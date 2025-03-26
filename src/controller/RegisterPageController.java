@@ -1,12 +1,8 @@
 package controller;
 
-import view.RegisterPageView;
-import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import view.RegisterPageView;
 
-/**
- * Contrôleur de la page d'inscription.
- */
 public class RegisterPageController {
 
     private Stage primaryStage;
@@ -15,25 +11,44 @@ public class RegisterPageController {
     public RegisterPageController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new RegisterPageView();
-        attachEvents();
+        attachEventHandlers();
     }
 
-    private void attachEvents() {
-        // Bouton "Créer un compte"
-        view.getCreateAccountButton().setOnAction((ActionEvent e) -> {
-            System.out.println("Tentative d'inscription...");
-            // TODO: logique d'inscription
+    private void attachEventHandlers() {
+        // Action sur le bouton "Créer un compte"
+        view.getCreateAccountButton().setOnAction(e -> {
+            System.out.println("Tentative de création de compte...");
+            // TODO: Implémenter la logique d'inscription
         });
-
-        // Lien "Se connecter"
-        view.getLoginLink().setOnAction((ActionEvent e) -> {
+        // Lien "Se connecter" dans le formulaire
+        view.getLoginLink().setOnAction(e -> {
             LoginPageController loginController = new LoginPageController(primaryStage);
             loginController.show();
+        });
+        // Navigation via la NavBar
+        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
+            HomePageController homeController = new HomePageController(primaryStage);
+            homeController.show();
+        });
+        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
+            LoginPageController loginController = new LoginPageController(primaryStage);
+            loginController.show();
+        });
+        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
+            // On est déjà sur la page inscription : on peut recharger la page
+            this.show();
         });
     }
 
     public void show() {
+        boolean fullScreen = primaryStage.isFullScreen();
+        double width = primaryStage.getWidth();
+        double height = primaryStage.getHeight();
+
         primaryStage.setScene(view.getScene());
+        primaryStage.setWidth(width);
+        primaryStage.setHeight(height);
+        primaryStage.setFullScreen(fullScreen);
         primaryStage.show();
     }
 }

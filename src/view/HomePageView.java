@@ -12,24 +12,24 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-/**
- * Vue pour la page d'accueil.
- * Pas de logique, seulement la construction de l'UI.
- */
+import java.util.Objects;
+
 public class HomePageView {
 
     private Scene scene;
     private TextField searchField;
+    private NavBarView navBarView;
 
     public HomePageView() {
         createUI();
     }
 
     private void createUI() {
-        // Barre de navigation
-        HBox navBar = NavBarView.createNavBar();
+        // Crée la NavBar
+        navBarView = new NavBarView();
+        HBox navBar = navBarView.getNavBar();
 
-        // Centre
+        // Zone centrale
         VBox centerBox = new VBox(30);
         centerBox.setAlignment(Pos.CENTER);
 
@@ -53,7 +53,7 @@ public class HomePageView {
         searchField = new TextField();
         searchField.setPromptText("Recherche");
 
-        // Icone loupe (placer loupe.png dans resources/images)
+        // Charger l'image loupe (vérifie que /images/loupe.png existe dans resources)
 
 
         searchContainer.setPrefWidth(400);
@@ -62,7 +62,6 @@ public class HomePageView {
 
         centerBox.getChildren().addAll(mainMessage, searchContainer);
 
-        // Layout principal
         BorderPane root = new BorderPane();
         root.setTop(navBar);
         root.setCenter(centerBox);
@@ -81,5 +80,9 @@ public class HomePageView {
 
     public TextField getSearchField() {
         return searchField;
+    }
+
+    public NavBarView getNavBarView() {
+        return navBarView;
     }
 }
