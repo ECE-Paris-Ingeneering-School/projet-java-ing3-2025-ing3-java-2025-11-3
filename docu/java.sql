@@ -1,79 +1,184 @@
--- Création de la base de données java
-CREATE DATABASE IF NOT EXISTS java;
-USE java;
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : ven. 28 mars 2025 à 08:47
+-- Version du serveur : 9.1.0
+-- Version de PHP : 8.3.14
 
--- Table: user
--- Note : le nom "user" étant un mot réservé, il est encadré par des backticks.
-CREATE TABLE `user` (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    mdp VARCHAR(255) NOT NULL,
-    nom VARCHAR(255) NOT NULL,
-    prenom VARCHAR(255) NOT NULL,
-    newU BOOLEAN NOT NULL DEFAULT TRUE,
-    admin BOOLEAN NOT NULL DEFAULT FALSE
-) ENGINE=InnoDB;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- Table: reduction
-CREATE TABLE reduction (
-    reduction_id INT AUTO_INCREMENT PRIMARY KEY,
-    code_promo VARCHAR(8) NOT NULL,
-    pourcentage INT NOT NULL
-) ENGINE=InnoDB;
 
--- Table: options
--- "options" est également encadré pour éviter tout conflit potentiel avec des mots réservés.
-CREATE TABLE `options` (
-    option_id INT AUTO_INCREMENT PRIMARY KEY,
-    nom_option VARCHAR(255) NOT NULL,
-    description TEXT
-) ENGINE=InnoDB;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Table: hebergement
-CREATE TABLE hebergement (
-    hebergement_id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(255) NOT NULL,
-    type INT NOT NULL,
-    adresse VARCHAR(255) NOT NULL,
-    description TEXT,
-    prix_base FLOAT UNSIGNED NOT NULL,
-    etoile INT NOT NULL,
-    proprietaire VARCHAR(255) NOT NULL,
-    statut INT NOT NULL,
-    photo VARCHAR(255)
-) ENGINE=InnoDB;
+--
+-- Base de données : `java`
+--
 
--- Table: reservation
-CREATE TABLE reservation (
-    reservation_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    hebergement_id INT NOT NULL,
-    date_debut DATE NOT NULL,
-    date_fin DATE NOT NULL,
-    tarif_final FLOAT UNSIGNED NOT NULL,
-    statut BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES `user`(user_id),
-    FOREIGN KEY (hebergement_id) REFERENCES hebergement(hebergement_id)
-) ENGINE=InnoDB;
+-- --------------------------------------------------------
 
--- Table: avis
-CREATE TABLE avis (
-    avis_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    hebergement_id INT NOT NULL,
-    date_avis TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    note INT NOT NULL,
-    commentaire TEXT,
-    FOREIGN KEY (user_id) REFERENCES `user`(user_id),
-    FOREIGN KEY (hebergement_id) REFERENCES hebergement(hebergement_id)
-) ENGINE=InnoDB;
+--
+-- Structure de la table `avis`
+--
 
--- Table: hebergement_option
--- Table de liaison pour gérer la relation plusieurs-à-plusieurs entre hébergements et options.
-CREATE TABLE hebergement_option (
-    option_id INT NOT NULL,
-    hebergement_id INT NOT NULL,
-    PRIMARY KEY (option_id, hebergement_id),
-    FOREIGN KEY (option_id) REFERENCES `options`(option_id),
-    FOREIGN KEY (hebergement_id) REFERENCES hebergement(hebergement_id)
-) ENGINE=InnoDB;
+DROP TABLE IF EXISTS `avis`;
+CREATE TABLE IF NOT EXISTS `avis` (
+  `avis_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `hebergement_id` int NOT NULL,
+  `date_avis` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `note` int NOT NULL,
+  `commentaire` text,
+  PRIMARY KEY (`avis_id`),
+  KEY `avis_ibfk_1` (`user_id`),
+  KEY `avis_ibfk_2` (`hebergement_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `hebergement`
+--
+
+DROP TABLE IF EXISTS `hebergement`;
+CREATE TABLE IF NOT EXISTS `hebergement` (
+  `hebergement_id` int NOT NULL AUTO_INCREMENT,
+  `nom` varchar(255) NOT NULL,
+  `type` int NOT NULL,
+  `adresse` varchar(255) NOT NULL,
+  `description` text,
+  `prix_base` float UNSIGNED NOT NULL,
+  `etoile` int NOT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`hebergement_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `hebergement`
+--
+
+INSERT INTO `hebergement` (`hebergement_id`, `nom`, `type`, `adresse`, `description`, `prix_base`, `etoile`, `photo`) VALUES
+(1, 'lac', 1, '25 rue bb', 'ddf', 20, 1, 'fee');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `hebergement_option`
+--
+
+DROP TABLE IF EXISTS `hebergement_option`;
+CREATE TABLE IF NOT EXISTS `hebergement_option` (
+  `option_id` int NOT NULL,
+  `hebergement_id` int NOT NULL,
+  PRIMARY KEY (`option_id`,`hebergement_id`),
+  KEY `hebergement_option_ibfk_2` (`hebergement_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `options`
+--
+
+DROP TABLE IF EXISTS `options`;
+CREATE TABLE IF NOT EXISTS `options` (
+  `option_id` int NOT NULL AUTO_INCREMENT,
+  `nom_option` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`option_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `reduction`
+--
+
+DROP TABLE IF EXISTS `reduction`;
+CREATE TABLE IF NOT EXISTS `reduction` (
+  `reduction_id` int NOT NULL AUTO_INCREMENT,
+  `code_promo` varchar(8) NOT NULL,
+  `pourcentage` int NOT NULL,
+  PRIMARY KEY (`reduction_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `reservation`
+--
+
+DROP TABLE IF EXISTS `reservation`;
+CREATE TABLE IF NOT EXISTS `reservation` (
+  `reservation_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `hebergement_id` int NOT NULL,
+  `date_debut` date NOT NULL,
+  `date_fin` date NOT NULL,
+  `tarif_final` float UNSIGNED NOT NULL,
+  PRIMARY KEY (`reservation_id`),
+  KEY `reservation_ibfk_1` (`user_id`),
+  KEY `reservation_ibfk_2` (`hebergement_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `mdp` varchar(255) NOT NULL,
+  `nom` varchar(255) NOT NULL,
+  `prenom` varchar(255) NOT NULL,
+  `newU` tinyint(1) NOT NULL DEFAULT '1',
+  `admin` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `user`
+--
+
+INSERT INTO `user` (`user_id`, `email`, `mdp`, `nom`, `prenom`, `newU`, `admin`) VALUES
+(2, 'tt@gg', 'zf', 'fz', 'fz', 1, 0);
+
+--
+-- Contraintes pour les tables déchargées
+--
+
+--
+-- Contraintes pour la table `avis`
+--
+ALTER TABLE `avis`
+  ADD CONSTRAINT `avis_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `avis_ibfk_2` FOREIGN KEY (`hebergement_id`) REFERENCES `hebergement` (`hebergement_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `hebergement_option`
+--
+ALTER TABLE `hebergement_option`
+  ADD CONSTRAINT `hebergement_option_ibfk_1` FOREIGN KEY (`option_id`) REFERENCES `options` (`option_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `hebergement_option_ibfk_2` FOREIGN KEY (`hebergement_id`) REFERENCES `hebergement` (`hebergement_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `reservation`
+--
+ALTER TABLE `reservation`
+  ADD CONSTRAINT `reservation_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reservation_ibfk_2` FOREIGN KEY (`hebergement_id`) REFERENCES `hebergement` (`hebergement_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
