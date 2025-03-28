@@ -33,6 +33,7 @@ public class HomePageView {
         VBox centerBox = new VBox(30);
         centerBox.setAlignment(Pos.CENTER);
 
+        // Message principal
         Label mainMessage = new Label("Réservez l’hébergement de vos rêves\nen quelques clics");
         mainMessage.setFont(new Font("Arial", 28));
         mainMessage.setStyle("-fx-font-weight: bold; -fx-text-fill: #000000;");
@@ -52,15 +53,20 @@ public class HomePageView {
 
         searchField = new TextField();
         searchField.setPromptText("Recherche");
-
-        // Charger l'image loupe (vérifie que /images/loupe.png existe dans resources)
-
-
+        // Ajoute la zone de saisie à la barre de recherche
+        searchContainer.getChildren().add(searchField);
         searchContainer.setPrefWidth(400);
         searchContainer.setMaxWidth(400);
 
+        // Chargement de l'image à afficher sous la barre de recherche
+        // Remplacez le chemin "/images/monImage.png" par le chemin réel de votre image dans votre projet
+        Image image = new Image("file:/Users/elishabajemon/IdeaProjects/projet-java-ing3-2025-ing3-java-2025-11-3/src/resources/homepage.png"); ImageView imageView = new ImageView(image); imageView.setFitWidth(300); // ajustez la taille selon vos besoins imageView.setPreserveRatio(true);
+        imageView = new ImageView(image);
+        imageView.setFitWidth(300); // ajustez la largeur de l'image si nécessaire
+        imageView.setPreserveRatio(true);
 
-        centerBox.getChildren().addAll(mainMessage, searchContainer);
+        // Ajoute le message principal, la barre de recherche et l'image dans le conteneur central
+        centerBox.getChildren().addAll(mainMessage, searchContainer, imageView);
 
         BorderPane root = new BorderPane();
         root.setTop(navBar);

@@ -20,17 +20,26 @@ public class HomePageController {
             LoginPageController loginController = new LoginPageController(primaryStage);
             loginController.show();
         });
+
         // Si on clique sur "Register", on passe à la page d'inscription
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
             RegisterPageController registerController = new RegisterPageController(primaryStage);
             registerController.show();
         });
+
         // Si on clique sur le titre, on recharge la HomePage
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
             HomePageController homeController = new HomePageController(primaryStage);
             homeController.show();
         });
+
+        // Si on clique sur "Recherche", on passe à la page de recherche
+        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
+            SearchPageController searchController = new SearchPageController(primaryStage);
+            searchController.show();
+        });
     }
+
 
     public void show() {
         // Récupérer et réappliquer la taille et le mode plein écran
