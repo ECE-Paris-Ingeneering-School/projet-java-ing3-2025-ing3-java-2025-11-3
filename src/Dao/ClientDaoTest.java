@@ -55,7 +55,7 @@ public class ClientDaoTest {
         assertEquals(0, clientState, "Client state should be updated to false");
 
         // Clean up the test data
-        //UserDao.supprimerUser(userId);
+        UserDao.supprimerUser(userId);
     }
     @AfterAll
     public static void tearDown() throws Exception {
