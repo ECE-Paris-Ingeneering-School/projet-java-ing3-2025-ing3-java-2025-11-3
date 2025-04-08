@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import Dao.AdminDaoImpl;
+import Dao.ClientDaoImpl;
+import Dao.UserDaoImpl;
+
+
 public class AzureDBConnector {
     /**
      * Attributs private pour la connexion JDBC
@@ -52,4 +57,19 @@ public class AzureDBConnector {
         // Retourner la connection du driver de la base de données
         return DriverManager.getConnection(url, username, password);
     }
+
+    public void closeConnection() throws SQLException {
+        Connection connection = getConnection();
+        if (connection != null) {
+            connection.close();
+        }
+    }
+
+    public UserDaoImpl getUserDao () {
+        return new UserDaoImpl(this);
+    }
+    public ClientDaoImpl getClientDao () { return  new ClientDaoImpl(this); }
+    public AdminDaoImpl getAdminDao () { return  new AdminDaoImpl(this); }
+
+
 }
