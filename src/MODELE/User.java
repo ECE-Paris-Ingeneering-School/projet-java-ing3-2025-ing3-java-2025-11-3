@@ -42,6 +42,11 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
+    public void setNom(String nom) {this.nom = nom;}
+    public void setPrenom(String prenom) {this.prenom = prenom;}
+    public void setEmail(String email) {this.email = email;}
+    public void setPassword(String password) {this.password = password;}
+
 
 
 }
