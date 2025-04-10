@@ -7,6 +7,8 @@ public class Avis {
     private int idHebergement;
     private int idClient;
 
+    public Avis() {}
+
     public Avis(int note, String commentaire, int idHebergement, int idClient) {
         this.note = note;
         this.commentaire = commentaire;

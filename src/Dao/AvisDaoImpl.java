@@ -7,11 +7,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class AvisDaoImpl implements AvisDao {
-    private AzureDBConnector conn;
+    private final AzureDBConnector conn;
 
-    public AvisDaoImpl(AzureDBConnector connector) {
-        this.conn = connector;
-    }
+    public AvisDaoImpl(AzureDBConnector conn) {this.conn = conn;}
+
+
     @Override
     public void saveAvis(Avis avis) {
         try{
@@ -25,7 +25,9 @@ public class AvisDaoImpl implements AvisDao {
             preparedStatement.executeUpdate();
 
 
-        }catch (SQLException e){}
+        }catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

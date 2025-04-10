@@ -67,9 +67,9 @@ public class AvisDaoTest {
         assertEquals(avis.getIdClient(), retriveavis.getIdClient(), "Avis Client should match");
 
         // Clean up the test data
-        avisDao.deleteAvis(avisId);
-        userDao.supprimerUser(userId);
-        hebergementDao.supprimerHebergement(hebergementId);
+        //avisDao.deleteAvis(avisId);
+        //userDao.supprimerUser(userId);
+        //hebergementDao.supprimerHebergement(hebergementId);
 
 
     }

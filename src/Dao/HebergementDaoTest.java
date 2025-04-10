@@ -1,7 +1,9 @@
 package Dao;
 
+import MODELE.Avis;
 import MODELE.Hebergement;
 import MODELE.Options;
+import MODELE.User;
 import db.AzureDBConnector;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,6 +108,72 @@ public class HebergementDaoTest {
         hebergementDao.supprimerHebergement(id);
         optionDao.supprimerOption(id_option1);
         optionDao.supprimerOption(id_option2);
+
+
+
+    }
+
+    @Test void avis(){
+        HebergementDaoImpl hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
+        UserDaoImpl userDao = new UserDaoImpl(new AzureDBConnector());
+        AvisDaoImpl avisDao = new AvisDaoImpl(new AzureDBConnector());
+
+        //hebergement
+        ArrayList<String> img = new ArrayList<>();
+        img.add("image1.jpg");
+        img.add("image2.jpg");
+        String name = "hebergementtest" ;
+        Hebergement hebergement = new Hebergement(name, 1, "adresse", "description",100);
+        hebergement.setImage(img);
+        hebergementDao.ajouterHebergement(hebergement);
+        int hid =hebergementDao.getIdHebergement(name);
+        hebergement.setHid(hid);
+
+        //user
+        String nom1 = "usertest1" ;
+        String nom2 = "usertest2" ;
+        User user = new User(nom1, "prenom", "email1", "password");
+        User user2 = new User(nom2, "prenom", "email2", "password");
+        userDao.ajouterUser(user);
+        userDao.ajouterUser(user2);
+        int id_user = userDao.getIdUser("email1");
+        int id_user2 = userDao.getIdUser("email2");
+        user.setId(id_user);
+        user2.setId(id_user2);
+
+        //avis
+        Avis avis = new Avis(4, "commentaire", hid, id_user);
+        avisDao.saveAvis(avis);
+        Avis avis2 = new Avis(4, "commentaire2", hid, id_user2);
+        avisDao.saveAvis(avis2);
+
+
+
+
+        int id_avis = avisDao.getIdAvis(id_user, hid);
+        int id_avis2 = avisDao.getIdAvis(id_user2, hid);
+        avis.setId(id_avis);
+        avis2.setId(id_avis2);
+
+
+        assert avis.getIdClient() == id_user;
+
+        assert avis2.getIdClient() == id_user2;
+
+        ArrayList<Avis> avisList = hebergementDao.getAllAvis(hid);
+        assert avisList != null;
+        assert avisList.size() == 2;
+        assert avisList.get(0).getIdClient() == id_user;
+        assert avisList.get(1).getIdClient() == id_user2;
+
+        hebergementDao.supprimerHebergement(hid);
+        userDao.supprimerUser(id_user);
+        userDao.supprimerUser(id_user2);
+
+
+
+
+
 
 
 

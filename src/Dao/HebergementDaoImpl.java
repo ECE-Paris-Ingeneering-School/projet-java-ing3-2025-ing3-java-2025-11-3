@@ -1,5 +1,6 @@
 package Dao;
 
+import MODELE.Avis;
 import MODELE.Hebergement;
 import MODELE.Options;
 import db.AzureDBConnector;
@@ -140,6 +141,30 @@ public class HebergementDaoImpl implements HebergementDao {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public ArrayList<Avis> getAllAvis(int id_hebergement) {
+        try{
+            AvisDao avisDao= new AvisDaoImpl(conn);
+            Connection connection=conn.getConnection();
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM avis WHERE hebergement_id = ?");
+            ps.setInt(1, id_hebergement);
+            ResultSet rs = ps.executeQuery();
+            ArrayList<Avis> avisList = new ArrayList<>();
+            while (rs.next()) {
+                int avis_id = rs.getInt("avis_id");
+                Avis avis = new Avis();
+                avis=avisDao.getAvisById(avis_id);
+                avisList.add(avis);
+            }
+            return avisList;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+
         }
 
     }
