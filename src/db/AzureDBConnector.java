@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import Dao.AdminDaoImpl;
 import Dao.ClientDaoImpl;
+import Dao.HebergementDaoImpl;
 import Dao.UserDaoImpl;
 
 
@@ -70,6 +71,8 @@ public class AzureDBConnector {
     }
     public ClientDaoImpl getClientDao () { return  new ClientDaoImpl(this); }
     public AdminDaoImpl getAdminDao () { return  new AdminDaoImpl(this); }
+    public HebergementDaoImpl getHebergementDao () { return  new HebergementDaoImpl(this); }
+
 
 
 }

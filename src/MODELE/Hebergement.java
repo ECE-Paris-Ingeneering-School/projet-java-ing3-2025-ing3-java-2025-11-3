@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Hebergement {
     private int Hid;
     private String nom;
-    private String type;
+    private int type;
     private String adresse;
     private String description;
     private int prix;
@@ -14,7 +14,7 @@ public class Hebergement {
     private ArrayList<Options> options;
     private ArrayList<Avis> avis;
 
-    public Hebergement( String nom, String type, String adresse, String description, int prix){
+    public Hebergement( String nom, int type, String adresse, String description, int prix){
         this.nom = nom;
         this.type = type;
         this.adresse = adresse;
@@ -27,7 +27,7 @@ public class Hebergement {
         this.avis = null;
 
     }
-    public Hebergement(int Hid, String nom, String type, String adresse, String description, int prix, int note, ArrayList<String> image, ArrayList<Options> options, ArrayList<Avis> avis){
+    public Hebergement(int Hid, String nom, int type, String adresse, String description, int prix, int note, ArrayList<String> image, ArrayList<Options> options, ArrayList<Avis> avis){
         this.Hid = Hid;
         this.nom = nom;
         this.type = type;
@@ -47,7 +47,7 @@ public class Hebergement {
     public String getNom() {
         return nom;
     }
-    public String getType() {
+    public int getType() {
         return type;
     }
     public String getAdresse() {
