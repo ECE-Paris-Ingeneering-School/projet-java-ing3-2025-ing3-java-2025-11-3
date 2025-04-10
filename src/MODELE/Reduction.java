@@ -14,4 +14,20 @@ public class Reduction {
         this.CodePromo = CodePromo;
         this.pourcentage = pourcentage;
     }
+    public int getReducID() {
+        return reducID;
+    }
+    public void setReducID(int reducID) {
+        this.reducID = reducID;
+    }
+    public String getCodePromo() {
+        return CodePromo;
+    }
+    public void setCodePromo(String codePromo) {
+        CodePromo = codePromo;
+    }
+    public int getPourcentage() {
+        return pourcentage;
+    }
+
 }
