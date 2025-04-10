@@ -70,6 +70,6 @@ public class AzureDBConnector {
     public AdminDaoImpl getAdminDao () { return  new AdminDaoImpl(this); }
     public HebergementDaoImpl getHebergementDao () { return  new HebergementDaoImpl(this); }
     public OptionDaoImpl getOptionDao () { return  new OptionDaoImpl(this); }
-
+    public AvisDaoImpl getAvisDao () { return  new AvisDaoImpl(this); }
 
 }
