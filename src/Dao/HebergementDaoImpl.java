@@ -122,9 +122,26 @@ public class HebergementDaoImpl implements HebergementDao {
     }
 
     @Override
-    public Options getOption(int id) {
-        //TODO
-        return null;
+    public ArrayList<Options> getOption(int id_hebergement) {
+        try{
+            OptionDao optionDao= new OptionDaoImpl(conn);
+            Connection connection=conn.getConnection();
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM hebergement_option WHERE hebergement_id = ?");
+            ps.setInt(1, id_hebergement);
+            ResultSet rs = ps.executeQuery();
+            ArrayList<Options> optionsList = new ArrayList<>();
+            while (rs.next()) {
+                int option_id = rs.getInt("option_id");
+                Options option = new Options();
+                option=optionDao.getOptionById(option_id);
+                optionsList.add(option);
+            }
+            return optionsList;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -141,5 +158,20 @@ public class HebergementDaoImpl implements HebergementDao {
     public ArrayList<String> decompreserListe(String string) {
         String[] parts = string.split(",");
         return new ArrayList<String>(List.of(parts));
+    }
+
+    @Override
+    public void ajouterOption(int id_hebergement, int id_option) {
+        try{
+            Connection connection=conn.getConnection();
+            String sql = "INSERT INTO hebergement_option (hebergement_id, option_id) VALUES (?, ?)";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, id_hebergement);
+            ps.setInt(2, id_option);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

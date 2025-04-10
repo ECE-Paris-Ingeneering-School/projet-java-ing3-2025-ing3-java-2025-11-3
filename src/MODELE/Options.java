@@ -4,6 +4,7 @@ public class Options {
     private int id;
     private String nom;
     private String description;
+    public Options() {}
 
     public Options(String nom, String description) {
         this.nom = nom;

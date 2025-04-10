@@ -13,7 +13,8 @@ public interface HebergementDao {
      Hebergement getHebergement(int id);
      void supprimerHebergement(int id);
      void modifierHebergement(Hebergement hebergement);
-     Options getOption(int id);
+     ArrayList<Options> getOption(int id_hebergement);
      String compreserListe(ArrayList<String> list);
      ArrayList<String> decompreserListe(String string);
+     void ajouterOption(int id_hebergement, int id_option);
 }
