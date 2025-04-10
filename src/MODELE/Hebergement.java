@@ -79,6 +79,12 @@ public class Hebergement {
     public void setImage(ArrayList<String> image) {
         this.image = image;
     }
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public void setOptions(ArrayList<Options> options) {
         this.options = options;

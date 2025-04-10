@@ -45,4 +45,27 @@ public class HebergementDaoTest {
 
 
     }
+    @Test
+    public void modifHebergementTest() {
+        Random rand = new Random();
+        HebergementDaoImpl hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
+        ArrayList<String> img = new ArrayList<>();
+        img.add("image1.jpg");
+        img.add("image2.jpg");
+        String name = "hebergement" + rand.nextInt(100000)+10000000;
+        Hebergement hebergement = new Hebergement(name, 1, "adresse", "description",100);
+        hebergement.setImage(img);
+        hebergementDao.ajouterHebergement(hebergement);
+        int id = hebergementDao.getIdHebergement(name);
+        Hebergement hebergement1 = hebergementDao.getHebergement(id);
+        hebergement1.setDescription("description hebergement Modifie");
+        hebergementDao.modifierHebergement(hebergement1);
+        Hebergement hebergement2 = hebergementDao.getHebergement(id);
+        assert hebergement2 != null;
+        assert hebergement2.getNom().equals(name);
+        assert hebergement2.getType() == 1;
+        assert hebergement2.getAdresse().equals("adresse");
+        assert hebergement2.getDescription().equals("description hebergement Modifie");
+
+    }
 }
