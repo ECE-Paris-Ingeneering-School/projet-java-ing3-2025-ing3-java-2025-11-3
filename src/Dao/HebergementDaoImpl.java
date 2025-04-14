@@ -60,6 +60,34 @@ public class HebergementDaoImpl implements HebergementDao {
     }
 
     @Override
+    public ArrayList<Hebergement> getAllHebergements() {
+        try{
+            Connection connection=conn.getConnection();
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM hebergement");
+            ResultSet rs = ps.executeQuery();
+            ArrayList<Hebergement> hebergements = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("hebergement_id");
+                String nom = rs.getString("nom");
+                int type = rs.getInt("type");
+                String adresse = rs.getString("adresse");
+                String description = rs.getString("description");
+                int prix = rs.getInt("prix_base");
+                int etoile = rs.getInt("etoile");
+                String images = rs.getString("photo");
+                ArrayList<String> imageList = decompreserListe(images);
+
+                hebergements.add(new Hebergement(id, nom, type, adresse, description, prix, etoile, imageList, null, null));
+            }
+            return hebergements;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
     public Hebergement getHebergement(int id) {
         try{
             Connection connection=conn.getConnection();

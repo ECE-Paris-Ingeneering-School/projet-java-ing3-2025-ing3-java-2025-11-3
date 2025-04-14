@@ -178,4 +178,49 @@ public class HebergementDaoTest {
 
 
     }
+
+    @Test void allhebergement(){
+        HebergementDaoImpl hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
+        ArrayList<String> img1 = new ArrayList<>();
+        img1.add("image1.jpg");
+        img1.add("image2.jpg");
+        ArrayList<String> img2 = new ArrayList<>();
+        img2.add("image3.jpg");
+        img2.add("image4.jpg");
+        img2.add("image5.jpg");
+
+        Hebergement hebergement1=new Hebergement("hebergement1", 1, "adresse1", "description",100);
+        hebergement1.setImage(img1);
+        Hebergement hebergement2=new Hebergement("hebergement2", 1, "adresse2", "description",100);
+        hebergement2.setImage(img2);
+        Hebergement hebergement3=new Hebergement("hebergement3", 2, "adresse3", "description",100);
+        hebergement3.setImage(img1);
+        Hebergement hebergement4=new Hebergement("hebergement4", 1, "adresse4", "description",100);
+        hebergement4.setImage(img2);
+        hebergementDao.ajouterHebergement(hebergement1);
+        hebergementDao.ajouterHebergement(hebergement2);
+        hebergementDao.ajouterHebergement(hebergement3);
+        hebergementDao.ajouterHebergement(hebergement4);
+        ArrayList<Hebergement> hebergements = hebergementDao.getAllHebergements();
+        assert hebergements != null;
+        assert hebergements.size() == 4;
+        assert hebergements.get(0).getNom().equals("hebergement1");
+        assert hebergements.get(1).getNom().equals("hebergement2");
+        assert hebergements.get(2).getNom().equals("hebergement3");
+        assert hebergements.get(3).getNom().equals("hebergement4");
+        assert hebergements.get(0).getType() == 1;
+        assert hebergements.get(1).getType() == 1;
+        assert hebergements.get(2).getType() == 2;
+        assert hebergements.get(3).getType() == 1;
+        assert hebergements.get(0).getAdresse().equals("adresse1");
+        assert hebergements.get(1).getAdresse().equals("adresse2");
+        assert hebergements.get(2).getAdresse().equals("adresse3");
+        assert hebergements.get(3).getAdresse().equals("adresse4");
+
+        hebergementDao.supprimerHebergement(hebergements.get(0).getHid());
+        hebergementDao.supprimerHebergement(hebergements.get(1).getHid());
+        hebergementDao.supprimerHebergement(hebergements.get(2).getHid());
+        hebergementDao.supprimerHebergement(hebergements.get(3).getHid());
+
+    }
 }

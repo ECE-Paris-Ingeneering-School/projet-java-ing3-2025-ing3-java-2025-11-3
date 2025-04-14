@@ -11,6 +11,7 @@ public interface HebergementDao {
 
      void ajouterHebergement(Hebergement hebergement);
      int getIdHebergement(String nom);
+     ArrayList<Hebergement> getAllHebergements();
      Hebergement getHebergement(int id);
      void supprimerHebergement(int id);
      void modifierHebergement(Hebergement hebergement);
