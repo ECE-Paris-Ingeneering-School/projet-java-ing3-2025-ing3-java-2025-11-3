@@ -5,36 +5,48 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
-public class ReservationView extends BorderPane {
+public class ReservationView {
 
+    private Scene scene;
     private NavBarView navBarView;
 
     public ReservationView() {
-        createView();
+        createUI();
     }
 
-    private void createView() {
-        // Ajoute la NavBar en haut
+    private void createUI() {
+        // Barre de navigation (similaire à RegisterPageView)
         navBarView = new NavBarView();
-        this.setTop(navBarView.getNavBar());
+        HBox navBar = navBarView.getNavBar();
 
-        // Centre un label avec le texte "Mes réservations"
-        Label label = new Label("Mes réservations");
-        label.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #333;");
-        BorderPane.setAlignment(label, Pos.CENTER);
-        this.setCenter(label);
+        // Conteneur principal pour centrer le contenu
+        VBox mainContainer = new VBox();
+        mainContainer.setAlignment(Pos.CENTER);
+        mainContainer.setSpacing(20);
+        mainContainer.setPadding(new Insets(20));
 
-        // Ajoute un padding global si nécessaire
-        this.setPadding(new Insets(20));
+        // Titre de la page
+        Label titleLabel = new Label("Mes réservations");
+        titleLabel.setFont(new Font("Arial", 28));
+        titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
+
+        mainContainer.getChildren().add(titleLabel);
+
+        // Layout principal avec BorderPane
+        BorderPane root = new BorderPane();
+        root.setTop(navBar);
+        root.setCenter(mainContainer);
+        root.setStyle("-fx-background-color: #F9F9F9;");
+
+        scene = new Scene(root, 800, 600);
     }
 
-    /**
-     * Retourne une Scene contenant cette vue.
-     * Utilisez createScene() pour éviter de surcharger Node.getScene() qui est final.
-     */
-    public Scene createScene() {
-        return new Scene(this, 1200, 800);
+    public Scene getScene() {
+        return scene;
     }
 
     public NavBarView getNavBarView() {
