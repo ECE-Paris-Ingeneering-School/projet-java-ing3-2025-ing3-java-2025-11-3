@@ -2,6 +2,7 @@ package controller;
 
 import javafx.stage.Stage;
 import view.BookingPageView;
+import view.ReservationView;
 
 public class BookingPageController {
 
@@ -15,10 +16,16 @@ public class BookingPageController {
     }
 
     private void initController() {
-        // Navigation NavBar
+        // Navigation via NavBar
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
+        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
+        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> new SearchPageController(primaryStage).show());
-        // etc...
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
+            ReservationView reservationView = new ReservationView();
+            new ReservationController(primaryStage, reservationView);
+            primaryStage.setScene(reservationView.getScene());
+        });
 
         // Bouton "Réserver"
         view.getReserverButton().setOnAction(e -> {

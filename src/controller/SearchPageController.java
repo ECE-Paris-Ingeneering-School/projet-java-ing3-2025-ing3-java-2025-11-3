@@ -2,6 +2,7 @@ package controller;
 
 import javafx.stage.Stage;
 import view.SearchPageView;
+import view.ReservationView;
 
 public class SearchPageController {
 
@@ -16,17 +17,19 @@ public class SearchPageController {
     }
 
     private void attachEventHandlers() {
-        // -- Navigation via NavBar
+        // Navigation via NavBar
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> this.show());
-
-        // -- Bouton DEBUG PRODUIT en haut (redirect vers BookingPage)
-        view.getDebugProductButton().setOnAction(e -> {
-            BookingPageController bookingCtrl = new BookingPageController(primaryStage);
-            bookingCtrl.show();
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
+            ReservationView reservationView = new ReservationView();
+            new ReservationController(primaryStage, reservationView);
+            primaryStage.setScene(reservationView.getScene());
         });
+
+        // Bouton DEBUG PRODUIT en haut (redirect vers BookingPage)
+        view.getDebugProductButton().setOnAction(e -> new BookingPageController(primaryStage).show());
     }
 
     private void initSearchInteractions() {
