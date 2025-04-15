@@ -2,6 +2,10 @@ package controller;
 
 import javafx.stage.Stage;
 import view.HomePageView;
+import view.ReservationView;
+import view.LoginPageView;
+import view.RegisterPageView;
+import view.SearchPageView;
 
 public class HomePageController {
 
@@ -17,31 +21,34 @@ public class HomePageController {
     private void attachEventHandlers() {
         // Si on clique sur "Sign in", on passe à la page de connexion
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            LoginPageController loginController = new LoginPageController(primaryStage);
-            loginController.show();
+            new LoginPageController(primaryStage).show();
         });
+
         // Si on clique sur "Register", on passe à la page d'inscription
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            RegisterPageController registerController = new RegisterPageController(primaryStage);
-            registerController.show();
+            new RegisterPageController(primaryStage).show();
         });
-        // Si on clique sur le titre, on recharge la HomePage
+
+        // Si on clique sur "Recherche", on passe à la page de recherche
+        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
+            new SearchPageController(primaryStage).show();
+        });
+
+        // SI on clique sur "Réservations", on passe à la page de gestion des réservations
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
+            ReservationView reservationView = new ReservationView();
+            new ReservationController(reservationView);  // Instanciation du contrôleur des réservations
+            primaryStage.setScene(reservationView.getScene());
+        });
+
+        // Cliquer sur le titre renvoie à la HomePage
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            HomePageController homeController = new HomePageController(primaryStage);
-            homeController.show();
+            new HomePageController(primaryStage).show();
         });
     }
 
     public void show() {
-        // Récupérer et réappliquer la taille et le mode plein écran
-        boolean fullScreen = primaryStage.isFullScreen();
-        double width = primaryStage.getWidth();
-        double height = primaryStage.getHeight();
-
         primaryStage.setScene(view.getScene());
-        primaryStage.setWidth(width);
-        primaryStage.setHeight(height);
-        primaryStage.setFullScreen(fullScreen);
         primaryStage.show();
     }
 }
