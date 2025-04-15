@@ -2,6 +2,8 @@ package controller;
 
 import javafx.stage.Stage;
 import view.RegisterPageView;
+import view.ReservationView;
+import view.SearchPageView;
 
 public class RegisterPageController {
 
@@ -20,23 +22,33 @@ public class RegisterPageController {
             System.out.println("Tentative de création de compte...");
             // TODO: Implémenter la logique d'inscription
         });
+
         // Lien "Se connecter" dans le formulaire
         view.getLoginLink().setOnAction(e -> {
-            LoginPageController loginController = new LoginPageController(primaryStage);
-            loginController.show();
+            new LoginPageController(primaryStage).show();
         });
+
         // Navigation via la NavBar
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            HomePageController homeController = new HomePageController(primaryStage);
-            homeController.show();
+            new HomePageController(primaryStage).show();
         });
+
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            LoginPageController loginController = new LoginPageController(primaryStage);
-            loginController.show();
+            new LoginPageController(primaryStage).show();
         });
+
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            // On est déjà sur la page inscription : on peut recharger la page
-            this.show();
+            this.show(); // On est déjà sur cette page
+        });
+
+        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
+            new SearchPageController(primaryStage).show();
+        });
+
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
+            ReservationView reservationView = new ReservationView();
+            new ReservationController(primaryStage, reservationView);
+            primaryStage.setScene(reservationView.getScene());
         });
     }
 
