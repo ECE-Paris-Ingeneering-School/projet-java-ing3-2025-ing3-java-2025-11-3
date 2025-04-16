@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import MODELE.Hebergement; // Assure-toi que ce modèle existe bien
 
 public class BookingPageView {
 
@@ -16,7 +17,6 @@ public class BookingPageView {
 
     private NavBarView navBarView;
 
-    // Section principale (image + infos)
     private Button favoriteButton;
     private Label headingLabel;
     private Label priceTagLabel;
@@ -27,38 +27,32 @@ public class BookingPageView {
     private Button reserverButton;
     private TitledPane faqTitledPane;
 
-    // Deux images en dessous
     private ImageView featureImg1, featureImg2;
 
-    // Section Avis
     private Label avisTitle;
     private Label avisSubtitle;
 
-    public BookingPageView() {
-        createUI();
+    public BookingPageView(Hebergement hebergement) {
+        createUI(hebergement);
     }
 
-    private void createUI() {
+    private void createUI(Hebergement hebergement) {
         root = new BorderPane();
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
 
-        // Contenu principal scrollable
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setPadding(new Insets(0));
 
-        // Conteneur vertical global, centré
         VBox mainContainer = new VBox(30);
         mainContainer.setPadding(new Insets(20));
         mainContainer.setAlignment(Pos.CENTER);
         scrollPane.setContent(mainContainer);
 
-        // 1) Section principale : image + infos, centrée
         HBox topSection = new HBox(30);
-        topSection.setAlignment(Pos.CENTER);  // Centre l'image et l'infoBox horizontalement
+        topSection.setAlignment(Pos.CENTER);
 
-        // -- Image principale
         StackPane imagePane = new StackPane();
         imagePane.setMaxWidth(500);
         imagePane.setMaxHeight(500);
@@ -70,29 +64,26 @@ public class BookingPageView {
 
         favoriteButton = new Button("♡");
         favoriteButton.setStyle("-fx-background-color: #F5F5F5; -fx-border-radius: 50%; -fx-font-size: 16px;");
-
         imagePane.getChildren().addAll(mainImage, favoriteButton);
         StackPane.setAlignment(favoriteButton, Pos.TOP_LEFT);
         StackPane.setMargin(favoriteButton, new Insets(10,0,0,10));
 
-        // -- Infos à droite
         VBox infoBox = new VBox(15);
-        infoBox.setAlignment(Pos.CENTER);  // Centre verticalement le texte dans l'infoBox
+        infoBox.setAlignment(Pos.CENTER);
         infoBox.setMaxWidth(400);
 
-        headingLabel = new Label("Text Heading");
+        headingLabel = new Label(hebergement.getNom());
         headingLabel.setFont(new Font(22));
 
         priceTagLabel = new Label("Prix par nuit");
         priceTagLabel.setStyle("-fx-text-fill: #28a745; -fx-font-size: 14px;");
 
-        bigPriceLabel = new Label("$50");
+        bigPriceLabel = new Label(hebergement.getPrix() + "€");
         bigPriceLabel.setStyle("-fx-font-size: 32px; -fx-font-weight: bold;");
 
-        smallTextLabel = new Label("Text");
+        smallTextLabel = new Label(hebergement.getAdresse());
         smallTextLabel.setStyle("-fx-text-fill: #555555;");
 
-        // Dates
         GridPane datesGrid = new GridPane();
         datesGrid.setAlignment(Pos.CENTER);
         datesGrid.setHgap(20);
@@ -110,10 +101,7 @@ public class BookingPageView {
         reserverButton = new Button("Réserver");
         reserverButton.setStyle("-fx-background-color: #000; -fx-text-fill: white; -fx-font-size: 16px; -fx-padding: 10px 20px;");
 
-        // Accordion (FAQ)
-        faqTitledPane = new TitledPane("Title",
-                new Label("Answer the frequently asked question in a simple sentence,\n" +
-                        "a longish paragraph, or even in a list."));
+        faqTitledPane = new TitledPane("FAQ", new Label("Des infos utiles pour votre séjour..."));
         faqTitledPane.setExpanded(false);
 
         infoBox.getChildren().addAll(
@@ -128,7 +116,6 @@ public class BookingPageView {
 
         topSection.getChildren().addAll(imagePane, infoBox);
 
-        // 2) Deux images en dessous, centrées
         HBox featureImagesRow = new HBox(20);
         featureImagesRow.setAlignment(Pos.CENTER);
 
@@ -142,16 +129,14 @@ public class BookingPageView {
 
         featureImagesRow.getChildren().addAll(featureImg1, featureImg2);
 
-        // 3) Section Avis (centrée)
         VBox avisSection = new VBox(15);
         avisSection.setAlignment(Pos.CENTER);
 
         avisTitle = new Label("Avis");
         avisTitle.setFont(new Font(20));
-        avisSubtitle = new Label("Ce qu'en pensent les ienclis");
+        avisSubtitle = new Label("Ce qu'en pensent les utilisateurs");
         avisSubtitle.setStyle("-fx-text-fill: #555;");
 
-        // FlowPane pour disposer les avis
         FlowPane avisFlow = new FlowPane(20, 20);
         avisFlow.setPrefWrapLength(900);
         avisFlow.setAlignment(Pos.CENTER);
@@ -162,13 +147,12 @@ public class BookingPageView {
             card.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
             card.setPrefWidth(250);
 
-            Label quoteLabel = new Label("\"MASHALLAH\"");
+            Label quoteLabel = new Label("\"Super séjour !\"");
             quoteLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-            Label nameLabel = new Label("INCROYABLE");
-            Label descLabel = new Label("SARTEK LE DEGRADE");
+            Label nameLabel = new Label("Utilisateur");
+            Label descLabel = new Label("Très bon hébergement.");
             descLabel.setStyle("-fx-text-fill: #777; -fx-font-size: 12px;");
 
-            // Petite image de profil
             ImageView avatar = new ImageView(new Image("file:src/resources/avatar_40.png"));
             avatar.setFitWidth(40);
             avatar.setFitHeight(40);
@@ -180,7 +164,6 @@ public class BookingPageView {
 
         avisSection.getChildren().addAll(avisTitle, avisSubtitle, avisFlow);
 
-        // On assemble tout dans le conteneur principal
         mainContainer.getChildren().addAll(topSection, featureImagesRow, avisSection);
 
         root.setCenter(scrollPane);
@@ -188,27 +171,10 @@ public class BookingPageView {
     }
 
     // GETTERS
-    public Scene getScene() {
-        return scene;
-    }
-
-    public NavBarView getNavBarView() {
-        return navBarView;
-    }
-
-    public Button getFavoriteButton() {
-        return favoriteButton;
-    }
-
-    public Button getReserverButton() {
-        return reserverButton;
-    }
-
-    public DatePicker getDateArriveePicker() {
-        return dateArriveePicker;
-    }
-
-    public DatePicker getDateDepartPicker() {
-        return dateDepartPicker;
-    }
+    public Scene getScene() { return scene; }
+    public NavBarView getNavBarView() { return navBarView; }
+    public Button getFavoriteButton() { return favoriteButton; }
+    public Button getReserverButton() { return reserverButton; }
+    public DatePicker getDateArriveePicker() { return dateArriveePicker; }
+    public DatePicker getDateDepartPicker() { return dateDepartPicker; }
 }

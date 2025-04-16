@@ -88,7 +88,7 @@ public class SearchPageController {
         for (Hebergement h : hebergements) {
             VBox lodgingItem = view.createLodgingItem(h);
 
-            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage).show());
+            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage,h).show());
 
             view.getLodgingFlowPane().getChildren().add(lodgingItem);
         }

@@ -3,17 +3,22 @@ package controller;
 import javafx.stage.Stage;
 import view.BookingPageView;
 import view.ReservationView;
+import MODELE.Hebergement;
+
 
 public class BookingPageController {
 
     private Stage primaryStage;
     private BookingPageView view;
+    private Hebergement hebergement; // à ajouter
 
-    public BookingPageController(Stage primaryStage) {
+    public BookingPageController(Stage primaryStage, Hebergement hebergement) {
         this.primaryStage = primaryStage;
-        this.view = new BookingPageView();
+        this.hebergement = hebergement;
+        this.view = new BookingPageView(hebergement);
         initController();
     }
+
 
     private void initController() {
         // Navigation via NavBar
