@@ -34,6 +34,11 @@ public interface AvisDao {
     * @param id d un Avis
      */
     void deleteAvis(int id);
+    /*
+    * Return tous les Avis d un hebergement dans la BDD
+    * @param hebergement_id
+    * @return liste des avis
+     */
     List<Avis> getAvisByHebergementId(int hebergementId);
 
 
