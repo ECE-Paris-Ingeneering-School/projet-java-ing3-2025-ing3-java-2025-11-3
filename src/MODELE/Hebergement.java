@@ -93,4 +93,11 @@ public class Hebergement {
     public void setAvis(ArrayList<Avis> avis) {
         this.avis = avis;
     }
+
+    public String getImageFilename() {
+        if (image != null && !image.isEmpty()) {
+            return image.getFirst(); // Renvoie le nom du premier fichier d'image
+        }
+        return null; // Ou une valeur par défaut si aucune image n'est disponible
+    }
 }
