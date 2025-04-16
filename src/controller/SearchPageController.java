@@ -8,6 +8,7 @@ import view.SearchPageView;
 import javafx.stage.Stage;
 import view.SearchPageView;
 import view.ReservationView;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 
@@ -38,7 +39,9 @@ public class SearchPageController {
             primaryStage.setScene(reservationView.getScene());
         });
 
-        view.getDebugProductButton().setOnAction(e -> new BookingPageController(primaryStage).show());
+
+
+        //view.getDebugProductButton().setOnAction(e -> new BookingPageController(primaryStage).show());
     }
 
     private void initSearchInteractions() {
@@ -83,7 +86,11 @@ public class SearchPageController {
         }*/
 
         for (Hebergement h : hebergements) {
-            view.getLodgingFlowPane().getChildren().add(view.createLodgingItem(h));
+            VBox lodgingItem = view.createLodgingItem(h);
+
+            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage).show());
+
+            view.getLodgingFlowPane().getChildren().add(lodgingItem);
         }
     }
 
