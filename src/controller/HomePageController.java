@@ -3,9 +3,6 @@ package controller;
 import javafx.stage.Stage;
 import view.HomePageView;
 import view.ReservationView;
-import view.LoginPageView;
-import view.RegisterPageView;
-import view.SearchPageView;
 
 public class HomePageController {
 
@@ -21,34 +18,46 @@ public class HomePageController {
     private void attachEventHandlers() {
         // Si on clique sur "Sign in", on passe à la page de connexion
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            new LoginPageController(primaryStage).show();
+            LoginPageController loginController = new LoginPageController(primaryStage);
+            loginController.show();
         });
 
         // Si on clique sur "Register", on passe à la page d'inscription
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            new RegisterPageController(primaryStage).show();
+            RegisterPageController registerController = new RegisterPageController(primaryStage);
+            registerController.show();
+        });
+
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
+            ReservationView newReservationView = new ReservationView();
+            new ReservationController(primaryStage, newReservationView);
+            primaryStage.setScene(newReservationView.getScene());
+        });
+
+        // Si on clique sur le titre, on recharge la HomePage
+        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
+            HomePageController homeController = new HomePageController(primaryStage);
+            homeController.show();
         });
 
         // Si on clique sur "Recherche", on passe à la page de recherche
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
-            new SearchPageController(primaryStage).show();
-        });
-
-        // SI on clique sur "Réservations", on passe à la page de gestion des réservations
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView reservationView = new ReservationView();
-            new ReservationController(reservationView);  // Instanciation du contrôleur des réservations
-            primaryStage.setScene(reservationView.getScene());
-        });
-
-        // Cliquer sur le titre renvoie à la HomePage
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            new HomePageController(primaryStage).show();
+            SearchPageController searchController = new SearchPageController(primaryStage);
+            searchController.show();
         });
     }
 
+
     public void show() {
+        // Récupérer et réappliquer la taille et le mode plein écran
+        boolean fullScreen = primaryStage.isFullScreen();
+        double width = primaryStage.getWidth();
+        double height = primaryStage.getHeight();
+
         primaryStage.setScene(view.getScene());
+        primaryStage.setWidth(width);
+        primaryStage.setHeight(height);
+        primaryStage.setFullScreen(fullScreen);
         primaryStage.show();
     }
 }

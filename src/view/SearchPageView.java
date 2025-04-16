@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import java.time.LocalDate;
+import MODELE.Hebergement;
 
 public class SearchPageView {
 
@@ -20,7 +21,6 @@ public class SearchPageView {
     private HBox searchRow;
     private TextField searchField;
     private Button sortPriceButton, sortRatingButton;
-    private Button debugProductButton;  // Bouton Debug en haut
     private FlowPane lodgingFlowPane;
 
     private CheckBox maisonCheck, appartementCheck, autreCheck;
@@ -78,10 +78,8 @@ public class SearchPageView {
         sortPriceButton = new Button("Trier par prix");
         sortRatingButton = new Button("Trier par note");
 
-        debugProductButton = new Button("DEBUG PRODUIT");
-        debugProductButton.setStyle("-fx-background-color: #ffcccc; -fx-font-weight: bold;");
 
-        searchRow.getChildren().addAll(searchField, sortPriceButton, sortRatingButton, debugProductButton);
+        searchRow.getChildren().addAll(searchField, sortPriceButton, sortRatingButton);
 
         // -- FlowPane pour les logements
         lodgingFlowPane = new FlowPane();
@@ -92,9 +90,7 @@ public class SearchPageView {
         lodgingFlowPane.setPrefWrapLength(1000);
         VBox.setVgrow(lodgingFlowPane, Priority.ALWAYS);
 
-        for (int i = 0; i < 30; i++) {
-            lodgingFlowPane.getChildren().add(createLodgingItem(i + 1));
-        }
+
 
         rightContainer.getChildren().addAll(searchRow, lodgingFlowPane);
 
@@ -107,19 +103,22 @@ public class SearchPageView {
         scene = new Scene(root, 1200, 800);
     }
 
-    private VBox createLodgingItem(int index) {
+    public VBox createLodgingItem(Hebergement hebergement) {
+        System.out.println("Creating lodging item for: " + hebergement.getNom());
+
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(10));
         box.setStyle("-fx-border-color: #CCC; -fx-background-color: #FAFAFA;");
 
-        ImageView iv = new ImageView(new Image("file:src/resources/larry.jpeg"));
+        ImageView iv = new ImageView(new Image("file:src/resources/" + hebergement.getImageFilename()));
         iv.setFitWidth(200);
         iv.setFitHeight(250);
 
-        box.getChildren().addAll(iv, new Label("Logement " + index));
+        box.getChildren().addAll(iv, new Label(hebergement.getNom()));
         return box;
     }
+
 
     public Scene getScene() {
         return scene;
@@ -140,10 +139,6 @@ public class SearchPageView {
 
     public Button getSortRatingButton() {
         return sortRatingButton;
-    }
-
-    public Button getDebugProductButton() {
-        return debugProductButton;
     }
 
     // -- Getters pour les filtres

@@ -1,32 +1,47 @@
 package controller;
 
+import Dao.HebergementDao;
+import Dao.HebergementDaoImpl;
+import MODELE.Hebergement;
+import db.AzureDBConnector;
+import view.SearchPageView;
 import javafx.stage.Stage;
 import view.SearchPageView;
+import view.ReservationView;
+import javafx.scene.layout.VBox;
+
+import java.util.ArrayList;
 
 public class SearchPageController {
 
-    private Stage primaryStage;
-    private SearchPageView view;
+    private final Stage primaryStage;
+    private final SearchPageView view;
+    private final HebergementDao dao;
 
     public SearchPageController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new SearchPageView();
+        this.dao = new HebergementDaoImpl(new AzureDBConnector());
+
         attachEventHandlers();
         initSearchInteractions();
+        updateResults();
     }
 
     private void attachEventHandlers() {
-        // -- Navigation via NavBar
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> this.show());
-
-        // -- Bouton DEBUG PRODUIT en haut (redirect vers BookingPage)
-        view.getDebugProductButton().setOnAction(e -> {
-            BookingPageController bookingCtrl = new BookingPageController(primaryStage);
-            bookingCtrl.show();
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
+            ReservationView reservationView = new ReservationView();
+            new ReservationController(primaryStage, reservationView);
+            primaryStage.setScene(reservationView.getScene());
         });
+
+
+
+        //view.getDebugProductButton().setOnAction(e -> new BookingPageController(primaryStage).show());
     }
 
     private void initSearchInteractions() {
@@ -44,8 +59,39 @@ public class SearchPageController {
     }
 
     private void updateResults() {
-        System.out.println("Mise à jour des résultats selon les filtres, tri, recherche...");
-        // TODO : Implémenter la logique de filtrage
+        view.getLodgingFlowPane().getChildren().clear();
+
+        ArrayList<Hebergement> hebergements = dao.getAllHebergements();
+
+        /*boolean filtreMaison = view.getMaisonCheck().isSelected();
+        boolean filtreAppart = view.getAppartementCheck().isSelected();
+        boolean filtreAutre = view.getAutreCheck().isSelected();
+
+        int prixMax = (int) view.getPrixSlider().getValue();
+        String rechercheTexte = view.getSearchField().getText().toLowerCase();
+
+        hebergements.removeIf(h -> {
+            boolean typeOk = (h.getType() == 1 && filtreMaison)
+                    || (h.getType() == 2 && filtreAppart)
+                    || (h.getType() == 3 && filtreAutre);
+            boolean prixOk = h.getPrix() <= prixMax;
+            boolean rechercheOk = h.getNom().toLowerCase().contains(rechercheTexte);
+            return !(typeOk && prixOk && rechercheOk);
+        });
+
+        if (view.getSortPriceButton().isFocused()) {
+            hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
+        } else if (view.getSortRatingButton().isFocused()) {
+            hebergements.sort((a, b) -> Integer.compare(b.getNote(), a.getNote()));
+        }*/
+
+        for (Hebergement h : hebergements) {
+            VBox lodgingItem = view.createLodgingItem(h);
+
+            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage,h).show());
+
+            view.getLodgingFlowPane().getChildren().add(lodgingItem);
+        }
     }
 
     public void show() {

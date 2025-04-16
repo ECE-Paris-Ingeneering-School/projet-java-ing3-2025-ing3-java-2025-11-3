@@ -1,12 +1,15 @@
 package Dao;
 
 import MODELE.Avis;
+import java.util.List;
 
 public interface AvisDao {
     /*
     * Sauvegarde un nouvel avis dans la BDD
     * @param Avis sans id
      */
+
+
     void saveAvis(Avis avis);
     /*
     * Recherche un avis par son id dans la BDD
@@ -31,6 +34,7 @@ public interface AvisDao {
     * @param id d un Avis
      */
     void deleteAvis(int id);
+    List<Avis> getAvisByHebergementId(int hebergementId);
 
 
 }
