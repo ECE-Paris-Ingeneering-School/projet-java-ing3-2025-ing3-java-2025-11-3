@@ -86,8 +86,8 @@ public class ReservationDaoImpl  implements ReservationDao {
         return null;
     }
 
-    @Override
-    public ArrayList<Reservation> getallReservationSQL(String Sql, int id) {
+
+    private ArrayList<Reservation> getallReservationSQL(String Sql, int id) {
         ArrayList<Reservation> reservations = new ArrayList<>();
         try {
             Connection connection = conn.getConnection();
