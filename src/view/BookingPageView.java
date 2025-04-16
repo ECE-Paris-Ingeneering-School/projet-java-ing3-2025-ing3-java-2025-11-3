@@ -9,6 +9,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import MODELE.Hebergement; // Assure-toi que ce modèle existe bien
+import MODELE.Avis; // Assure-toi que ce modèle existe bien
+
+import java.util.List;
 
 public class BookingPageView {
 
@@ -32,11 +35,11 @@ public class BookingPageView {
     private Label avisTitle;
     private Label avisSubtitle;
 
-    public BookingPageView(Hebergement hebergement) {
-        createUI(hebergement);
+    public BookingPageView(Hebergement hebergement, List<Avis> avisList) {
+        createUI(hebergement, avisList);
     }
 
-    private void createUI(Hebergement hebergement) {
+    private void createUI(Hebergement hebergement, List<Avis> avisList) {
         root = new BorderPane();
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
@@ -141,25 +144,27 @@ public class BookingPageView {
         avisFlow.setPrefWrapLength(900);
         avisFlow.setAlignment(Pos.CENTER);
 
-        for (int i = 0; i < 3; i++) {
-            VBox card = new VBox(5);
-            card.setPadding(new Insets(10));
-            card.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
-            card.setPrefWidth(250);
+        if (avisList.isEmpty()) {
+            Label noAvisLabel = new Label("Aucun avis pour cet hébergement.");
+            noAvisLabel.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
+            avisFlow.getChildren().add(noAvisLabel);
+        } else {
+            for (Avis avis : avisList) {
+                VBox card = new VBox(5);
+                card.setPadding(new Insets(10));
+                card.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
+                card.setPrefWidth(250);
 
-            Label quoteLabel = new Label("\"Super séjour !\"");
-            quoteLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-            Label nameLabel = new Label("Utilisateur");
-            Label descLabel = new Label("Très bon hébergement.");
-            descLabel.setStyle("-fx-text-fill: #777; -fx-font-size: 12px;");
+                Label noteLabel = new Label("Note : " + avis.getNote() + "/5");
+                noteLabel.setStyle("-fx-font-weight: bold;");
 
-            ImageView avatar = new ImageView(new Image("file:src/resources/avatar_40.png"));
-            avatar.setFitWidth(40);
-            avatar.setFitHeight(40);
+                Label commentaireLabel = new Label(avis.getCommentaire());
+                commentaireLabel.setWrapText(true);
+                commentaireLabel.setStyle("-fx-text-fill: #555;");
 
-            HBox userRow = new HBox(10, avatar, new VBox(nameLabel, descLabel));
-            card.getChildren().addAll(quoteLabel, userRow);
-            avisFlow.getChildren().add(card);
+                card.getChildren().addAll(noteLabel, commentaireLabel);
+                avisFlow.getChildren().add(card);
+            }
         }
 
         avisSection.getChildren().addAll(avisTitle, avisSubtitle, avisFlow);
