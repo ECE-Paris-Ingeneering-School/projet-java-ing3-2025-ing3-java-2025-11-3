@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import java.time.LocalDate;
+import MODELE.Hebergement;
 
 public class SearchPageView {
 
@@ -92,9 +93,10 @@ public class SearchPageView {
         lodgingFlowPane.setPrefWrapLength(1000);
         VBox.setVgrow(lodgingFlowPane, Priority.ALWAYS);
 
-        for (int i = 0; i < 30; i++) {
+        // -- Ajout d'items de logements via le controleur
+        /*for (int i = 0; i < 30; i++) {
             lodgingFlowPane.getChildren().add(createLodgingItem(i + 1));
-        }
+        }*/
 
         rightContainer.getChildren().addAll(searchRow, lodgingFlowPane);
 
@@ -107,19 +109,22 @@ public class SearchPageView {
         scene = new Scene(root, 1200, 800);
     }
 
-    private VBox createLodgingItem(int index) {
+    public VBox createLodgingItem(Hebergement hebergement) {
+        System.out.println("Creating lodging item for: " + hebergement.getNom());
+
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(10));
         box.setStyle("-fx-border-color: #CCC; -fx-background-color: #FAFAFA;");
 
-        ImageView iv = new ImageView(new Image("file:src/resources/larry.jpeg"));
+        ImageView iv = new ImageView(new Image("file:src/resources/" + hebergement.getImageFilename()));
         iv.setFitWidth(200);
         iv.setFitHeight(250);
 
-        box.getChildren().addAll(iv, new Label("Logement " + index));
+        box.getChildren().addAll(iv, new Label(hebergement.getNom()));
         return box;
     }
+
 
     public Scene getScene() {
         return scene;
