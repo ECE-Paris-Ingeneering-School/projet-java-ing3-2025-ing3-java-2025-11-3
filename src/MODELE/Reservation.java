@@ -1,12 +1,14 @@
 package MODELE;
 
+import java.time.chrono.ChronoLocalDate;
+
 public class Reservation {
     private int id;
-    private String dateDebut;
-    private String dateFin;
-    private int idHebergement;
-    private int idClient;
-    private float prix;
+    private final String dateDebut;
+    private final String dateFin;
+    private final int idHebergement;
+    private final int idClient;
+    private final float prix;
 
     public Reservation( String dateDebut, String dateFin, int idHebergement, int idClient, float prix) {
         this.dateDebut = dateDebut;
@@ -31,9 +33,7 @@ public class Reservation {
     public String getDateDebut() {
         return dateDebut;
     }
-    public String getDateFin() {
-        return dateFin;
-    }
+    public String getDateFin() {return dateFin;}
     public int getIdHebergement() {
         return idHebergement;
     }
