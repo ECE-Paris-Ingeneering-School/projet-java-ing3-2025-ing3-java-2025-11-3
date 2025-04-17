@@ -116,8 +116,6 @@ public class SearchPageView {
     }
 
     public VBox createLodgingItem(Hebergement hebergement) {
-        System.out.println("Creating lodging item for: " + hebergement.getNom());
-
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(10));
