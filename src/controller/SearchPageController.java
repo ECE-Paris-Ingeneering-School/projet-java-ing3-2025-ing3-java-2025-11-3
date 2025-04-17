@@ -101,7 +101,7 @@ public class SearchPageController {
                 view.getLodgingFlowPane().getChildren().clear();
                 for (Hebergement h : hebergements) {
                     VBox lodgingItem = view.createLodgingItem(h);
-                    lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h).show());
+                    lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h));
                     view.getLodgingFlowPane().getChildren().add(lodgingItem);
                 }
             }
@@ -112,6 +112,7 @@ public class SearchPageController {
             }
         }).start(); // Démarrer le thread
     }
+
 
     public void show() {
         boolean fullScreen = primaryStage.isFullScreen();
