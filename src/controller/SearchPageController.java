@@ -61,31 +61,15 @@ public class SearchPageController {
     private void updateResults() {
         view.getLodgingFlowPane().getChildren().clear();
 
-        ArrayList<Hebergement> hebergements = dao.getAllHebergements();
-
         boolean filtreMaison = view.getMaisonCheck().isSelected();
         boolean filtreAppart = view.getAppartementCheck().isSelected();
         boolean filtreAutre = view.getAutreCheck().isSelected();
-        boolean anyTypeFilter = filtreMaison || filtreAppart || filtreAutre;
-
         int prixMax = (int) view.getPrixSlider().getValue();
         String rechercheTexte = view.getSearchField().getText().toLowerCase();
 
-        hebergements.removeIf(h -> {
-            boolean typeOk = true;
-            if (anyTypeFilter) {
-                typeOk = (filtreMaison && h.getType() == 1)
-                        || (filtreAppart && h.getType() == 2)
-                        || (filtreAutre && h.getType() != 1 && h.getType() != 2);
-            }
-
-            boolean prixOk = h.getPrix() <= prixMax;
-
-            boolean rechercheOk = rechercheTexte.isEmpty()
-                    || h.getNom().toLowerCase().contains(rechercheTexte);
-
-            return !(typeOk && prixOk && rechercheOk);
-        });
+        ArrayList<Hebergement> hebergements = dao.getFilteredHebergements(
+                filtreMaison, filtreAppart, filtreAutre, prixMax, rechercheTexte
+        );
 
         if (view.getSortPriceButton().isFocused()) {
             hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
