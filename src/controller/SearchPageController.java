@@ -4,9 +4,10 @@ import Dao.HebergementDao;
 import Dao.HebergementDaoImpl;
 import MODELE.Hebergement;
 import db.AzureDBConnector;
+import javafx.concurrent.Task;
+import javafx.scene.control.ProgressIndicator;
 import view.SearchPageView;
 import javafx.stage.Stage;
-import view.SearchPageView;
 import view.ReservationView;
 import javafx.scene.layout.VBox;
 
@@ -59,29 +60,48 @@ public class SearchPageController {
     }
 
     private void updateResults() {
+        ProgressIndicator progressIndicator = new ProgressIndicator();
         view.getLodgingFlowPane().getChildren().clear();
+        view.getLodgingFlowPane().getChildren().add(progressIndicator);
 
-        boolean filtreMaison = view.getMaisonCheck().isSelected();
-        boolean filtreAppart = view.getAppartementCheck().isSelected();
-        boolean filtreAutre = view.getAutreCheck().isSelected();
-        int prixMax = (int) view.getPrixSlider().getValue();
-        String rechercheTexte = view.getSearchField().getText().toLowerCase();
+        new Thread(new Task<Void>() {
+            private ArrayList<Hebergement> hebergements;
 
-        ArrayList<Hebergement> hebergements = dao.getFilteredHebergements(
-                filtreMaison, filtreAppart, filtreAutre, prixMax, rechercheTexte
-        );
+            @Override
+            protected Void call() throws Exception {
+                boolean filtreMaison = view.getMaisonCheck().isSelected();
+                boolean filtreAppart = view.getAppartementCheck().isSelected();
+                boolean filtreAutre = view.getAutreCheck().isSelected();
+                int prixMax = (int) view.getPrixSlider().getValue();
+                String rechercheTexte = view.getSearchField().getText().toLowerCase();
 
-        if (view.getSortPriceButton().isFocused()) {
-            hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
-        } else if (view.getSortRatingButton().isFocused()) {
-            hebergements.sort((a, b) -> Integer.compare(b.getNote(), a.getNote()));
-        }
+                hebergements = dao.getFilteredHebergements(
+                        filtreMaison, filtreAppart, filtreAutre, prixMax, rechercheTexte
+                );
 
-        for (Hebergement h : hebergements) {
-            VBox lodgingItem = view.createLodgingItem(h);
-            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h).show());
-            view.getLodgingFlowPane().getChildren().add(lodgingItem);
-        }
+                if (view.getSortPriceButton().isFocused()) {
+                    hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
+                } else if (view.getSortRatingButton().isFocused()) {
+                    hebergements.sort((a, b) -> Integer.compare(b.getNote(), a.getNote()));
+                }
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                view.getLodgingFlowPane().getChildren().clear();
+                for (Hebergement h : hebergements) {
+                    VBox lodgingItem = view.createLodgingItem(h);
+                    lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h).show());
+                    view.getLodgingFlowPane().getChildren().add(lodgingItem);
+                }
+            }
+
+            @Override
+            protected void failed() {
+                System.err.println("Erreur lors du chargement des données : " + getException());
+            }
+        }).start(); // Démarrer le thread
     }
 
     public void show() {
