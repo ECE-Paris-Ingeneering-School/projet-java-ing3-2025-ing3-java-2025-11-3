@@ -105,26 +105,4 @@ public class AvisDaoImpl implements AvisDao {
 
     }
 
-    @Override
-    public List<Avis> getAvisByHebergementId(int hebergementId) {
-        List<Avis> avisList = new ArrayList<>();
-        try {
-            Connection connection = conn.getConnection();
-            String sql = "SELECT * FROM avis WHERE hebergement_id = ?";
-            java.sql.PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, hebergementId);
-            java.sql.ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                int id = resultSet.getInt("avis_id");
-                int note = resultSet.getInt("note");
-                String commentaire = resultSet.getString("commentaire");
-                int idClient = resultSet.getInt("user_id");
-                avisList.add(new Avis(id, note, commentaire, hebergementId, idClient));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return avisList;
-    }
 }

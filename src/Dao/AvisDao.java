@@ -39,7 +39,4 @@ public interface AvisDao {
     * @param hebergement_id
     * @return liste des avis
      */
-    List<Avis> getAvisByHebergementId(int hebergementId);
-
-
 }
