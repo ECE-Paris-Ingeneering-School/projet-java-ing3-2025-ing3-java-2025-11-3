@@ -1,4 +1,5 @@
 import controller.HomePageController;
+import controller.LoginPageController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -8,8 +9,8 @@ public class MyJavaFXApp extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Booking App");
         // Instanciation et lancement de la HomePage via son contrôleur
-        HomePageController homeController = new HomePageController(primaryStage);
-        homeController.show();
+        LoginPageController loginPageController = new LoginPageController(primaryStage);
+        loginPageController.show();
     }
 
     public static void main(String[] args) {

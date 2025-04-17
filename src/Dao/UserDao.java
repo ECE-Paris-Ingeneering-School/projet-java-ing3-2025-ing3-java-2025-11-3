@@ -33,5 +33,10 @@ public interface UserDao {
      */
     void modifierUser(User user);
 
+    /*
+     * return true si l'user existe pour les identifiants donnee
+     * @param mail, mdp
+     */
+    boolean connexionUser(String mail, String mdp);
 
 }

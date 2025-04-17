@@ -93,4 +93,19 @@ public class UserDaoImpl implements UserDao {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean connexionUser(String mail, String mdp){
+        try {
+            Connection connection = conn.getConnection();
+            PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE email = ? AND mdp = ?");
+            ps.setString(1, mail);
+            ps.setString(2,mdp);
+            System.out.println("launch request");
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

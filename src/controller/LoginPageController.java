@@ -1,5 +1,7 @@
 package controller;
 
+import Dao.UserDaoImpl;
+import db.AzureDBConnector;
 import javafx.stage.Stage;
 import view.LoginPageView;
 import view.ReservationView;
@@ -9,18 +11,27 @@ public class LoginPageController {
 
     private Stage primaryStage;
     private LoginPageView view;
+    private UserDaoImpl userDao;
 
     public LoginPageController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new LoginPageView();
+        this.userDao = new UserDaoImpl(new AzureDBConnector());
         attachEventHandlers();
     }
 
     private void attachEventHandlers() {
         // Action sur le bouton "Connexion"
         view.getLoginButton().setOnAction(e -> {
+            // verif existence user
+            // puis forwartd sur page recherche
+            String mail = view.getEmailField().getText();
             System.out.println("Tentative de connexion...");
-            // TODO: Implémenter la logique de connexion
+            if(userDao.connexionUser(view.getEmailField().getText(),view.getPasswordField().getText())){
+             System.out.println("Connexion etablie");
+             new HomePageController(primaryStage).show();
+            }
+            else {System.out.println("Erreur connexion, utilisateur introuvable");}
         });
 
         // Lien "S'inscrire" dans le formulaire
