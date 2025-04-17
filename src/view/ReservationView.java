@@ -1,5 +1,6 @@
 package view;
 
+import java.util.List;
 import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,6 +28,7 @@ public class ReservationView {
 
     private Scene scene;
     private NavBarView navBarView;
+    private VBox reservationsCardsContainer;
 
     public ReservationView() {
         createUI();
@@ -52,9 +54,10 @@ public class ReservationView {
         reservationsLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
 
         // Conteneur des cartes de réservation (largeur étendue)
-        VBox reservationsCardsContainer = new VBox();
+        reservationsCardsContainer = new VBox();
         reservationsCardsContainer.setAlignment(Pos.CENTER);
         reservationsCardsContainer.setSpacing(20);
+
 
         // Conteneur pour les réservations
         VBox mainContainer = new VBox();
@@ -64,18 +67,7 @@ public class ReservationView {
         mainContainer.setMaxWidth(800);
         mainContainer.getChildren().addAll(reservationsLabel, reservationsCardsContainer);
 
-        // Données fictives pour les réservations avec illustration par défaut
-        ObservableList<Reservation> reservationsData = FXCollections.observableArrayList(
-                new Reservation("Hotel Plaza", "2025-06-15", "2025-06-20", "750€", "https://via.placeholder.com/150?text=Illustration", "Paris, France", "150€"),
-                new Reservation("Chalet Montagne", "2025-07-10", "2025-07-15", "875€", "https://via.placeholder.com/150?text=Illustration", "Chamonix, France", "175€"),
-                new Reservation("Appartement City Center", "2025-08-01", "2025-08-05", "600€", "https://via.placeholder.com/150?text=Illustration", "Lyon, France", "150€")
-        );
 
-        // Création d'une carte pour chaque réservation
-        for (Reservation reservation : reservationsData) {
-            HBox reservationCard = createReservationCard(reservation);
-            reservationsCardsContainer.getChildren().add(reservationCard);
-        }
 
         // Section FAQ : conteneur étroit et centré avec label introductif "FAQ"
         Label faqLabel = new Label("FAQ");
@@ -110,9 +102,24 @@ public class ReservationView {
         scene = new Scene(scrollPane, 900, 700);
     }
 
-    /**
-     * Crée la section FAQ avec un design sobre et centré.
-     */
+    public void setReservations(List<Reservation> reservations) {
+        reservationsCardsContainer.getChildren().clear();
+
+        if (reservations.isEmpty()) {
+            Label noReservationsLabel = new Label("Vous n'avez aucune réservation.");
+            noReservationsLabel.setFont(new Font("Arial", 18));
+            noReservationsLabel.setStyle("-fx-text-fill: #7F8C8D;");
+            reservationsCardsContainer.getChildren().add(noReservationsLabel);
+        } else {
+            for (Reservation r : reservations) {
+                HBox card = createReservationCard(r);
+                reservationsCardsContainer.getChildren().add(card);
+            }
+        }
+    }
+
+
+
     private Accordion createFAQSection() {
         Accordion accordion = new Accordion();
 
