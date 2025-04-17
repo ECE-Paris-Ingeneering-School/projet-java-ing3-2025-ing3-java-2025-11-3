@@ -12,7 +12,7 @@ public class UserDaoImpl implements UserDao {
 
     public UserDaoImpl(AzureDBConnector conn) {this.conn = conn;}
 
-@Override
+    @Override
     public int getIdUserByEmail(String email) {
         try{
             Connection connection= conn.getConnection();
@@ -28,10 +28,9 @@ public class UserDaoImpl implements UserDao {
         }
         return -1;
     }
-@Override
+
+    @Override
     public void ajouterUser(User user) {
-
-
         try {
             Connection connection = conn.getConnection();
             PreparedStatement ps = connection.prepareStatement("INSERT INTO user (nom, prenom, email, mdp) VALUES (?, ?, ?, ?)");
@@ -44,6 +43,7 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
     }
+
     @Override
     public User getUserByID(int id) {
 
