@@ -74,6 +74,7 @@ public class BookingPageController {
                     }
                 }
 
+                //desactiver dates passé et dates réservées
                 view.getDateArriveePicker().setDayCellFactory(picker -> new DateCell() {
                     @Override
                     public void updateItem(LocalDate date, boolean empty) {
@@ -94,6 +95,39 @@ public class BookingPageController {
                             setStyle("-fx-background-color: #ffc0cb;");
                         }
                     }
+                });
+
+                // Listener pour mettre à jour les cellules désactivées en fonction des dates sélectionnées
+                view.getDateArriveePicker().valueProperty().addListener((obs, oldDate, newDate) -> {
+                    view.getDateDepartPicker().setDayCellFactory(picker -> new DateCell() {
+                        @Override
+                        public void updateItem(LocalDate date, boolean empty) {
+                            super.updateItem(date, empty);
+                            boolean disable = date.isBefore(LocalDate.now()) ||
+                                    date.isBefore(newDate) ||
+                                    datesReservees.contains(date);
+                            if (disable) {
+                                setDisable(true);
+                                setStyle("-fx-background-color: #ffc0cb;");
+                            }
+                        }
+                    });
+                });
+
+                view.getDateDepartPicker().valueProperty().addListener((obs, oldDate, newDate) -> {
+                    view.getDateArriveePicker().setDayCellFactory(picker -> new DateCell() {
+                        @Override
+                        public void updateItem(LocalDate date, boolean empty) {
+                            super.updateItem(date, empty);
+                            boolean disable = date.isBefore(LocalDate.now()) ||
+                                    (newDate != null && date.isAfter(newDate)) ||
+                                    datesReservees.contains(date);
+                            if (disable) {
+                                setDisable(true);
+                                setStyle("-fx-background-color: #ffc0cb;");
+                            }
+                        }
+                    });
                 });
 
                 primaryStage.setScene(view.getScene());
