@@ -11,7 +11,6 @@ import Dao.HebergementDao;
 import javafx.scene.control.DateCell;
 import javafx.stage.Stage;
 import view.BookingPageView;
-import view.ReservationView;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
@@ -28,9 +27,11 @@ public class BookingPageController {
 
     private final Stage primaryStage;
     private BookingPageView view;
+    private Hebergement hebergement;
 
     public BookingPageController(Stage primaryStage, Hebergement hebergement) {
         this.primaryStage = primaryStage;
+        this.hebergement = hebergement;
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
         VBox loadingScreen = new VBox(progressIndicator);
@@ -45,7 +46,7 @@ public class BookingPageController {
             private List<Reservation> reservationList;
 
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
                 HebergementDao hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
                 avisList = hebergementDao.getAllAvis(hebergement.getHid());
                 optionsList = hebergementDao.getOption(hebergement.getHid());
@@ -54,7 +55,6 @@ public class BookingPageController {
                 reservationList = reservationDao.getAllReservationByHebergementId(hebergement.getHid());
                 return null;
             }
-
 
             @Override
             protected void succeeded() {
@@ -96,8 +96,7 @@ public class BookingPageController {
                         }
                     }
                 });
-
-                // Listener pour mettre à jour les cellules désactivées en fonction des dates sélectionnées
+                
                 view.getDateArriveePicker().valueProperty().addListener((obs, oldDate, newDate) -> {
                     view.getDateDepartPicker().setDayCellFactory(picker -> new DateCell() {
                         @Override
@@ -151,10 +150,20 @@ public class BookingPageController {
 
         view.getBackButton().setOnAction(e -> new SearchPageController(primaryStage).show());
 
-        // Bouton "Réserver"
+        view.getReserverButton().setDisable(true); // Désactivé au début
+
+        view.getDateArriveePicker().valueProperty().addListener((obs, oldVal, newVal) -> {
+            checkIfDatesAreSelected();
+        });
+
+        view.getDateDepartPicker().valueProperty().addListener((obs, oldVal, newVal) -> {
+            checkIfDatesAreSelected();
+        });
+        
         view.getReserverButton().setOnAction(e -> {
-            System.out.println("Réservation en cours...");
-            // TODO: implémenter la logique de réservation
+            //print dans la toute les info de la reservation (date et id hebergement)
+            System.out.println("Réservation effectuée pour l'hébergement : " + hebergement.getHid() + " du " +
+                    view.getDateArriveePicker().getValue() + " au " + view.getDateDepartPicker().getValue());
         });
     }
 
@@ -162,4 +171,12 @@ public class BookingPageController {
         primaryStage.setScene(view.getScene());
         primaryStage.show();
     }
+
+    private void checkIfDatesAreSelected() {
+        LocalDate debut = view.getDateArriveePicker().getValue();
+        LocalDate fin = view.getDateDepartPicker().getValue();
+        boolean datesValides = (debut != null && fin != null && !fin.isBefore(debut));
+        view.getReserverButton().setDisable(!datesValides);
+    }
+
 }
