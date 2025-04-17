@@ -1,13 +1,23 @@
 package controller;
 
+import Dao.ReservationDaoImpl;
+import db.AzureDBConnector;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+
+import Dao.ReservationDao;
+import MODELE.Reservation;
 import view.ReservationView;
-import view.HomePageView;
-import view.LoginPageView;
-import view.RegisterPageView;
-import view.SearchPageView;
+
+import controller.UserSession;
+import MODELE.User;
+
+import java.io.Console;
+import java.io.Serial;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 import java.util.Optional;
 
@@ -19,11 +29,13 @@ public class ReservationController {
 
     private Stage primaryStage;
     private ReservationView view;
+    private ReservationDao reservationDao;
 
 
     public ReservationController(Stage primaryStage){
         this.primaryStage= primaryStage;
         this.view = new ReservationView();
+        this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
         attachEventHandlers();
     }
 
@@ -69,11 +81,31 @@ public class ReservationController {
             }
         }
 
-        // Récupérer et réappliquer la taille et le mode plein écran
+        User currentUser = UserSession.getInstance().getConnectedUser();
+
+        List<Reservation> dbReservations = reservationDao.getAllReservationByClientId(currentUser.getId());
+
+        //print dans la console le current user id
+        System.out.println("Current user id: " + currentUser.getId());
+
+        List<view.ReservationView.Reservation> viewReservations = dbReservations.stream().map(res ->
+                new view.ReservationView.Reservation(
+                        "Nom du logement",            // TODO: À remplacer par le vrai nom
+                        res.getDateDebut(),
+                        res.getDateFin(),
+                        res.getPrix() + "€",
+                        "",                           // image url
+                        "Ville inconnue",             // location
+                        "?"                           // prix par nuit
+                )
+        ).collect(Collectors.toList());
+
+        view.setReservations(viewReservations);
+
+        // 👉 Tu dois ajouter cette partie :
         boolean fullScreen = primaryStage.isFullScreen();
         double width = primaryStage.getWidth();
         double height = primaryStage.getHeight();
-
         primaryStage.setScene(view.getScene());
         primaryStage.setWidth(width);
         primaryStage.setHeight(height);
