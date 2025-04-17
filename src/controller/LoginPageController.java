@@ -28,8 +28,10 @@ public class LoginPageController {
             String mail = view.getEmailField().getText();
             System.out.println("Tentative de connexion...");
             if(userDao.connexionUser(view.getEmailField().getText(),view.getPasswordField().getText())){
-             System.out.println("Connexion etablie");
-             new HomePageController(primaryStage).show();
+                System.out.println("Connexion etablie");
+                //Stocke l'user connecté
+                UserSession.getInstance().setConnectedUser(userDao.getUserByEmail(mail));
+                new HomePageController(primaryStage).show();
             }
             else {System.out.println("Erreur connexion, utilisateur introuvable");}
         });

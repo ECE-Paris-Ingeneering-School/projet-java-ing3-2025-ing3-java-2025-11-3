@@ -1,11 +1,15 @@
 package controller;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import view.ReservationView;
 import view.HomePageView;
 import view.LoginPageView;
 import view.RegisterPageView;
 import view.SearchPageView;
+
+import java.util.Optional;
 
 /**
  * Contrôleur pour la page de gestion des réservations.
@@ -51,6 +55,20 @@ public class ReservationController {
     }
 
     public void show() {
+        if(UserSession.getInstance().getConnectedUser() == null ) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Accès refusé");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez-vous connecter ou créer un compte pour accéder à vos réservations");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                new LoginPageController(primaryStage).show();
+                return;
+            } else if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+                return;
+            }
+        }
+
         // Récupérer et réappliquer la taille et le mode plein écran
         boolean fullScreen = primaryStage.isFullScreen();
         double width = primaryStage.getWidth();
