@@ -7,8 +7,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import java.time.LocalDate;
 import MODELE.Hebergement;
+import java.time.LocalDate;
 
 public class SearchPageView {
 
@@ -33,9 +33,12 @@ public class SearchPageView {
     }
 
     private void createUI() {
+        // racine et barre de navigation
         root = new BorderPane();
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
+
+
 
         // -- Zone de filtres à gauche
         filtersBox = new VBox(10);
@@ -44,6 +47,7 @@ public class SearchPageView {
         filtersBox.setPrefWidth(250);
         filtersBox.setAlignment(Pos.TOP_LEFT);
 
+        //
         maisonCheck = new CheckBox("Maison");
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
@@ -51,6 +55,11 @@ public class SearchPageView {
         personnesSpinner = new Spinner<>(1, 10, 1);
         nuitsSpinner = new Spinner<>(1, 30, 1);
         dateArriveePicker = new DatePicker(LocalDate.now());
+
+        maisonCheck.setSelected(false);
+        appartementCheck.setSelected(false);
+        autreCheck.setSelected(false);
+        prixSlider.setValue(500);
 
         filtersBox.getChildren().addAll(
                 new Label("Filtres"),
@@ -61,27 +70,23 @@ public class SearchPageView {
                 new Label("Nuits:"), nuitsSpinner
         );
 
-        // -- Zone de droite (barre de recherche + Tri + bouton debug + logements)
+        // -- Zone de droite (recherche + tri + logements)
         rightContainer = new VBox(20);
         rightContainer.setPadding(new Insets(15));
         rightContainer.setAlignment(Pos.TOP_LEFT);
         VBox.setVgrow(rightContainer, Priority.ALWAYS);
 
-        // -- Ligne recherche + tri + BOUTON DEBUG
+        // Ligne de recherche et de tri
         searchRow = new HBox(10);
         searchRow.setAlignment(Pos.CENTER_LEFT);
-
         searchField = new TextField();
         searchField.setPromptText("Rechercher...");
         searchField.setPrefWidth(300);
-
         sortPriceButton = new Button("Trier par prix");
         sortRatingButton = new Button("Trier par note");
-
-
         searchRow.getChildren().addAll(searchField, sortPriceButton, sortRatingButton);
 
-        // -- FlowPane pour les logements
+        // FlowPane pour afficher les logements
         lodgingFlowPane = new FlowPane();
         lodgingFlowPane.setHgap(20);
         lodgingFlowPane.setVgap(20);
@@ -90,8 +95,6 @@ public class SearchPageView {
         lodgingFlowPane.setPrefWrapLength(1000);
         VBox.setVgrow(lodgingFlowPane, Priority.ALWAYS);
 
-
-
         rightContainer.getChildren().addAll(searchRow, lodgingFlowPane);
 
         // -- Disposition principale
@@ -99,7 +102,16 @@ public class SearchPageView {
         mainContent.getChildren().addAll(filtersBox, rightContainer);
         HBox.setHgrow(rightContainer, Priority.ALWAYS);
 
-        root.setCenter(mainContent);
+        // ** On encapsule mainContent dans un ScrollPane pour le défilement vertical **
+        ScrollPane contentScrollPane = new ScrollPane(mainContent);
+        contentScrollPane.setFitToWidth(true);
+        contentScrollPane.setFitToHeight(true);
+        contentScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        contentScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        root.setCenter(contentScrollPane);
+
+        // création de la scène
         scene = new Scene(root, 1200, 800);
     }
 
@@ -119,7 +131,6 @@ public class SearchPageView {
         return box;
     }
 
-
     public Scene getScene() {
         return scene;
     }
@@ -128,7 +139,7 @@ public class SearchPageView {
         return navBarView;
     }
 
-    // -- Getters pour la barre de recherche, le tri et le debug
+    // -- Getters pour les contrôles de recherche et de tri
     public TextField getSearchField() {
         return searchField;
     }

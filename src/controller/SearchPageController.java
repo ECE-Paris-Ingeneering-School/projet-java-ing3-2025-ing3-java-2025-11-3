@@ -61,35 +61,25 @@ public class SearchPageController {
     private void updateResults() {
         view.getLodgingFlowPane().getChildren().clear();
 
-        ArrayList<Hebergement> hebergements = dao.getAllHebergements();
-
-        /*boolean filtreMaison = view.getMaisonCheck().isSelected();
+        boolean filtreMaison = view.getMaisonCheck().isSelected();
         boolean filtreAppart = view.getAppartementCheck().isSelected();
         boolean filtreAutre = view.getAutreCheck().isSelected();
-
         int prixMax = (int) view.getPrixSlider().getValue();
         String rechercheTexte = view.getSearchField().getText().toLowerCase();
 
-        hebergements.removeIf(h -> {
-            boolean typeOk = (h.getType() == 1 && filtreMaison)
-                    || (h.getType() == 2 && filtreAppart)
-                    || (h.getType() == 3 && filtreAutre);
-            boolean prixOk = h.getPrix() <= prixMax;
-            boolean rechercheOk = h.getNom().toLowerCase().contains(rechercheTexte);
-            return !(typeOk && prixOk && rechercheOk);
-        });
+        ArrayList<Hebergement> hebergements = dao.getFilteredHebergements(
+                filtreMaison, filtreAppart, filtreAutre, prixMax, rechercheTexte
+        );
 
         if (view.getSortPriceButton().isFocused()) {
             hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
         } else if (view.getSortRatingButton().isFocused()) {
             hebergements.sort((a, b) -> Integer.compare(b.getNote(), a.getNote()));
-        }*/
+        }
 
         for (Hebergement h : hebergements) {
             VBox lodgingItem = view.createLodgingItem(h);
-
-            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage,h).show());
-
+            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h).show());
             view.getLodgingFlowPane().getChildren().add(lodgingItem);
         }
     }

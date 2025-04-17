@@ -1,37 +1,37 @@
 package controller;
 
+import Dao.HebergementDaoImpl;
+import MODELE.Options;
+import MODELE.Avis;
+import MODELE.Hebergement;
 import db.AzureDBConnector;
+import Dao.HebergementDao;
 import javafx.stage.Stage;
 import view.BookingPageView;
 import view.ReservationView;
-import MODELE.Hebergement;
-import MODELE.Avis;
-import Dao.AvisDaoImpl;
 
 import java.util.List;
 
-
 public class BookingPageController {
 
-    private Stage primaryStage;
-    private BookingPageView view;
-    private Hebergement hebergement; // à ajouter
-    private AvisDaoImpl avisDao; // à ajouter
+    private final Stage primaryStage;
+    private final BookingPageView view;
+    private Hebergement hebergement;
 
     public BookingPageController(Stage primaryStage, Hebergement hebergement) {
         this.primaryStage = primaryStage;
         this.hebergement = hebergement;
 
-        this.avisDao = new AvisDaoImpl(new AzureDBConnector()); // à ajouter
+        HebergementDao hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
+        List<Avis> avisList = hebergementDao.getAllAvis(hebergement.getHid());
+        List<Options> optionsList = hebergementDao.getOption(hebergement.getHid());
 
-        List<Avis> avisList = avisDao.getAvisByHebergementId(hebergement.getHid()); // méthode à ajouter
-        this.view = new BookingPageView(hebergement, avisList);
-
+        this.view = new BookingPageView(hebergement, avisList, optionsList);
         initController();
     }
 
     private void initController() {
-        // Navigation via NavBar
+        // NavBar
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
@@ -42,10 +42,13 @@ public class BookingPageController {
             primaryStage.setScene(reservationView.getScene());
         });
 
+        // Bouton Retour
+        view.getBackButton().setOnAction(e -> new SearchPageController(primaryStage).show());
+
         // Bouton "Réserver"
         view.getReserverButton().setOnAction(e -> {
             System.out.println("Réservation en cours...");
-            // TODO: Logique de réservation
+            // TODO: implémenter la logique de réservation
         });
     }
 
