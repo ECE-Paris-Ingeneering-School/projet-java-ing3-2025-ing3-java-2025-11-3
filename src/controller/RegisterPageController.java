@@ -38,6 +38,8 @@ public class RegisterPageController {
                 User newUser=new User("thouvenin","come",mail,mdp) ;//<- a completer quand ajout attribut manquant fait
                 UserDaoImpl userDao = new UserDaoImpl(new AzureDBConnector());
                 userDao.ajouterUser(newUser);
+                //Stocke l'user connecté
+                UserSession.getInstance().setConnectedUser(newUser);
                 new HomePageController(primaryStage).show();
             }
         });
