@@ -13,7 +13,7 @@ public class UserDaoImpl implements UserDao {
     public UserDaoImpl(AzureDBConnector conn) {this.conn = conn;}
 
 @Override
-    public int getIdUserByEmail(String email) {
+    public int getIdUser(String email) {
         try{
             Connection connection= conn.getConnection();
             PreparedStatement ps = connection.prepareStatement("SELECT user_id FROM user WHERE email = ?");
@@ -44,8 +44,8 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
     }
-    @Override
-    public User getUserByID(int id) {
+@Override
+    public User getUser(int id) {
 
         try {
             Connection connection = conn.getConnection();
@@ -56,27 +56,6 @@ public class UserDaoImpl implements UserDao {
                 String nom = rs.getString("nom");
                 String prenom = rs.getString("prenom");
                 String email = rs.getString("email");
-                String password = rs.getString("mdp");
-                return new User(id, nom, prenom, email, password);
-            }
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-
-        try {
-            Connection connection = conn.getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE email = ?");
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                int id = rs.getInt("user_id");
-                String nom = rs.getString("nom");
-                String prenom = rs.getString("prenom");
                 String password = rs.getString("mdp");
                 return new User(id, nom, prenom, email, password);
             }

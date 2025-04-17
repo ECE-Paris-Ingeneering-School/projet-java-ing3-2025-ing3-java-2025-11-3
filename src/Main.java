@@ -1,4 +1,3 @@
-import controller.UserSession;
 import db.AzureDBConnector;
 import javafx.application.Application;
 import java.sql.Connection;
@@ -11,6 +10,5 @@ public class Main {
 
         // Lancement de l'interface JavaFX
         Application.launch(MyJavaFXApp.class, args);
-        UserSession.getInstance().clearSession();
     }
 }
