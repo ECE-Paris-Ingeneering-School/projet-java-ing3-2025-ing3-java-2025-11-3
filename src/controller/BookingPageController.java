@@ -1,11 +1,14 @@
 package controller;
 
 import Dao.HebergementDaoImpl;
+import Dao.ReservationDaoImpl;
 import MODELE.Options;
 import MODELE.Avis;
 import MODELE.Hebergement;
+import MODELE.Reservation;
 import db.AzureDBConnector;
 import Dao.HebergementDao;
+import javafx.scene.control.DateCell;
 import javafx.stage.Stage;
 import view.BookingPageView;
 import view.ReservationView;
@@ -14,8 +17,12 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import Dao.ReservationDao;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BookingPageController {
 
@@ -35,22 +42,63 @@ public class BookingPageController {
         new Thread(new Task<Void>() {
             private List<Avis> avisList;
             private List<Options> optionsList;
+            private List<Reservation> reservationList;
 
             @Override
             protected Void call() throws Exception {
                 HebergementDao hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
                 avisList = hebergementDao.getAllAvis(hebergement.getHid());
                 optionsList = hebergementDao.getOption(hebergement.getHid());
+
+                ReservationDao reservationDao = new ReservationDaoImpl(new AzureDBConnector());
+                reservationList = reservationDao.getAllReservationByHebergementId(hebergement.getHid());
                 return null;
             }
+
 
             @Override
             protected void succeeded() {
                 view = new BookingPageView(hebergement, avisList, optionsList);
                 initController();
 
+                Set<LocalDate> datesReservees = new HashSet<>();
+
+                for (Reservation res : reservationList) {
+                    LocalDate debut = LocalDate.parse(res.getDateDebut());
+                    LocalDate fin = LocalDate.parse(res.getDateFin());
+                    LocalDate current = debut;
+
+                    while (!current.isAfter(fin)) {
+                        datesReservees.add(current);
+                        current = current.plusDays(1);
+                    }
+                }
+
+                view.getDateArriveePicker().setDayCellFactory(picker -> new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate date, boolean empty) {
+                        super.updateItem(date, empty);
+                        if (date.isBefore(LocalDate.now()) || datesReservees.contains(date)) {
+                            setDisable(true);
+                            setStyle("-fx-background-color: #ffc0cb;");
+                        }
+                    }
+                });
+
+                view.getDateDepartPicker().setDayCellFactory(picker -> new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate date, boolean empty) {
+                        super.updateItem(date, empty);
+                        if (date.isBefore(LocalDate.now()) || datesReservees.contains(date)) {
+                            setDisable(true);
+                            setStyle("-fx-background-color: #ffc0cb;");
+                        }
+                    }
+                });
+
                 primaryStage.setScene(view.getScene());
                 primaryStage.show();
+
             }
 
             @Override
@@ -70,7 +118,6 @@ public class BookingPageController {
             new ReservationController(primaryStage, reservationView);
             primaryStage.setScene(reservationView.getScene());
         });
-
 
         view.getBackButton().setOnAction(e -> new SearchPageController(primaryStage).show());
 
