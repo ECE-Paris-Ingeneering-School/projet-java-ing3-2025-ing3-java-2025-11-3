@@ -1,6 +1,7 @@
 package controller;
 
 import Dao.HebergementDaoImpl;
+import MODELE.Options;
 import db.AzureDBConnector;
 import javafx.stage.Stage;
 import view.BookingPageView;
@@ -24,7 +25,9 @@ public class BookingPageController {
         HebergementDaoImpl hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
 
         List<Avis> avisList = hebergementDao.getAllAvis(hebergement.getHid());
-        this.view = new BookingPageView(hebergement, avisList);
+        List<Options> optionsList = hebergementDao.getOption(hebergement.getHid());
+
+        this.view = new BookingPageView(hebergement, avisList, optionsList);
 
         initController();
     }

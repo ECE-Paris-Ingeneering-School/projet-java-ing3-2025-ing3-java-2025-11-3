@@ -1,5 +1,6 @@
 package view;
 
+import MODELE.Options;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,11 +36,11 @@ public class BookingPageView {
     private Label avisTitle;
     private Label avisSubtitle;
 
-    public BookingPageView(Hebergement hebergement, List<Avis> avisList) {
-        createUI(hebergement, avisList);
+    public BookingPageView(Hebergement hebergement, List<Avis> avisList, List<Options> optionsList) {
+        createUI(hebergement, avisList, optionsList);
     }
 
-    private void createUI(Hebergement hebergement, List<Avis> avisList) {
+    private void createUI(Hebergement hebergement, List<Avis> avisList, List<Options> optionsList) {
         root = new BorderPane();
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
@@ -119,18 +120,41 @@ public class BookingPageView {
 
         topSection.getChildren().addAll(imagePane, infoBox);
 
-       /* HBox featureImagesRow = new HBox(20);
-        featureImagesRow.setAlignment(Pos.CENTER);
+        VBox optionsSection = new VBox(15);
+        optionsSection.setAlignment(Pos.CENTER);
 
-        featureImg1 = new ImageView(new Image("file:src/resources/homepage.jpg"));
-        featureImg1.setFitWidth(400);
-        featureImg1.setFitHeight(300);
+        Label optionsTitle = new Label("Options");
+        optionsTitle.setFont(new Font(20));
 
-        featureImg2 = new ImageView(new Image("file:src/resources/homepage.jpeg"));
-        featureImg2.setFitWidth(400);
-        featureImg2.setFitHeight(300);
+        FlowPane optionsFlow = new FlowPane(20, 20);
+        optionsFlow.setPrefWrapLength(900);
+        optionsFlow.setAlignment(Pos.CENTER);
 
-        featureImagesRow.getChildren().addAll(featureImg1, featureImg2);*/
+        if (optionsList == null || optionsList.isEmpty()) {
+            Label noOptionsLabel = new Label("Aucune option disponible pour cet hébergement.");
+            noOptionsLabel.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
+            optionsFlow.getChildren().add(noOptionsLabel);
+        } else {
+            for (Options option : optionsList) {
+                VBox optionCard = new VBox(5);
+                optionCard.setPadding(new Insets(10));
+                optionCard.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
+                optionCard.setPrefWidth(250);
+
+                Label nomLabel = new Label(option.getNom());
+                nomLabel.setStyle("-fx-font-weight: bold;");
+
+                Label descLabel = new Label(option.getDescription());
+                descLabel.setWrapText(true);
+                descLabel.setStyle("-fx-text-fill: #555;");
+
+                optionCard.getChildren().addAll(nomLabel, descLabel);
+                optionsFlow.getChildren().add(optionCard);
+            }
+        }
+
+        optionsSection.getChildren().addAll(optionsTitle, optionsFlow);
+
 
         VBox avisSection = new VBox(15);
         avisSection.setAlignment(Pos.CENTER);
@@ -169,7 +193,7 @@ public class BookingPageView {
 
         avisSection.getChildren().addAll(avisTitle, avisSubtitle, avisFlow);
 
-        mainContainer.getChildren().addAll(topSection, avisSection);
+        mainContainer.getChildren().addAll(topSection,optionsSection, avisSection);
 
         root.setCenter(scrollPane);
         scene = new Scene(root, 1200, 900);
