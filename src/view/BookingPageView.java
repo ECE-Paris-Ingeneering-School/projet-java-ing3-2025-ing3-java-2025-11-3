@@ -1,6 +1,8 @@
 package view;
 
 import MODELE.Options;
+import MODELE.Hebergement;
+import MODELE.Avis;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,8 +11,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-import MODELE.Hebergement; // Assure-toi que ce modèle existe bien
-import MODELE.Avis; // Assure-toi que ce modèle existe bien
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ public class BookingPageView {
     private BorderPane root;
 
     private NavBarView navBarView;
+    private Button backButton;
 
     private Button favoriteButton;
     private Label headingLabel;
@@ -31,8 +32,6 @@ public class BookingPageView {
     private Button reserverButton;
     private TitledPane faqTitledPane;
 
-    private ImageView featureImg1, featureImg2;
-
     private Label avisTitle;
     private Label avisSubtitle;
 
@@ -42,39 +41,49 @@ public class BookingPageView {
 
     private void createUI(Hebergement hebergement, List<Avis> avisList, List<Options> optionsList) {
         root = new BorderPane();
+
+        // Barre de navigation en haut
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
 
+        // Scroll central
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setPadding(new Insets(0));
 
-        VBox mainContainer = new VBox(30);
+        VBox mainContainer = new VBox(20);
         mainContainer.setPadding(new Insets(20));
-        mainContainer.setAlignment(Pos.CENTER);
-        scrollPane.setContent(mainContainer);
+        mainContainer.setAlignment(Pos.TOP_CENTER);
 
+        // Bouton Retour sous la NavBar, aligné à gauche
+        backButton = new Button("← Retour");
+        backButton.setStyle("-fx-background-color: transparent; -fx-font-size: 14px;");
+        HBox backBox = new HBox(backButton);
+        backBox.setAlignment(Pos.CENTER_LEFT);
+        mainContainer.getChildren().add(backBox);
+
+        // Section principale (image + infos)
         HBox topSection = new HBox(30);
         topSection.setAlignment(Pos.CENTER);
 
+        // Image principale
         StackPane imagePane = new StackPane();
         imagePane.setMaxWidth(500);
         imagePane.setMaxHeight(500);
-
         ImageView mainImage = new ImageView(new Image("file:src/resources/" + hebergement.getImage()));
         mainImage.setFitWidth(500);
         mainImage.setFitHeight(500);
         mainImage.setPreserveRatio(false);
-
         favoriteButton = new Button("♡");
         favoriteButton.setStyle("-fx-background-color: #F5F5F5; -fx-border-radius: 50%; -fx-font-size: 16px;");
         imagePane.getChildren().addAll(mainImage, favoriteButton);
         StackPane.setAlignment(favoriteButton, Pos.TOP_LEFT);
-        StackPane.setMargin(favoriteButton, new Insets(10,0,0,10));
+        StackPane.setMargin(favoriteButton, new Insets(10));
 
+        // Box infos réservation
         VBox infoBox = new VBox(15);
-        infoBox.setAlignment(Pos.CENTER);
         infoBox.setMaxWidth(400);
+        infoBox.setAlignment(Pos.CENTER_LEFT);
 
         headingLabel = new Label(hebergement.getNom());
         headingLabel.setFont(new Font(22));
@@ -89,17 +98,12 @@ public class BookingPageView {
         smallTextLabel.setStyle("-fx-text-fill: #555555;");
 
         GridPane datesGrid = new GridPane();
-        datesGrid.setAlignment(Pos.CENTER);
         datesGrid.setHgap(20);
         dateArriveePicker = new DatePicker();
         dateDepartPicker = new DatePicker();
-
-        Label dateArriveeLabel = new Label("Date d'arrivée");
-        Label dateDepartLabel = new Label("Date de départ");
-
-        datesGrid.add(dateArriveeLabel, 0, 0);
+        datesGrid.add(new Label("Date d'arrivée"), 0, 0);
         datesGrid.add(dateArriveePicker, 0, 1);
-        datesGrid.add(dateDepartLabel, 1, 0);
+        datesGrid.add(new Label("Date de départ"), 1, 0);
         datesGrid.add(dateDepartPicker, 1, 1);
 
         reserverButton = new Button("Réserver");
@@ -119,82 +123,59 @@ public class BookingPageView {
         );
 
         topSection.getChildren().addAll(imagePane, infoBox);
+        mainContainer.getChildren().add(topSection);
 
-        VBox optionsSection = new VBox(15);
+        // Section Options
+        VBox optionsSection = new VBox(10);
         optionsSection.setAlignment(Pos.CENTER);
-
         Label optionsTitle = new Label("Options");
         optionsTitle.setFont(new Font(20));
-
         FlowPane optionsFlow = new FlowPane(20, 20);
         optionsFlow.setPrefWrapLength(900);
         optionsFlow.setAlignment(Pos.CENTER);
-
         if (optionsList == null || optionsList.isEmpty()) {
-            Label noOptionsLabel = new Label("Aucune option disponible pour cet hébergement.");
-            noOptionsLabel.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
-            optionsFlow.getChildren().add(noOptionsLabel);
+            Label noOptions = new Label("Aucune option disponible pour cet hébergement.");
+            noOptions.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
+            optionsFlow.getChildren().add(noOptions);
         } else {
-            for (Options option : optionsList) {
-                VBox optionCard = new VBox(5);
-                optionCard.setPadding(new Insets(10));
-                optionCard.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
-                optionCard.setPrefWidth(250);
-
-                Label nomLabel = new Label(option.getNom());
-                nomLabel.setStyle("-fx-font-weight: bold;");
-
-                Label descLabel = new Label(option.getDescription());
-                descLabel.setWrapText(true);
-                descLabel.setStyle("-fx-text-fill: #555;");
-
-                optionCard.getChildren().addAll(nomLabel, descLabel);
-                optionsFlow.getChildren().add(optionCard);
-            }
-        }
-
-        optionsSection.getChildren().addAll(optionsTitle, optionsFlow);
-
-
-        VBox avisSection = new VBox(15);
-        avisSection.setAlignment(Pos.CENTER);
-
-        avisTitle = new Label("Avis");
-        avisTitle.setFont(new Font(20));
-        avisSubtitle = new Label("Ce qu'en pensent les utilisateurs");
-        avisSubtitle.setStyle("-fx-text-fill: #555;");
-
-        FlowPane avisFlow = new FlowPane(20, 20);
-        avisFlow.setPrefWrapLength(900);
-        avisFlow.setAlignment(Pos.CENTER);
-
-        if (avisList.isEmpty()) {
-            Label noAvisLabel = new Label("Aucun avis pour cet hébergement.");
-            noAvisLabel.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
-            avisFlow.getChildren().add(noAvisLabel);
-        } else {
-            for (Avis avis : avisList) {
+            for (Options opt : optionsList) {
                 VBox card = new VBox(5);
                 card.setPadding(new Insets(10));
                 card.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
-                card.setPrefWidth(250);
-
-                Label noteLabel = new Label("Note : " + avis.getNote() + "/5");
-                noteLabel.setStyle("-fx-font-weight: bold;");
-
-                Label commentaireLabel = new Label(avis.getCommentaire());
-                commentaireLabel.setWrapText(true);
-                commentaireLabel.setStyle("-fx-text-fill: #555;");
-
-                card.getChildren().addAll(noteLabel, commentaireLabel);
-                avisFlow.getChildren().add(card);
+                Label name = new Label(opt.getNom()); name.setStyle("-fx-font-weight: bold;");
+                Label desc = new Label(opt.getDescription()); desc.setWrapText(true);
+                card.getChildren().addAll(name, desc);
+                optionsFlow.getChildren().add(card);
             }
         }
+        optionsSection.getChildren().addAll(optionsTitle, optionsFlow);
+        mainContainer.getChildren().add(optionsSection);
 
+        // Section Avis
+        VBox avisSection = new VBox(10);
+        avisSection.setAlignment(Pos.CENTER);
+        avisTitle = new Label("Avis"); avisTitle.setFont(new Font(20));
+        avisSubtitle = new Label("Ce qu'en pensent les utilisateurs"); avisSubtitle.setStyle("-fx-text-fill: #555;");
+        FlowPane avisFlow = new FlowPane(20, 20);
+        avisFlow.setPrefWrapLength(900);
+        avisFlow.setAlignment(Pos.CENTER);
+        if (avisList.isEmpty()) {
+            Label none = new Label("Aucun avis pour cet hébergement."); none.setStyle("-fx-font-style: italic; -fx-text-fill: #888;");
+            avisFlow.getChildren().add(none);
+        } else {
+            for (Avis a : avisList) {
+                VBox c = new VBox(5); c.setPadding(new Insets(10));
+                c.setStyle("-fx-background-color: #FAFAFA; -fx-border-color: #E5E5E5;");
+                Label note = new Label("Note : " + a.getNote() + "/5"); note.setStyle("-fx-font-weight: bold;");
+                Label com = new Label(a.getCommentaire()); com.setWrapText(true);
+                c.getChildren().addAll(note, com);
+                avisFlow.getChildren().add(c);
+            }
+        }
         avisSection.getChildren().addAll(avisTitle, avisSubtitle, avisFlow);
+        mainContainer.getChildren().add(avisSection);
 
-        mainContainer.getChildren().addAll(topSection,optionsSection, avisSection);
-
+        scrollPane.setContent(mainContainer);
         root.setCenter(scrollPane);
         scene = new Scene(root, 1200, 900);
     }
@@ -202,6 +183,7 @@ public class BookingPageView {
     // GETTERS
     public Scene getScene() { return scene; }
     public NavBarView getNavBarView() { return navBarView; }
+    public Button getBackButton() { return backButton; }
     public Button getFavoriteButton() { return favoriteButton; }
     public Button getReserverButton() { return reserverButton; }
     public DatePicker getDateArriveePicker() { return dateArriveePicker; }
