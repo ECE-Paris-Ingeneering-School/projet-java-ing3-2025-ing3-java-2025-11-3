@@ -70,4 +70,7 @@ public interface HebergementDao {
      * @param option_id
       */
      void ajouterOption(int id_hebergement, int id_option);
+
+
+     public ArrayList<Hebergement> getFilteredHebergements(boolean maison, boolean appart, boolean autre, int prixMax, String rechercheTexte);
 }
