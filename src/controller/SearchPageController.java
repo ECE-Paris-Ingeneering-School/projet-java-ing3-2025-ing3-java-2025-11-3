@@ -29,6 +29,19 @@ public class SearchPageController {
         updateResults();
     }
 
+    public SearchPageController(Stage primaryStage, String searchQuery) {
+        this.primaryStage = primaryStage;
+        this.view = new SearchPageView();
+        this.dao = new HebergementDaoImpl(new AzureDBConnector());
+
+        this.view.getSearchField().setText(searchQuery);
+
+        attachEventHandlers();
+        initSearchInteractions();
+        updateResults();
+    }
+
+
     private void attachEventHandlers() {
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
