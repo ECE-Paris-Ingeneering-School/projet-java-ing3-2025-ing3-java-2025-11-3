@@ -60,7 +60,7 @@ public class BookingPageView {
         imagePane.setMaxWidth(500);
         imagePane.setMaxHeight(500);
 
-        ImageView mainImage = new ImageView(new Image("file:src/resources/larry.jpeg"));
+        ImageView mainImage = new ImageView(new Image("file:src/resources/" + hebergement.getImage()));
         mainImage.setFitWidth(500);
         mainImage.setFitHeight(500);
         mainImage.setPreserveRatio(false);
@@ -119,7 +119,7 @@ public class BookingPageView {
 
         topSection.getChildren().addAll(imagePane, infoBox);
 
-        HBox featureImagesRow = new HBox(20);
+       /* HBox featureImagesRow = new HBox(20);
         featureImagesRow.setAlignment(Pos.CENTER);
 
         featureImg1 = new ImageView(new Image("file:src/resources/homepage.jpg"));
@@ -130,7 +130,7 @@ public class BookingPageView {
         featureImg2.setFitWidth(400);
         featureImg2.setFitHeight(300);
 
-        featureImagesRow.getChildren().addAll(featureImg1, featureImg2);
+        featureImagesRow.getChildren().addAll(featureImg1, featureImg2);*/
 
         VBox avisSection = new VBox(15);
         avisSection.setAlignment(Pos.CENTER);
@@ -169,7 +169,7 @@ public class BookingPageView {
 
         avisSection.getChildren().addAll(avisTitle, avisSubtitle, avisFlow);
 
-        mainContainer.getChildren().addAll(topSection, featureImagesRow, avisSection);
+        mainContainer.getChildren().addAll(topSection, avisSection);
 
         root.setCenter(scrollPane);
         scene = new Scene(root, 1200, 900);
