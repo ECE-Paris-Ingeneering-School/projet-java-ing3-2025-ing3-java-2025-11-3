@@ -63,19 +63,27 @@ public class SearchPageController {
 
         ArrayList<Hebergement> hebergements = dao.getAllHebergements();
 
-        /*boolean filtreMaison = view.getMaisonCheck().isSelected();
+        boolean filtreMaison = view.getMaisonCheck().isSelected();
         boolean filtreAppart = view.getAppartementCheck().isSelected();
         boolean filtreAutre = view.getAutreCheck().isSelected();
+        boolean anyTypeFilter = filtreMaison || filtreAppart || filtreAutre;
 
         int prixMax = (int) view.getPrixSlider().getValue();
         String rechercheTexte = view.getSearchField().getText().toLowerCase();
 
         hebergements.removeIf(h -> {
-            boolean typeOk = (h.getType() == 1 && filtreMaison)
-                    || (h.getType() == 2 && filtreAppart)
-                    || (h.getType() == 3 && filtreAutre);
+            boolean typeOk = true;
+            if (anyTypeFilter) {
+                typeOk = (filtreMaison && h.getType() == 1)
+                        || (filtreAppart && h.getType() == 2)
+                        || (filtreAutre && h.getType() != 1 && h.getType() != 2);
+            }
+
             boolean prixOk = h.getPrix() <= prixMax;
-            boolean rechercheOk = h.getNom().toLowerCase().contains(rechercheTexte);
+
+            boolean rechercheOk = rechercheTexte.isEmpty()
+                    || h.getNom().toLowerCase().contains(rechercheTexte);
+
             return !(typeOk && prixOk && rechercheOk);
         });
 
@@ -83,13 +91,11 @@ public class SearchPageController {
             hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
         } else if (view.getSortRatingButton().isFocused()) {
             hebergements.sort((a, b) -> Integer.compare(b.getNote(), a.getNote()));
-        }*/
+        }
 
         for (Hebergement h : hebergements) {
             VBox lodgingItem = view.createLodgingItem(h);
-
-            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage,h).show());
-
+            lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h).show());
             view.getLodgingFlowPane().getChildren().add(lodgingItem);
         }
     }

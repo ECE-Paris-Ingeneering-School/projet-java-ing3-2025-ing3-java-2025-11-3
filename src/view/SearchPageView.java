@@ -38,6 +38,8 @@ public class SearchPageView {
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
 
+
+
         // -- Zone de filtres à gauche
         filtersBox = new VBox(10);
         filtersBox.setPadding(new Insets(15));
@@ -45,6 +47,7 @@ public class SearchPageView {
         filtersBox.setPrefWidth(250);
         filtersBox.setAlignment(Pos.TOP_LEFT);
 
+        //
         maisonCheck = new CheckBox("Maison");
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
@@ -52,6 +55,11 @@ public class SearchPageView {
         personnesSpinner = new Spinner<>(1, 10, 1);
         nuitsSpinner = new Spinner<>(1, 30, 1);
         dateArriveePicker = new DatePicker(LocalDate.now());
+
+        maisonCheck.setSelected(false);
+        appartementCheck.setSelected(false);
+        autreCheck.setSelected(false);
+        prixSlider.setValue(500);
 
         filtersBox.getChildren().addAll(
                 new Label("Filtres"),
