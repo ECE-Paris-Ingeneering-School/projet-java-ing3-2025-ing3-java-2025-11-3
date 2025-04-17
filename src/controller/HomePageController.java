@@ -45,6 +45,15 @@ public class HomePageController {
             SearchPageController searchController = new SearchPageController(primaryStage);
             searchController.show();
         });
+
+        view.getSearchField().setOnAction(e -> {
+            String query = view.getSearchField().getText().trim();
+
+            if (!query.isEmpty()) {
+                SearchPageController searchController = new SearchPageController(primaryStage, query);
+                searchController.show();
+            }
+        });
     }
 
 
