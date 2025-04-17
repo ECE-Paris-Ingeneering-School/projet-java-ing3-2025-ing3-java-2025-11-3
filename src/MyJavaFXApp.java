@@ -9,8 +9,8 @@ public class MyJavaFXApp extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Booking App");
         // Instanciation et lancement de la HomePage via son contrôleur
-        LoginPageController loginPageController = new LoginPageController(primaryStage);
-        loginPageController.show();
+        HomePageController homePageController = new HomePageController(primaryStage);
+        homePageController.show();
     }
 
     public static void main(String[] args) {
