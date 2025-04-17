@@ -57,9 +57,7 @@ public class LoginPageController {
         });
 
         view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView reservationView = new ReservationView();
-            new ReservationController(primaryStage, reservationView);
-            primaryStage.setScene(reservationView.getScene());
+            new ReservationController(primaryStage).show();
         });
     }
 

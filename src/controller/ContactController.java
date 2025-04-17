@@ -31,9 +31,7 @@ public class ContactController {
 
         // Réservations
         view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView rv = new ReservationView();
-            new ReservationController(primaryStage, rv);
-            primaryStage.setScene(rv.getScene());
+            new ReservationController(primaryStage).show();
         });
 
         // Contact (recharge la page Contact)

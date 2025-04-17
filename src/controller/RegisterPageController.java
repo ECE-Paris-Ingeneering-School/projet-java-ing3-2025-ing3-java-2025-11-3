@@ -1,5 +1,9 @@
 package controller;
 
+import Dao.UserDao;
+import Dao.UserDaoImpl;
+import MODELE.User;
+import db.AzureDBConnector;
 import javafx.stage.Stage;
 import view.RegisterPageView;
 import view.ReservationView;
@@ -20,7 +24,22 @@ public class RegisterPageController {
         // Action sur le bouton "Créer un compte"
         view.getCreateAccountButton().setOnAction(e -> {
             System.out.println("Tentative de création de compte...");
-            // TODO: Implémenter la logique d'inscription
+            //Récupération des champs remplis
+            String mail = view.getEmailField().getText();
+            String mdp = view.getPasswordField().getText();
+            String mdpConfirm = view.getConfirmPasswordField().getText();
+
+            //Vérification du mdp
+            if(!mdp.equals(mdpConfirm)){
+                // TODO: afficher texte rouge -> veuillez entrer same mdp
+                System.out.println("Veuillez-entrer le même mdp");
+            }
+            else{
+                User newUser=new User("thouvenin","come",mail,mdp) ;//<- a completer quand ajout attribut manquant fait
+                UserDaoImpl userDao = new UserDaoImpl(new AzureDBConnector());
+                userDao.ajouterUser(newUser);
+                new HomePageController(primaryStage).show();
+            }
         });
 
         // Lien "Se connecter" dans le formulaire
@@ -45,10 +64,9 @@ public class RegisterPageController {
             new SearchPageController(primaryStage).show();
         });
 
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView reservationView = new ReservationView();
-            new ReservationController(primaryStage, reservationView);
-            primaryStage.setScene(reservationView.getScene());
+
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e-> {
+            new ReservationController(primaryStage).show();
         });
     }
 

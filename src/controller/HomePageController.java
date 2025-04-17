@@ -29,9 +29,7 @@ public class HomePageController {
         });
 
         view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView newReservationView = new ReservationView();
-            new ReservationController(primaryStage, newReservationView);
-            primaryStage.setScene(newReservationView.getScene());
+            new ReservationController(primaryStage).show();
         });
 
         // Si on clique sur le titre, on recharge la HomePage

@@ -113,11 +113,7 @@ public class BookingPageController {
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
         view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> new SearchPageController(primaryStage).show());
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView reservationView = new ReservationView();
-            new ReservationController(primaryStage, reservationView);
-            primaryStage.setScene(reservationView.getScene());
-        });
+        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {new ReservationController(primaryStage).show();});
 
         view.getBackButton().setOnAction(e -> new SearchPageController(primaryStage).show());
 

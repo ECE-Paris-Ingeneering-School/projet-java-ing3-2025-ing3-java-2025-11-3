@@ -16,9 +16,10 @@ public class ReservationController {
     private Stage primaryStage;
     private ReservationView view;
 
-    public ReservationController(Stage primaryStage, ReservationView view) {
-        this.primaryStage = primaryStage;
-        this.view = view;
+
+    public ReservationController(Stage primaryStage){
+        this.primaryStage= primaryStage;
+        this.view = new ReservationView();
         attachEventHandlers();
     }
 
@@ -40,9 +41,7 @@ public class ReservationController {
 
         // Navigation vers la page de réservations
         view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            ReservationView newReservationView = new ReservationView();
-            new ReservationController(primaryStage, newReservationView);
-            primaryStage.setScene(newReservationView.getScene());
+            this.show();
         });
 
         // Retour à la page d'accueil
@@ -52,7 +51,16 @@ public class ReservationController {
     }
 
     public void show() {
+        // Récupérer et réappliquer la taille et le mode plein écran
+        boolean fullScreen = primaryStage.isFullScreen();
+        double width = primaryStage.getWidth();
+        double height = primaryStage.getHeight();
+
         primaryStage.setScene(view.getScene());
+        primaryStage.setWidth(width);
+        primaryStage.setHeight(height);
+        primaryStage.setFullScreen(fullScreen);
         primaryStage.show();
     }
+
 }
