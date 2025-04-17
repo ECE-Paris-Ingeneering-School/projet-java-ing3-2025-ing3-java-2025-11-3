@@ -62,7 +62,7 @@ public class HebergementDaoImpl implements HebergementDao {
     @Override
     public ArrayList<Hebergement> getAllHebergements() {
         try{
-            Connection connection=conn.getConnection();
+            Connection connection= AzureDBConnector.getConnection();
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM hebergement");
             ResultSet rs = ps.executeQuery();
             ArrayList<Hebergement> hebergements = new ArrayList<>();
@@ -227,4 +227,58 @@ public class HebergementDaoImpl implements HebergementDao {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public ArrayList<Hebergement> getFilteredHebergements(boolean maison, boolean appart, boolean autre, int prixMax, String rechercheTexte) {
+        ArrayList<Hebergement> hebergements = new ArrayList<>();
+        try {
+            Connection connection = conn.getConnection();
+
+            StringBuilder sql = new StringBuilder("SELECT * FROM hebergement WHERE prix_base <= ?");
+            List<Object> params = new ArrayList<>();
+            params.add(prixMax);
+
+            if (maison || appart || autre) {
+                sql.append(" AND (");
+                List<String> typeClauses = new ArrayList<>();
+                if (maison) typeClauses.add("type = 1");
+                if (appart) typeClauses.add("type = 2");
+                if (autre) typeClauses.add("(type != 1 AND type != 2)");
+                sql.append(String.join(" OR ", typeClauses));
+                sql.append(")");
+            }
+
+            if (!rechercheTexte.isEmpty()) {
+                sql.append(" AND LOWER(nom) LIKE ?");
+                params.add("%" + rechercheTexte.toLowerCase() + "%");
+            }
+
+            PreparedStatement ps = connection.prepareStatement(sql.toString());
+
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("hebergement_id");
+                String nom = rs.getString("nom");
+                int type = rs.getInt("type");
+                String adresse = rs.getString("adresse");
+                String description = rs.getString("description");
+                int prix = rs.getInt("prix_base");
+                int etoile = rs.getInt("etoile");
+                String images = rs.getString("photo");
+                ArrayList<String> imageList = decompreserListe(images);
+
+                hebergements.add(new Hebergement(id, nom, type, adresse, description, prix, etoile, imageList, null, null));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return hebergements;
+    }
+
 }
