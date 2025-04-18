@@ -1,7 +1,7 @@
-package Dao;
+package dao;
 
-import MODELE.Hebergement;
-import MODELE.Reservation;
+import modele.Hebergement;
+import modele.Reservation;
 import db.AzureDBConnector;
 
 import java.sql.*;

@@ -1,13 +1,10 @@
 package controller;
 
-import Dao.UserDao;
-import Dao.UserDaoImpl;
-import MODELE.User;
+import dao.UserDaoImpl;
+import modele.User;
 import db.AzureDBConnector;
 import javafx.stage.Stage;
 import view.RegisterPageView;
-import view.ReservationView;
-import view.SearchPageView;
 
 public class RegisterPageController {
 

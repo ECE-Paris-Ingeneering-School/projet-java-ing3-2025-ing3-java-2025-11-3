@@ -1,6 +1,6 @@
-package Dao;
+package dao;
 
-import MODELE.Options;
+import modele.Options;
 import db.AzureDBConnector;
 
 import java.sql.Connection;

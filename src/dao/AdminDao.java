@@ -1,6 +1,6 @@
-package Dao;
+package dao;
 
-import MODELE.Admin;
+import modele.Admin;
 
 import java.util.List;
 

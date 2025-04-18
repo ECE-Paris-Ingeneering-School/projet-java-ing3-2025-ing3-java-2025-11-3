@@ -1,4 +1,4 @@
-package MODELE;
+package modele;
 
 public class Avis {
     private int id;

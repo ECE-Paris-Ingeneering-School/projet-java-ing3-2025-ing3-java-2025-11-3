@@ -1,6 +1,6 @@
-package Dao;
+package dao;
 
-import MODELE.Reservation;
+import modele.Reservation;
 
 import java.sql.Date;
 import java.util.ArrayList;

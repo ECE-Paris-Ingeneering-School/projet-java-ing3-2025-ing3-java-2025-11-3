@@ -1,7 +1,7 @@
-package Dao;
+package dao;
 
 import db.AzureDBConnector;
-import MODELE.Client;
+import modele.Client;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

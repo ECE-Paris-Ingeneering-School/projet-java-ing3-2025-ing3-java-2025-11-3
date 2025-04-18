@@ -1,4 +1,4 @@
-package MODELE;
+package modele;
 
 public class Client extends User{
     private int newClient;

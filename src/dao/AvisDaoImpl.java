@@ -1,12 +1,10 @@
-package Dao;
+package dao;
 
-import MODELE.Avis;
+import modele.Avis;
 import db.AzureDBConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AvisDaoImpl implements AvisDao {
     private final AzureDBConnector conn;

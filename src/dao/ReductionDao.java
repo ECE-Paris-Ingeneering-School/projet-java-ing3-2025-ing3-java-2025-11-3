@@ -1,6 +1,6 @@
-package Dao;
+package dao;
 
-import MODELE.Reduction;
+import modele.Reduction;
 
 public interface ReductionDao {
     /*

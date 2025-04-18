@@ -1,4 +1,4 @@
-package MODELE;
+package modele;
 
 public class Admin extends User{
     private int admin;

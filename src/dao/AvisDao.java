@@ -1,7 +1,6 @@
-package Dao;
+package dao;
 
-import MODELE.Avis;
-import java.util.List;
+import modele.Avis;
 
 public interface AvisDao {
     /*

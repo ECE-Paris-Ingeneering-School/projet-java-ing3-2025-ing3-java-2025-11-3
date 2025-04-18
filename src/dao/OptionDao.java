@@ -1,5 +1,5 @@
-package Dao;
-import MODELE.Options;
+package dao;
+import modele.Options;
 
 public interface OptionDao {
     /*

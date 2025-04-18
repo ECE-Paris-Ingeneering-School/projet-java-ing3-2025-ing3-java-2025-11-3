@@ -1,6 +1,6 @@
 package controller;
 
-import MODELE.User;
+import modele.User;
 
 public class UserSession {
     private static UserSession instance;

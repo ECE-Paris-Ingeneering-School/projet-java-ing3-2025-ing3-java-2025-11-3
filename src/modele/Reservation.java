@@ -1,6 +1,4 @@
-package MODELE;
-
-import java.time.chrono.ChronoLocalDate;
+package modele;
 
 public class Reservation {
     private int id;

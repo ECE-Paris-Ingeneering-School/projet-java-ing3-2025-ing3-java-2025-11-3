@@ -1,8 +1,8 @@
-package Dao;
+package dao;
 
-import MODELE.Avis;
-import MODELE.Hebergement;
-import MODELE.Options;
+import modele.Avis;
+import modele.Hebergement;
+import modele.Options;
 
 import java.util.ArrayList;
 

@@ -1,28 +1,23 @@
 package controller;
 
-import Dao.ReservationDaoImpl;
+import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import Dao.ReservationDao;
-import MODELE.Reservation;
+import dao.ReservationDao;
+import modele.Reservation;
 import view.ReservationView;
 
-import controller.UserSession;
-import MODELE.User;
+import modele.User;
 
-import java.awt.*;
-import java.io.Console;
-import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

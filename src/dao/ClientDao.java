@@ -1,7 +1,7 @@
-package Dao;
+package dao;
 
 
-import MODELE.Client;
+import modele.Client;
 
 public interface ClientDao {
 

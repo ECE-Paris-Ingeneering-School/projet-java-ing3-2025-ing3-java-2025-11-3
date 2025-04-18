@@ -1,11 +1,9 @@
 package controller;
 
-import Dao.UserDaoImpl;
+import dao.UserDaoImpl;
 import db.AzureDBConnector;
 import javafx.stage.Stage;
 import view.LoginPageView;
-import view.ReservationView;
-import view.SearchPageView;
 
 public class LoginPageController {
 

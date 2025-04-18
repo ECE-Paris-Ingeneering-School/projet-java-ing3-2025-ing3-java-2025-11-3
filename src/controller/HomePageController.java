@@ -1,70 +1,68 @@
 package controller;
 
-import javafx.stage.Stage;
 import view.HomePageView;
-import view.ReservationView;
+import view.NavBarView;
+import javafx.stage.Stage;
 
+/**
+ * Controller for the home page, managing navigation and search from the navbar.
+ */
 public class HomePageController {
 
-    private Stage primaryStage;
-    private HomePageView view;
+    private final Stage primaryStage;
+    private final HomePageView view;
 
+    /**
+     * @param primaryStage the main application window
+     */
     public HomePageController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new HomePageView();
-        attachEventHandlers();
+        configureEventHandlers();
     }
 
-    private void attachEventHandlers() {
-        // Si on clique sur "Sign in", on passe à la page de connexion
-        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            LoginPageController loginController = new LoginPageController(primaryStage);
-            loginController.show();
-        });
+    /**
+     * Binds UI events to navigation actions.
+     */
+    private void configureEventHandlers() {
+        NavBarView nav = view.getNavBarView();
 
-        // Si on clique sur "Register", on passe à la page d'inscription
-        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            RegisterPageController registerController = new RegisterPageController(primaryStage);
-            registerController.show();
-        });
-
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            new ReservationController(primaryStage).show();
-        });
-
-        // Si on clique sur le titre, on recharge la HomePage
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            HomePageController homeController = new HomePageController(primaryStage);
-            homeController.show();
-        });
-
-        // Si on clique sur "Recherche", on passe à la page de recherche
-        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
-            SearchPageController searchController = new SearchPageController(primaryStage);
-            searchController.show();
-        });
+        nav.getSignInLabel().setOnMouseClicked(e -> navigate(() -> new LoginPageController(primaryStage).show()));
+        nav.getRegisterLabel().setOnMouseClicked(e -> navigate(() -> new RegisterPageController(primaryStage).show()));
+        nav.getReservationsLabel().setOnMouseClicked(e -> navigate(() -> new ReservationController(primaryStage).show()));
+        nav.getTitleLabel().setOnMouseClicked(e -> navigate(this::show));
+        nav.getRechercheLabel().setOnMouseClicked(e -> navigate(() -> new SearchPageController(primaryStage).show()));
 
         view.getSearchField().setOnAction(e -> {
             String query = view.getSearchField().getText().trim();
-
             if (!query.isEmpty()) {
-                SearchPageController searchController = new SearchPageController(primaryStage, query);
-                searchController.show();
+                navigate(() -> new SearchPageController(primaryStage, query).show());
             }
         });
     }
 
-
-    public void show() {
-        // Récupérer et réappliquer la taille et le mode plein écran
-        boolean fullScreen = primaryStage.isFullScreen();
+    /**
+     * Centralizes window-state preservation and navigation.
+     *
+     * @param showAction the action that will set and show the new scene
+     */
+    private void navigate(Runnable showAction) {
+        boolean wasFullScreen = primaryStage.isFullScreen();
         double width = primaryStage.getWidth();
         double height = primaryStage.getHeight();
 
-        primaryStage.setScene(view.getScene());
+        showAction.run();
+
         primaryStage.setWidth(width);
         primaryStage.setHeight(height);
-        primaryStage.setFullScreen(fullScreen);
+        primaryStage.setFullScreen(wasFullScreen);
+    }
+
+    /**
+     * Displays the home page scene.
+     */
+    public void show() {
+        primaryStage.setScene(view.getScene());
         primaryStage.show();
     }
 }

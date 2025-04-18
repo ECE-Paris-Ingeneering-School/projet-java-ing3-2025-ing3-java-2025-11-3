@@ -1,8 +1,8 @@
 package view;
 
-import MODELE.Options;
-import MODELE.Hebergement;
-import MODELE.Avis;
+import modele.Options;
+import modele.Hebergement;
+import modele.Avis;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
