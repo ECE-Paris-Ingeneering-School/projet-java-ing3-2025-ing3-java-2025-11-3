@@ -85,18 +85,15 @@ public class ReservationController {
 
         List<Reservation> dbReservations = reservationDao.getAllReservationByClientId(currentUser.getId());
 
-        //print dans la console le current user id
-        System.out.println("Current user id: " + currentUser.getId());
-
         List<view.ReservationView.Reservation> viewReservations = dbReservations.stream().map(res ->
                 new view.ReservationView.Reservation(
-                        "Nom du logement",            // TODO: À remplacer par le vrai nom
+                        res.getHebergement().getNom(),
                         res.getDateDebut(),
                         res.getDateFin(),
                         res.getPrix() + "€",
-                        "",                           // image url
-                        "Ville inconnue",             // location
-                        "?"                           // prix par nuit
+                        res.getHebergement().getImage() != null ? String.valueOf(res.getHebergement().getImage()) : "", // image si dispo
+                        res.getHebergement().getAdresse(),
+                        res.getHebergement().getPrix() + "€"
                 )
         ).collect(Collectors.toList());
 
