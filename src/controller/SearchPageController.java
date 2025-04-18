@@ -1,60 +1,71 @@
 package controller;
 
-import Dao.HebergementDao;
-import Dao.HebergementDaoImpl;
-import MODELE.Hebergement;
+import dao.HebergementDao;
+import dao.HebergementDaoImpl;
 import db.AzureDBConnector;
+import modele.Hebergement;
+import view.NavBarView;
+import view.SearchPageView;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
-import view.SearchPageView;
-import javafx.stage.Stage;
-import view.ReservationView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+/**
+ * Controller for the search page, handling user interactions and data loading.
+ */
 public class SearchPageController {
 
     private final Stage primaryStage;
     private final SearchPageView view;
     private final HebergementDao dao;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    /**
+     * Creates a SearchPageController with no initial query.
+     *
+     * @param primaryStage the main application stage
+     */
     public SearchPageController(Stage primaryStage) {
+        this(primaryStage, null);
+    }
+
+    /**
+     * Creates a SearchPageController with an optional initial search query.
+     *
+     * @param primaryStage the main application stage
+     * @param initialQuery prefilled search text (may be null)
+     */
+    public SearchPageController(Stage primaryStage, String initialQuery) {
         this.primaryStage = primaryStage;
         this.view = new SearchPageView();
         this.dao = new HebergementDaoImpl(new AzureDBConnector());
 
-        attachEventHandlers();
-        initSearchInteractions();
+        if (initialQuery != null && !initialQuery.isBlank()) {
+            view.getSearchField().setText(initialQuery);
+        }
+
+        configureEventHandlers();
         updateResults();
     }
 
-    public SearchPageController(Stage primaryStage, String searchQuery) {
-        this.primaryStage = primaryStage;
-        this.view = new SearchPageView();
-        this.dao = new HebergementDaoImpl(new AzureDBConnector());
+    /**
+     * Binds UI events to controller actions.
+     */
+    private void configureEventHandlers() {
+        NavBarView navBar = view.getNavBarView();
+        navBar.getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
+        navBar.getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
+        navBar.getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
+        navBar.getRechercheLabel().setOnMouseClicked(e -> show());
+        navBar.getReservationsLabel().setOnMouseClicked(e -> new ReservationController(primaryStage).show());
 
-        this.view.getSearchField().setText(searchQuery);
-
-        attachEventHandlers();
-        initSearchInteractions();
-        updateResults();
-    }
-
-
-    private void attachEventHandlers() {
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
-        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
-        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
-        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> this.show());
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {new ReservationController(primaryStage).show();});
-
-
-
-        //view.getDebugProductButton().setOnAction(e -> new BookingPageController(primaryStage).show());
-    }
-
-    private void initSearchInteractions() {
+        // Filters and search triggers
         view.getMaisonCheck().setOnAction(e -> updateResults());
         view.getAppartementCheck().setOnAction(e -> updateResults());
         view.getAutreCheck().setOnAction(e -> updateResults());
@@ -68,52 +79,74 @@ public class SearchPageController {
         view.getSortRatingButton().setOnAction(e -> updateResults());
     }
 
+    /**
+     * Clears previous results, shows a loader, and fetches filtered accommodations asynchronously.
+     */
     private void updateResults() {
-        ProgressIndicator progressIndicator = new ProgressIndicator();
-        view.getLodgingFlowPane().getChildren().clear();
-        view.getLodgingFlowPane().getChildren().add(progressIndicator);
+        ProgressIndicator loader = new ProgressIndicator();
+        var pane = view.getLodgingFlowPane();
+        pane.getChildren().setAll(loader);
 
-        new Thread(new Task<Void>() {
-            private ArrayList<Hebergement> hebergements;
-
+        Task<List<Hebergement>> searchTask = new Task<>() {
             @Override
-            protected Void call() throws Exception {
-                boolean filtreMaison = view.getMaisonCheck().isSelected();
-                boolean filtreAppart = view.getAppartementCheck().isSelected();
-                boolean filtreAutre = view.getAutreCheck().isSelected();
-                int prixMax = (int) view.getPrixSlider().getValue();
-                String rechercheTexte = view.getSearchField().getText().toLowerCase();
-
-                hebergements = dao.getFilteredHebergements(
-                        filtreMaison, filtreAppart, filtreAutre, prixMax, rechercheTexte
-                );
-
-                if (view.getSortPriceButton().isFocused()) {
-                    hebergements.sort((a, b) -> Integer.compare(a.getPrix(), b.getPrix()));
-                } else if (view.getSortRatingButton().isFocused()) {
-                    hebergements.sort((a, b) -> Integer.compare(b.getNote(), a.getNote()));
-                }
-                return null;
+            protected List<Hebergement> call() throws Exception {
+                return fetchFilteredHebergements();
             }
 
             @Override
             protected void succeeded() {
-                view.getLodgingFlowPane().getChildren().clear();
-                for (Hebergement h : hebergements) {
-                    VBox lodgingItem = view.createLodgingItem(h);
-                    lodgingItem.setOnMouseClicked(e -> new BookingPageController(primaryStage, h));
-                    view.getLodgingFlowPane().getChildren().add(lodgingItem);
-                }
+                displayResults(getValue());
             }
 
             @Override
             protected void failed() {
                 System.err.println("Erreur lors du chargement des données : " + getException());
             }
-        }).start(); // Démarrer le thread
+        };
+
+        executor.submit(searchTask);
     }
 
+    /**
+     * Retrieves and sorts the list of accommodations based on UI filters and sort buttons.
+     *
+     * @return a list of filtered and sorted Hebergement objects
+     */
+    private List<Hebergement> fetchFilteredHebergements() {
+        boolean maison = view.getMaisonCheck().isSelected();
+        boolean appart = view.getAppartementCheck().isSelected();
+        boolean autre = view.getAutreCheck().isSelected();
+        int prixMax = (int) view.getPrixSlider().getValue();
+        String recherche = view.getSearchField().getText().toLowerCase().trim();
 
+        List<Hebergement> result = dao.getFilteredHebergements(maison, appart, autre, prixMax, recherche);
+
+        if (view.getSortPriceButton().isFocused()) {
+            result.sort(Comparator.comparingInt(Hebergement::getPrix));
+        } else if (view.getSortRatingButton().isFocused()) {
+            result.sort(Comparator.comparingInt(Hebergement::getNote).reversed());
+        }
+        return result;
+    }
+
+    /**
+     * Populates the view with the provided list of accommodations.
+     *
+     * @param hebergements list of accommodations to display
+     */
+    private void displayResults(List<Hebergement> hebergements) {
+        var pane = view.getLodgingFlowPane();
+        pane.getChildren().clear();
+        hebergements.forEach(h -> {
+            VBox item = view.createLodgingItem(h);
+            item.setOnMouseClicked(e -> new BookingPageController(primaryStage, h));
+            pane.getChildren().add(item);
+        });
+    }
+
+    /**
+     * Displays the search page scene, preserving window dimensions and full-screen state.
+     */
     public void show() {
         boolean fullScreen = primaryStage.isFullScreen();
         double width = primaryStage.getWidth();

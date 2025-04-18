@@ -1,182 +1,210 @@
 package controller;
 
-import Dao.HebergementDaoImpl;
-import Dao.ReservationDaoImpl;
-import MODELE.Options;
-import MODELE.Avis;
-import MODELE.Hebergement;
-import MODELE.Reservation;
+import dao.HebergementDao;
+import dao.ReservationDao;
+import dao.HebergementDaoImpl;
+import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
-import Dao.HebergementDao;
-import javafx.scene.control.DateCell;
-import javafx.stage.Stage;
+import modele.Avis;
+import modele.Options;
+import modele.Hebergement;
+import modele.Reservation;
 import view.BookingPageView;
+import view.NavBarView;
 import javafx.concurrent.Task;
+import javafx.scene.Scene;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import Dao.ReservationDao;
+import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+/**
+ * Controller for the booking page: loads data, configures UI, and manages reservations.
+ */
 public class BookingPageController {
 
     private final Stage primaryStage;
     private BookingPageView view;
-    private Hebergement hebergement;
+    private final HebergementDao hebergementDao;
+    private final ReservationDao reservationDao;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    /**
+     * Package for holding data loaded for booking.
+     */
+    private static class BookingData {
+        final List<Avis> avis;
+        final List<Options> options;
+        final List<Reservation> reservations;
+
+        BookingData(List<Avis> avis, List<Options> options, List<Reservation> reservations) {
+            this.avis = avis;
+            this.options = options;
+            this.reservations = reservations;
+        }
+    }
+
+    /**
+     * Creates controller, shows loading screen, and initiates data fetch.
+     *
+     * @param primaryStage the application stage
+     * @param hebergement  the accommodation to book
+     */
     public BookingPageController(Stage primaryStage, Hebergement hebergement) {
         this.primaryStage = primaryStage;
-        this.hebergement = hebergement;
+        this.hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
+        this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
 
-        ProgressIndicator progressIndicator = new ProgressIndicator();
-        VBox loadingScreen = new VBox(progressIndicator);
-        loadingScreen.setAlignment(Pos.CENTER);
-        Scene loadingScene = new Scene(loadingScreen, 400, 200);
-        primaryStage.setScene(loadingScene);
+        showLoadingScreen();
+        loadBookingData(hebergement);
+    }
+
+    /**
+     * Displays a simple loading indicator scene.
+     */
+    private void showLoadingScreen() {
+        ProgressIndicator loader = new ProgressIndicator();
+        VBox container = new VBox(loader);
+        container.setAlignment(javafx.geometry.Pos.CENTER);
+        Scene scene = new Scene(container, 400, 200);
+        primaryStage.setScene(scene);
         primaryStage.show();
+    }
 
-        new Thread(new Task<Void>() {
-            private List<Avis> avisList;
-            private List<Options> optionsList;
-            private List<Reservation> reservationList;
-
+    /**
+     * Asynchronously fetches booking data and initializes the view upon success.
+     */
+    private void loadBookingData(Hebergement hebergement) {
+        Task<BookingData> task = new Task<>() {
             @Override
-            protected Void call() {
-                HebergementDao hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
-                avisList = hebergementDao.getAllAvis(hebergement.getHid());
-                optionsList = hebergementDao.getOption(hebergement.getHid());
-
-                ReservationDao reservationDao = new ReservationDaoImpl(new AzureDBConnector());
-                reservationList = reservationDao.getAllReservationByHebergementId(hebergement.getHid());
-                return null;
+            protected BookingData call() {
+                List<Avis> avisList = hebergementDao.getAllAvis(hebergement.getHid());
+                List<Options> optionsList = hebergementDao.getOption(hebergement.getHid());
+                List<Reservation> reservationList = reservationDao.getAllReservationByHebergementId(hebergement.getHid());
+                return new BookingData(avisList, optionsList, reservationList);
             }
 
             @Override
             protected void succeeded() {
-                view = new BookingPageView(hebergement, avisList, optionsList);
-                initController();
-
-                Set<LocalDate> datesReservees = new HashSet<>();
-
-                for (Reservation res : reservationList) {
-                    LocalDate debut = LocalDate.parse(res.getDateDebut());
-                    LocalDate fin = LocalDate.parse(res.getDateFin());
-                    LocalDate current = debut;
-
-                    while (!current.isAfter(fin)) {
-                        datesReservees.add(current);
-                        current = current.plusDays(1);
-                    }
-                }
-
-                //desactiver dates passé et dates réservées
-                view.getDateArriveePicker().setDayCellFactory(picker -> new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate date, boolean empty) {
-                        super.updateItem(date, empty);
-                        if (date.isBefore(LocalDate.now()) || datesReservees.contains(date)) {
-                            setDisable(true);
-                            setStyle("-fx-background-color: #ffc0cb;");
-                        }
-                    }
-                });
-
-                view.getDateDepartPicker().setDayCellFactory(picker -> new DateCell() {
-                    @Override
-                    public void updateItem(LocalDate date, boolean empty) {
-                        super.updateItem(date, empty);
-                        if (date.isBefore(LocalDate.now()) || datesReservees.contains(date)) {
-                            setDisable(true);
-                            setStyle("-fx-background-color: #ffc0cb;");
-                        }
-                    }
-                });
-                
-                view.getDateArriveePicker().valueProperty().addListener((obs, oldDate, newDate) -> {
-                    view.getDateDepartPicker().setDayCellFactory(picker -> new DateCell() {
-                        @Override
-                        public void updateItem(LocalDate date, boolean empty) {
-                            super.updateItem(date, empty);
-                            boolean disable = date.isBefore(LocalDate.now()) ||
-                                    date.isBefore(newDate) ||
-                                    datesReservees.contains(date);
-                            if (disable) {
-                                setDisable(true);
-                                setStyle("-fx-background-color: #ffc0cb;");
-                            }
-                        }
-                    });
-                });
-
-                view.getDateDepartPicker().valueProperty().addListener((obs, oldDate, newDate) -> {
-                    view.getDateArriveePicker().setDayCellFactory(picker -> new DateCell() {
-                        @Override
-                        public void updateItem(LocalDate date, boolean empty) {
-                            super.updateItem(date, empty);
-                            boolean disable = date.isBefore(LocalDate.now()) ||
-                                    (newDate != null && date.isAfter(newDate)) ||
-                                    datesReservees.contains(date);
-                            if (disable) {
-                                setDisable(true);
-                                setStyle("-fx-background-color: #ffc0cb;");
-                            }
-                        }
-                    });
-                });
-
+                BookingData data = getValue();
+                view = new BookingPageView(hebergement, data.avis, data.options);
+                configureEventHandlers();
+                configureDatePickers(data.reservations);
                 primaryStage.setScene(view.getScene());
                 primaryStage.show();
-
             }
 
             @Override
             protected void failed() {
-                System.err.println("Erreur lors du chargement des données : " + getException());
+                System.err.println("Error loading booking data: " + getException());
             }
-        }).start();
+        };
+        executor.submit(task);
     }
 
-    private void initController() {
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
-        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
-        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
-        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> new SearchPageController(primaryStage).show());
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {new ReservationController(primaryStage).show();});
+    /**
+     * Sets up UI controls and navigation links.
+     */
+    private void configureEventHandlers() {
+        NavBarView nav = view.getNavBarView();
+        nav.getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
+        nav.getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
+        nav.getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
+        nav.getRechercheLabel().setOnMouseClicked(e -> new SearchPageController(primaryStage).show());
+        nav.getReservationsLabel().setOnMouseClicked(e -> new ReservationController(primaryStage).show());
 
         view.getBackButton().setOnAction(e -> new SearchPageController(primaryStage).show());
+        view.getReserverButton().setDisable(true);
 
-        view.getReserverButton().setDisable(true); // Désactivé au début
+        view.getDateArriveePicker().valueProperty().addListener((obs, oldV, newV) -> checkDatesSelected());
+        view.getDateDepartPicker().valueProperty().addListener((obs, oldV, newV) -> checkDatesSelected());
+        view.getReserverButton().setOnAction(e -> makeReservation());
+    }
 
-        view.getDateArriveePicker().valueProperty().addListener((obs, oldVal, newVal) -> {
-            checkIfDatesAreSelected();
+    /**
+     * Disables unavailable dates and sets up interdependent date pickers.
+     *
+     * @param reservations list of existing reservations
+     */
+    private void configureDatePickers(List<Reservation> reservations) {
+        Set<LocalDate> takenDates = extractReservedDates(reservations);
+
+        // Disable past and taken dates for arrival and departure
+        view.getDateArriveePicker().setDayCellFactory(picker -> createDateCell(takenDates, LocalDate.MIN, LocalDate.MAX));
+        view.getDateDepartPicker().setDayCellFactory(picker -> createDateCell(takenDates, LocalDate.MIN, LocalDate.MAX));
+
+        // Constrain departure based on arrival selection
+        view.getDateArriveePicker().valueProperty().addListener((obs, oldV, newV) -> {
+            view.getDateDepartPicker().setDayCellFactory(picker -> createDateCell(takenDates, newV, LocalDate.MAX));
         });
-
-        view.getDateDepartPicker().valueProperty().addListener((obs, oldVal, newVal) -> {
-            checkIfDatesAreSelected();
-        });
-        
-        view.getReserverButton().setOnAction(e -> {
-            //print dans la toute les info de la reservation (date et id hebergement)
-            System.out.println("Réservation effectuée pour l'hébergement : " + hebergement.getHid() + " du " +
-                    view.getDateArriveePicker().getValue() + " au " + view.getDateDepartPicker().getValue());
+        view.getDateDepartPicker().valueProperty().addListener((obs, oldV, newV) -> {
+            view.getDateArriveePicker().setDayCellFactory(picker -> createDateCell(takenDates, LocalDate.MIN, newV));
         });
     }
 
+    /**
+     * Initializes a DateCell that disables dates before a lower bound, after an upper bound, or in takenDates.
+     */
+    private DateCell createDateCell(Set<LocalDate> takenDates, LocalDate startInclusive, LocalDate endInclusive) {
+        return new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                boolean outOfRange = date.isBefore(startInclusive) || date.isAfter(endInclusive);
+                if (empty || date.isBefore(LocalDate.now()) || outOfRange || takenDates.contains(date)) {
+                    setDisable(true);
+                    setStyle("-fx-background-color: #ffc0cb;");
+                }
+            }
+        };
+    }
+
+    /**
+     * Extracts all dates covered by existing reservations.
+     */
+    private Set<LocalDate> extractReservedDates(List<Reservation> reservations) {
+        return reservations.stream()
+                .flatMap(res -> Stream.iterate(
+                                LocalDate.parse(res.getDateDebut()), d -> d.plusDays(1))
+                        .limit(
+                                LocalDate.parse(res.getDateFin())
+                                        .toEpochDay() - LocalDate.parse(res.getDateDebut()).toEpochDay() + 1
+                        )
+                )
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    /**
+     * Enables the reserve button only when valid dates are selected.
+     */
+    private void checkDatesSelected() {
+        LocalDate start = view.getDateArriveePicker().getValue();
+        LocalDate end = view.getDateDepartPicker().getValue();
+        boolean valid = start != null && end != null && !end.isBefore(start);
+        view.getReserverButton().setDisable(!valid);
+    }
+
+    /**
+     * Handles reservation action (for now prints to console).
+     */
+    private void makeReservation() {
+
+    }
+
+    /**
+     * Shows the booking view scene.
+     */
     public void show() {
         primaryStage.setScene(view.getScene());
         primaryStage.show();
     }
-
-    private void checkIfDatesAreSelected() {
-        LocalDate debut = view.getDateArriveePicker().getValue();
-        LocalDate fin = view.getDateDepartPicker().getValue();
-        boolean datesValides = (debut != null && fin != null && !fin.isBefore(debut));
-        view.getReserverButton().setDisable(!datesValides);
-    }
-
 }
