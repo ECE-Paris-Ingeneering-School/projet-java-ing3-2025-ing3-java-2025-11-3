@@ -256,15 +256,13 @@ public class ReservationView {
         private final int reservationId;
 
         public Reservation(int reservationId, String name, String arrival, String departure, String totalPrice,
-                           List<String> imageUrls, String location, String pricePerNight) {
+                           String imageUrls, String location, String pricePerNight) {
             this.reservationId = reservationId;
             this.name = new SimpleStringProperty(name);
             this.arrival = new SimpleStringProperty(arrival);
             this.departure = new SimpleStringProperty(departure);
             this.totalPrice = new SimpleStringProperty(totalPrice);
-            this.imageUrl = new SimpleStringProperty(
-                    (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : ""
-            );
+            this.imageUrl = new SimpleStringProperty(imageUrls);
             this.location = new SimpleStringProperty(location);
             this.pricePerNight = new SimpleStringProperty(pricePerNight);
         }
