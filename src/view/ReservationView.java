@@ -1,17 +1,13 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
@@ -257,17 +253,23 @@ public class ReservationView {
         private final SimpleStringProperty imageUrl;
         private final SimpleStringProperty location;
         private final SimpleStringProperty pricePerNight;
+        private final int reservationId;
 
-        public Reservation(String name, String arrival, String departure, String totalPrice,
-                           String imageUrl, String location, String pricePerNight) {
+        public Reservation(int reservationId, String name, String arrival, String departure, String totalPrice,
+                           List<String> imageUrls, String location, String pricePerNight) {
+            this.reservationId = reservationId;
             this.name = new SimpleStringProperty(name);
             this.arrival = new SimpleStringProperty(arrival);
             this.departure = new SimpleStringProperty(departure);
             this.totalPrice = new SimpleStringProperty(totalPrice);
-            this.imageUrl = new SimpleStringProperty(imageUrl);
+            this.imageUrl = new SimpleStringProperty(
+                    (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : ""
+            );
             this.location = new SimpleStringProperty(location);
             this.pricePerNight = new SimpleStringProperty(pricePerNight);
         }
+
+        public int getReservationId() {return reservationId;}
 
         public String getName() {
             return name.get();
