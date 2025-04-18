@@ -97,9 +97,28 @@ public class ReservationController {
                 )
         ).collect(Collectors.toList());
 
-        view.setReservations(viewReservations);
+        view.setReservations(viewReservations, new ReservationView.ReservationActionHandler() {
+            @Override
+            public void onView(ReservationView.Reservation reservation) {
+                System.out.println("→ Consulter le bien : " + reservation.getName());
+                // Tu peux rediriger vers une page détail ici
+            }
 
-        // 👉 Tu dois ajouter cette partie :
+            @Override
+            public void onCancel(ReservationView.Reservation reservation) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Confirmation d'annulation");
+                alert.setHeaderText(null);
+                alert.setContentText("Êtes-vous sûr de vouloir annuler la réservation : " + reservation.getName() + " ?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    System.out.println("→ Réservation annulée pour : " + reservation.getName());
+                    // Appelle ici reservationDao.annulerReservation(...) si tu as l'ID
+                }
+            }
+        });
+
         boolean fullScreen = primaryStage.isFullScreen();
         double width = primaryStage.getWidth();
         double height = primaryStage.getHeight();

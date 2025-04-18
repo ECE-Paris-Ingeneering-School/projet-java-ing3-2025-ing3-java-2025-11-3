@@ -30,6 +30,11 @@ public class ReservationView {
     private NavBarView navBarView;
     private VBox reservationsCardsContainer;
 
+    public interface ReservationActionHandler {
+        void onView(Reservation reservation);
+        void onCancel(Reservation reservation);
+    }
+
     public ReservationView() {
         createUI();
     }
@@ -102,7 +107,7 @@ public class ReservationView {
         scene = new Scene(scrollPane, 900, 700);
     }
 
-    public void setReservations(List<Reservation> reservations) {
+    public void setReservations(List<Reservation> reservations, ReservationActionHandler handler) {
         reservationsCardsContainer.getChildren().clear();
 
         if (reservations.isEmpty()) {
@@ -112,13 +117,11 @@ public class ReservationView {
             reservationsCardsContainer.getChildren().add(noReservationsLabel);
         } else {
             for (Reservation r : reservations) {
-                HBox card = createReservationCard(r);
+                HBox card = createReservationCard(r, handler);
                 reservationsCardsContainer.getChildren().add(card);
             }
         }
     }
-
-
 
     private Accordion createFAQSection() {
         Accordion accordion = new Accordion();
@@ -167,16 +170,15 @@ public class ReservationView {
      * Crée une carte de réservation présentant l'image à gauche, les détails au centre,
      * et une colonne de boutons d'action à droite avec des boutons de même taille.
      */
-    private HBox createReservationCard(Reservation reservation) {
+    private HBox createReservationCard(Reservation reservation, ReservationActionHandler handler) {
         HBox card = new HBox();
         card.setSpacing(20);
         card.setPadding(new Insets(15));
         card.setAlignment(Pos.CENTER_LEFT);
         card.setMaxWidth(750);
-        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; " +
+        card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10;" +
                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
-        // Partie gauche : image du logement avec illustration par défaut
         ImageView imageView = new ImageView();
         String imageUrl = reservation.getImageUrl();
         if (imageUrl == null || imageUrl.isEmpty()) {
@@ -191,7 +193,6 @@ public class ReservationView {
         imageView.setFitWidth(150);
         imageView.setFitHeight(150);
 
-        // Partie centrale : détails du logement
         VBox detailsBox = new VBox();
         detailsBox.setSpacing(10);
         detailsBox.setAlignment(Pos.CENTER_LEFT);
@@ -219,7 +220,6 @@ public class ReservationView {
         detailsBox.getChildren().addAll(titleLabel, locationLabel, datesLabel, totalPriceLabel, pricePerNightLabel);
         HBox.setHgrow(detailsBox, Priority.ALWAYS);
 
-        // Partie droite : boutons d'action de même taille
         VBox buttonBox = new VBox();
         buttonBox.setSpacing(10);
         buttonBox.setAlignment(Pos.CENTER);
@@ -230,20 +230,10 @@ public class ReservationView {
         viewButton.setPrefWidth(buttonWidth);
         cancelButton.setPrefWidth(buttonWidth);
 
-        // Pop-up de confirmation pour "Annuler ma réservation"
-        cancelButton.setOnAction(e -> {
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation d'annulation");
-            alert.setHeaderText(null);
-            alert.setContentText("Êtes-vous sûr de vouloir annuler votre réservation ?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                System.out.println("Réservation annulée."); // Placez ici votre logique d'annulation
-            }
-        });
+        viewButton.setOnAction(e -> handler.onView(reservation));
+        cancelButton.setOnAction(e -> handler.onCancel(reservation));
 
         buttonBox.getChildren().addAll(viewButton, cancelButton);
-
         card.getChildren().addAll(imageView, detailsBox, buttonBox);
         return card;
     }
