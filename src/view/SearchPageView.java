@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import MODELE.Hebergement;
+import modele.Hebergement;
 import java.time.LocalDate;
 
 public class SearchPageView {
@@ -38,8 +38,6 @@ public class SearchPageView {
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
 
-
-
         // -- Zone de filtres à gauche
         filtersBox = new VBox(10);
         filtersBox.setPadding(new Insets(15));
@@ -47,7 +45,6 @@ public class SearchPageView {
         filtersBox.setPrefWidth(250);
         filtersBox.setAlignment(Pos.TOP_LEFT);
 
-        //
         maisonCheck = new CheckBox("Maison");
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
