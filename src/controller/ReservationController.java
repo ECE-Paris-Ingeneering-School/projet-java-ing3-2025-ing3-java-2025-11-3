@@ -16,6 +16,7 @@ import MODELE.User;
 import java.io.Console;
 import java.io.Serial;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -85,13 +86,18 @@ public class ReservationController {
 
         List<Reservation> dbReservations = reservationDao.getAllReservationByClientId(currentUser.getId());
 
-        List<view.ReservationView.Reservation> viewReservations = dbReservations.stream().map(res ->
-                new view.ReservationView.Reservation(
+        // 💡 Ajoute cette ligne ici
+        Map<Integer, Reservation> reservationMap = dbReservations.stream()
+                .collect(Collectors.toMap(Reservation::getId, r -> r));
+
+        List<ReservationView.Reservation> viewReservations = dbReservations.stream().map(res ->
+                new ReservationView.Reservation(
+                        res.getId(),
                         res.getHebergement().getNom(),
                         res.getDateDebut(),
                         res.getDateFin(),
                         res.getPrix() + "€",
-                        res.getHebergement().getImage() != null ? String.valueOf(res.getHebergement().getImage()) : "", // image si dispo
+                        res.getHebergement().getImage(),
                         res.getHebergement().getAdresse(),
                         res.getHebergement().getPrix() + "€"
                 )
@@ -100,21 +106,25 @@ public class ReservationController {
         view.setReservations(viewReservations, new ReservationView.ReservationActionHandler() {
             @Override
             public void onView(ReservationView.Reservation reservation) {
-                System.out.println("→ Consulter le bien : " + reservation.getName());
-                // Tu peux rediriger vers une page détail ici
+                Reservation full = reservationMap.get(reservation.getReservationId());
+                if (full != null) {
+                    new BookingPageController(primaryStage, full.getHebergement());
+                }
             }
 
             @Override
             public void onCancel(ReservationView.Reservation reservation) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                alert.setTitle("Confirmation d'annulation");
-                alert.setHeaderText(null);
-                alert.setContentText("Êtes-vous sûr de vouloir annuler la réservation : " + reservation.getName() + " ?");
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
-                    System.out.println("→ Réservation annulée pour : " + reservation.getName());
-                    // Appelle ici reservationDao.annulerReservation(...) si tu as l'ID
+                Reservation full = reservationMap.get(reservation.getReservationId());
+                if (full != null) {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Confirmation d'annulation");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Voulez-vous annuler la réservation de : " + full.getHebergement().getNom() + " ?");
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.isPresent() && result.get() == ButtonType.OK) {
+                        reservationDao.annulerReservation(full.getId());
+                        show(); // rafraîchir l'affichage après suppression
+                    }
                 }
             }
         });
@@ -128,5 +138,4 @@ public class ReservationController {
         primaryStage.setFullScreen(fullScreen);
         primaryStage.show();
     }
-
 }
