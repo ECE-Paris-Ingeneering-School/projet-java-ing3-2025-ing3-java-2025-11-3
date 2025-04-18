@@ -9,6 +9,7 @@ public class Reservation {
     private final int idHebergement;
     private final int idClient;
     private final float prix;
+    private Hebergement hebergement;
 
     public Reservation( String dateDebut, String dateFin, int idHebergement, int idClient, float prix) {
         this.dateDebut = dateDebut;
@@ -17,6 +18,7 @@ public class Reservation {
         this.idClient = idClient;
         this.prix = prix;
     }
+
     public Reservation(int id, String dateDebut, String dateFin, int idHebergement, int idClient, float prix) {
         this.id = id;
         this.dateDebut = dateDebut;
@@ -47,5 +49,13 @@ public class Reservation {
     // Setters pour les attributs de la classe Reservation
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Hebergement getHebergement() {
+        return hebergement;
+    }
+
+    public void setHebergement(Hebergement hebergement) {
+        this.hebergement = hebergement;
     }
 }
