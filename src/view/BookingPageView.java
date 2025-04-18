@@ -35,6 +35,8 @@ public class BookingPageView {
     private Label avisTitle;
     private Label avisSubtitle;
 
+    private int reservationId;
+
     public BookingPageView(Hebergement hebergement, List<Avis> avisList, List<Options> optionsList) {
         createUI(hebergement, avisList, optionsList);
     }
@@ -45,6 +47,7 @@ public class BookingPageView {
         // Barre de navigation en haut
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
+        reservationId = hebergement.getHid();
 
         // Scroll central
         ScrollPane scrollPane = new ScrollPane();
