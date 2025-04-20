@@ -131,7 +131,7 @@ public class BookingPageController {
 
         view.getDateArriveePicker().valueProperty().addListener((obs, oldV, newV) -> checkDatesSelected());
         view.getDateDepartPicker().valueProperty().addListener((obs, oldV, newV) -> checkDatesSelected());
-        view.getReserverButton().setOnAction(e -> makeReservation());
+        view.getReserverButton().setOnAction(e -> openPaymentPage());
     }
 
     /**
@@ -200,32 +200,22 @@ public class BookingPageController {
     /**
      * Handles reservation action (for now prints to console).
      */
-    private void makeReservation() {
-        //recuperer les dates dans les pickers
+    private void openPaymentPage() {
         LocalDate dateArrivee = view.getDateArriveePicker().getValue();
-        LocalDate dateDepart = view.getDateDepartPicker().getValue();
+        LocalDate dateDepart  = view.getDateDepartPicker().getValue();
+        float prix            = hebergement.getPrix();
+        int clientId          = UserSession.getInstance().getConnectedUser().getId();
 
-        //recuperer le prix de l'hebergement
-        float prix = hebergement.getPrix();
-        int hebergementId = hebergement.getHid();
-
-        int clientId = UserSession.getInstance().getConnectedUser().getId();
-
-        Reservation reservation = new Reservation(dateArrivee.toString(), dateDepart.toString(), hebergementId, clientId, prix);
-
-        reservationDao.nouvelleReservation(reservation);
-
-        // Afficher un message de confirmation
-        Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-        confirmationAlert.setTitle("Réservation réussie");
-        confirmationAlert.setHeaderText(null);
-        confirmationAlert.setContentText("Votre réservation a été effectuée avec succès !");
-        confirmationAlert.showAndWait();
-
-        //recharger la page de recherche
-        new SearchPageController(primaryStage).show();
-
+        new PaymentPageController(
+                primaryStage,
+                hebergement.getHid(),
+                clientId,
+                dateArrivee,
+                dateDepart,
+                prix
+        ).show();
     }
+
 
     /**
      * Shows the booking view scene.
