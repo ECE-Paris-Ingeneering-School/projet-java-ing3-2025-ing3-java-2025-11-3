@@ -5,6 +5,7 @@ import dao.ReductionDaoImpl;
 import dao.ReservationDao;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import modele.Reservation;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 
 public class PaymentPageController {
     private final Stage stage;
+    private final Scene previousScene;
     private final PaymentPageView view;
     private final ReservationDao reservationDao;
     private final ReductionDao reductionDao;
@@ -25,13 +27,9 @@ public class PaymentPageController {
     private double currentPrice;
     private int appliedReductionId = -1;
 
-    public PaymentPageController(Stage stage,
-                                 int hebergementId,
-                                 int clientId,
-                                 LocalDate dateArrivee,
-                                 LocalDate dateDepart,
-                                 double initialPrice) {
+    public PaymentPageController(Stage stage,Scene previousScene, int hebergementId, int clientId, LocalDate dateArrivee, LocalDate dateDepart, double initialPrice) {
         this.stage = stage;
+        this.previousScene = previousScene;
         this.hebergementId = hebergementId;
         this.clientId = clientId;
         this.dateArrivee = dateArrivee;
@@ -90,6 +88,10 @@ public class PaymentPageController {
             showAlert(Alert.AlertType.INFORMATION, "Réservation et paiement validés !");
             // Retour à la recherche
             new controller.SearchPageController(stage).show();
+        });
+
+        view.getCancelButton().setOnAction(e -> {
+            stage.setScene(previousScene);
         });
     }
 
