@@ -201,6 +201,8 @@ public class BookingPageController {
      * Handles reservation action (for now prints to console).
      */
     private void openPaymentPage() {
+        Scene bookingScene = view.getScene();
+
         LocalDate dateArrivee = view.getDateArriveePicker().getValue();
         LocalDate dateDepart  = view.getDateDepartPicker().getValue();
         float prix            = hebergement.getPrix();
@@ -208,6 +210,7 @@ public class BookingPageController {
 
         new PaymentPageController(
                 primaryStage,
+                bookingScene,            // ← on y passe la scene de booking
                 hebergement.getHid(),
                 clientId,
                 dateArrivee,
@@ -215,6 +218,7 @@ public class BookingPageController {
                 prix
         ).show();
     }
+
 
 
     /**
