@@ -16,6 +16,8 @@ public class RegisterPageView {
     private Button createAccountButton;
     private Hyperlink loginLink;
     private NavBarView navBarView;
+    private TextField firstNameField;
+    private TextField lastNameField;
 
     public RegisterPageView() {
         createUI();
@@ -26,11 +28,11 @@ public class RegisterPageView {
         navBarView = new NavBarView();
         HBox navBar = navBarView.getNavBar();
 
-        // Conteneur principal pour centrer le cartouche
+        // Conteneur principal
         VBox mainContainer = new VBox();
         mainContainer.setAlignment(Pos.CENTER);
 
-        // Cartouche de formulaire avec padding uniforme
+        // Cartouche de formulaire
         VBox formContainer = new VBox(20);
         formContainer.setAlignment(Pos.TOP_LEFT);
         formContainer.setPadding(new Insets(30));
@@ -48,29 +50,46 @@ public class RegisterPageView {
         registerTitle.setFont(new Font("Arial", 24));
         registerTitle.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
 
-        // Champs et bouton
+        // Boîte des champs
         VBox fieldsBox = new VBox(10);
         fieldsBox.setFillWidth(true);
 
+        // — Prénom
+        Label firstNameLabel = new Label("Prénom");
+        firstNameField = new TextField();
+        firstNameField.setPromptText("Votre prénom");
+        firstNameField.setMaxWidth(Double.MAX_VALUE);
+        firstNameField.setStyle("-fx-focus-color: black; -fx-faint-focus-color: transparent;");
+
+        // — Nom
+        Label lastNameLabel = new Label("Nom");
+        lastNameField = new TextField();
+        lastNameField.setPromptText("Votre nom");
+        lastNameField.setMaxWidth(Double.MAX_VALUE);
+        lastNameField.setStyle("-fx-focus-color: black; -fx-faint-focus-color: transparent;");
+
+        // — Email
         Label emailLabel = new Label("Email");
         emailField = new TextField();
         emailField.setPromptText("Votre email");
         emailField.setMaxWidth(Double.MAX_VALUE);
         emailField.setStyle("-fx-focus-color: black; -fx-faint-focus-color: transparent;");
 
+        // — Mot de passe
         Label passwordLabel = new Label("Mot de passe");
         passwordField = new PasswordField();
         passwordField.setPromptText("Votre mot de passe");
         passwordField.setMaxWidth(Double.MAX_VALUE);
         passwordField.setStyle("-fx-focus-color: black; -fx-faint-focus-color: transparent;");
 
+        // — Confirmation du mot de passe
         Label confirmPasswordLabel = new Label("Confirmer le mot de passe");
         confirmPasswordField = new PasswordField();
         confirmPasswordField.setPromptText("Confirmez votre mot de passe");
         confirmPasswordField.setMaxWidth(Double.MAX_VALUE);
         confirmPasswordField.setStyle("-fx-focus-color: black; -fx-faint-focus-color: transparent;");
 
-        // Espace vertical entre les champs et le bouton (10 px)
+        // Espace avant le bouton
         Region spacerBetween = new Region();
         spacerBetween.setMinHeight(10);
 
@@ -83,27 +102,32 @@ public class RegisterPageView {
         );
         createAccountButton.setMaxWidth(Double.MAX_VALUE);
 
-        fieldsBox.getChildren().addAll(emailLabel, emailField, passwordLabel, passwordField, confirmPasswordLabel, confirmPasswordField, spacerBetween, createAccountButton);
+        // Ajout de tous les champs dans l'ordre
+        fieldsBox.getChildren().addAll(
+                firstNameLabel, firstNameField,
+                lastNameLabel, lastNameField,
+                emailLabel, emailField,
+                passwordLabel, passwordField,
+                confirmPasswordLabel, confirmPasswordField,
+                spacerBetween,
+                createAccountButton
+        );
 
-        // Ligne pour les liens de bas : "Déjà un compte ?" à gauche et "Se connecter" à droite
+        // Ligne du bas avec lien “Se connecter”
         HBox bottomLine = new HBox();
         bottomLine.setAlignment(Pos.CENTER_LEFT);
         bottomLine.setPadding(new Insets(5, 0, 0, 0));
-        Label alreadyAccountLabel = new Label(" Déjà un compte ?");
+        Label alreadyAccountLabel = new Label("Déjà un compte ?");
         alreadyAccountLabel.setStyle("-fx-text-fill: #555555;");
         loginLink = new Hyperlink("Se connecter");
         loginLink.setStyle("-fx-text-fill: #555555;");
-        loginLink.setOnMouseEntered(e -> loginLink.setStyle("-fx-text-fill: #555555;"));
-        loginLink.setOnMouseExited(e -> loginLink.setStyle("-fx-text-fill: #555555;"));
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        bottomLine.getChildren().addAll(alreadyAccountLabel, spacer, loginLink);
+        HBox.setHgrow(new Region(), Priority.ALWAYS);
+        bottomLine.getChildren().addAll(alreadyAccountLabel, new Region(), loginLink);
 
-        // Assemblage final du cartouche
+        // Assemblage final
         formContainer.getChildren().addAll(registerTitle, fieldsBox, bottomLine);
         mainContainer.getChildren().add(formContainer);
 
-        // Layout principal
         BorderPane root = new BorderPane();
         root.setTop(navBar);
         root.setCenter(mainContainer);
@@ -111,6 +135,7 @@ public class RegisterPageView {
 
         scene = new Scene(root, 800, 500);
     }
+
 
     public Scene getScene() {
         return scene;
@@ -139,4 +164,8 @@ public class RegisterPageView {
     public NavBarView getNavBarView() {
         return navBarView;
     }
+
+    public TextField getFirstNameField() {return firstNameField;}
+
+    public TextField getLastNameField() {return lastNameField;}
 }
