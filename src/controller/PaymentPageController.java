@@ -44,7 +44,6 @@ public class PaymentPageController {
     }
 
     private void configureEvents() {
-        // Appliquer le code promo
         view.getApplyPromoButton().setOnAction(e -> {
             String code = view.getPromoCodeField().getText().trim();
             if (code.isEmpty()) {
@@ -56,10 +55,10 @@ public class PaymentPageController {
                 showAlert(Alert.AlertType.ERROR, "Code promo invalide.");
                 return;
             }
-            // Récupère la réduction
+
             int redId = reductionDao.getreductionId(new modele.Reduction(code, 0));
             modele.Reduction red = reductionDao.getReductionById(redId);
-            // Calcule le nouveau prix
+
             double taux = red.getPourcentage() / 100.0;
             currentPrice = currentPrice * (1 - taux);
             appliedReductionId = redId;
@@ -70,13 +69,11 @@ public class PaymentPageController {
             showAlert(Alert.AlertType.INFORMATION, "Réduction appliquée : " + red.getPourcentage() + "%");
         });
 
-        // Confirmer la réservation + paiement
         view.getConfirmButton().setOnAction(e -> {
-            // On ne vérifie pas les infos de carte, juste on récupère
             String numCarte = view.getCardNumberField().getText();
             String expiry   = view.getExpiryField().getText();
             String cvv      = view.getCvvField().getText();
-            // Création de la réservation
+
             Reservation res = new Reservation(
                     dateArrivee.toString(),
                     dateDepart.toString(),
@@ -86,8 +83,8 @@ public class PaymentPageController {
             );
             reservationDao.nouvelleReservation(res);
             showAlert(Alert.AlertType.INFORMATION, "Réservation et paiement validés !");
-            // Retour à la recherche
-            new controller.SearchPageController(stage).show();
+
+            new controller.ReservationController(stage).show();
         });
 
         view.getCancelButton().setOnAction(e -> {
