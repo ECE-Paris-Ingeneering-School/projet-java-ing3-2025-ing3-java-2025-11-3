@@ -28,7 +28,6 @@ public class HomePageController {
         NavBarView nav = view.getNavBarView();
 
         nav.getSignInLabel().setOnMouseClicked(e -> navigate(() -> new LoginPageController(primaryStage).show()));
-        nav.getRegisterLabel().setOnMouseClicked(e -> navigate(() -> new RegisterPageController(primaryStage).show()));
         nav.getReservationsLabel().setOnMouseClicked(e -> navigate(() -> new ReservationController(primaryStage).show()));
         nav.getTitleLabel().setOnMouseClicked(e -> navigate(this::show));
         nav.getRechercheLabel().setOnMouseClicked(e -> navigate(() -> new SearchPageController(primaryStage).show()));

@@ -55,10 +55,6 @@ public class RegisterPageController {
             new LoginPageController(primaryStage).show();
         });
 
-        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            this.show(); // On est déjà sur cette page
-        });
-
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
             new SearchPageController(primaryStage).show();
         });

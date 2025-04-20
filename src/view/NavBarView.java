@@ -19,7 +19,6 @@ public class NavBarView {
     private Label reservationsLabel;
     private Label contactLabel;
     private Label signInLabel;
-    private Label registerLabel;
 
     public NavBarView() {
         createNavBar();
@@ -46,14 +45,12 @@ public class NavBarView {
         reservationsLabel = new Label("Réservations");
         contactLabel      = new Label("Contact");
         signInLabel       = new Label("Sign in");
-        registerLabel     = new Label("Register");
 
         HBox navOptions = new HBox(20,
                 rechercheLabel,
                 reservationsLabel,
                 contactLabel,
-                signInLabel,
-                registerLabel
+                signInLabel
         );
         navOptions.setAlignment(Pos.CENTER_RIGHT);
 
@@ -66,5 +63,4 @@ public class NavBarView {
     public Label getReservationsLabel() { return reservationsLabel; }
     public Label getContactLabel()      { return contactLabel; }
     public Label getSignInLabel()       { return signInLabel; }
-    public Label getRegisterLabel()     { return registerLabel; }
 }

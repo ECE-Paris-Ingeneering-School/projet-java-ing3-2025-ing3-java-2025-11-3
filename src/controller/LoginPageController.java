@@ -48,9 +48,6 @@ public class LoginPageController {
             this.show(); // On est déjà sur cette page
         });
 
-        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            new RegisterPageController(primaryStage).show();
-        });
 
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
             new SearchPageController(primaryStage).show();

@@ -45,12 +45,7 @@ public class ContactController {
             LoginPageController loginController = new LoginPageController(primaryStage);
             loginController.show();
         });
-
-        // Register
-        view.getNavBarView().getRegisterLabel().setOnMouseClicked(e -> {
-            RegisterPageController registerController = new RegisterPageController(primaryStage);
-            registerController.show();
-        });
+        
     }
 
     public void show() {

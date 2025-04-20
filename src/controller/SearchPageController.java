@@ -61,7 +61,6 @@ public class SearchPageController {
         NavBarView navBar = view.getNavBarView();
         navBar.getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
         navBar.getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
-        navBar.getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
         navBar.getRechercheLabel().setOnMouseClicked(e -> show());
         navBar.getReservationsLabel().setOnMouseClicked(e -> new ReservationController(primaryStage).show());
 

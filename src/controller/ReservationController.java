@@ -66,7 +66,6 @@ public class ReservationController {
         NavBarView nav = view.getNavBarView();
 
         nav.getSignInLabel().setOnMouseClicked(e -> navigate(() -> new LoginPageController(primaryStage).show()));
-        nav.getRegisterLabel().setOnMouseClicked(e -> navigate(() -> new RegisterPageController(primaryStage).show()));
         nav.getRechercheLabel().setOnMouseClicked(e -> navigate(() -> new SearchPageController(primaryStage).show()));
         nav.getReservationsLabel().setOnMouseClicked(e -> navigate(this::show));
         nav.getTitleLabel().setOnMouseClicked(e -> navigate(() -> new HomePageController(primaryStage).show()));
@@ -145,7 +144,7 @@ public class ReservationController {
                             .filter(list -> !list.isEmpty())
                             .map(list -> list.get(0))
                             .orElse("file:src/resources/larry.jpg");
-                    
+
                     return new ReservationView.Reservation(
                             res.getId(),
                             res.getHebergement().getNom(),
@@ -164,7 +163,7 @@ public class ReservationController {
             public void onView(ReservationView.Reservation rv) {
                 Reservation full = data.reservationMap.get(rv.getReservationId());
                 if (full != null) {
-                    new BookingPageController(primaryStage, full.getHebergement()).show();
+                    new BookingPageController(primaryStage, full.getHebergement());
                 }
             }
 

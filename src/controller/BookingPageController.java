@@ -5,6 +5,7 @@ import dao.ReservationDao;
 import dao.HebergementDaoImpl;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
+import javafx.scene.control.Alert;
 import modele.Avis;
 import modele.Options;
 import modele.Hebergement;
@@ -38,6 +39,8 @@ public class BookingPageController {
     private final ReservationDao reservationDao;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
+    private Hebergement hebergement;
+
     /**
      * Package for holding data loaded for booking.
      */
@@ -63,6 +66,8 @@ public class BookingPageController {
         this.primaryStage = primaryStage;
         this.hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
+
+        this.hebergement = hebergement;
 
         showLoadingScreen();
         loadBookingData(hebergement);
@@ -118,7 +123,6 @@ public class BookingPageController {
         NavBarView nav = view.getNavBarView();
         nav.getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
         nav.getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
-        nav.getRegisterLabel().setOnMouseClicked(e -> new RegisterPageController(primaryStage).show());
         nav.getRechercheLabel().setOnMouseClicked(e -> new SearchPageController(primaryStage).show());
         nav.getReservationsLabel().setOnMouseClicked(e -> new ReservationController(primaryStage).show());
 
@@ -197,6 +201,29 @@ public class BookingPageController {
      * Handles reservation action (for now prints to console).
      */
     private void makeReservation() {
+        //recuperer les dates dans les pickers
+        LocalDate dateArrivee = view.getDateArriveePicker().getValue();
+        LocalDate dateDepart = view.getDateDepartPicker().getValue();
+
+        //recuperer le prix de l'hebergement
+        float prix = hebergement.getPrix();
+        int hebergementId = hebergement.getHid();
+
+        int clientId = UserSession.getInstance().getConnectedUser().getId();
+
+        Reservation reservation = new Reservation(dateArrivee.toString(), dateDepart.toString(), hebergementId, clientId, prix);
+
+        reservationDao.nouvelleReservation(reservation);
+
+        // Afficher un message de confirmation
+        Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+        confirmationAlert.setTitle("Réservation réussie");
+        confirmationAlert.setHeaderText(null);
+        confirmationAlert.setContentText("Votre réservation a été effectuée avec succès !");
+        confirmationAlert.showAndWait();
+
+        //recharger la page de recherche
+        new SearchPageController(primaryStage).show();
 
     }
 
