@@ -29,7 +29,8 @@ public class PaymentPageView {
         VBox card = new VBox(20);
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(30));
-        card.setMaxWidth(400);
+        card.setMaxWidth(500);
+        card.setMaxHeight(500);
         card.setEffect(new DropShadow(BlurType.GAUSSIAN,
                 Color.rgb(0,0,0,0.1),
                 10, 0, 0, 4));
