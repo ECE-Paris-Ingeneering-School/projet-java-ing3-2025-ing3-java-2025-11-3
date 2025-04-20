@@ -144,9 +144,22 @@ public class ReservationDaoImpl implements ReservationDao {
 
     @Override
     public ArrayList<Reservation> getAllReservationByHebergementId(int idHebergement) {
-        String sql = "SELECT * FROM reservation WHERE hebergement_id = ?";
+        String sql = """
+        SELECT 
+            r.*,
+            h.nom            AS hebergement_nom,
+            h.type           AS hebergement_type,
+            h.adresse        AS hebergement_adresse,
+            h.description    AS hebergement_description,
+            h.prix_base      AS hebergement_prix
+        FROM reservation r
+        JOIN hebergement h 
+          ON r.hebergement_id = h.hebergement_id
+        WHERE r.hebergement_id = ?
+        """;
         return getallReservationSQL(sql, idHebergement);
     }
+
 
     @Override
     public String convertDateToString(Date date) {
