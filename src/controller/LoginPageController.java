@@ -2,8 +2,12 @@ package controller;
 
 import dao.UserDaoImpl;
 import db.AzureDBConnector;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import view.LoginPageView;
+
+import java.util.regex.Pattern;
 
 public class LoginPageController {
 
@@ -19,43 +23,76 @@ public class LoginPageController {
     }
 
     private void attachEventHandlers() {
-        // Action sur le bouton "Connexion"
-        view.getLoginButton().setOnAction(e -> {
-            // verif existence user
-            // puis forwartd sur page recherche
-            String mail = view.getEmailField().getText();
-            System.out.println("Tentative de connexion...");
-            if(userDao.connexionUser(view.getEmailField().getText(),view.getPasswordField().getText())){
-                System.out.println("Connexion etablie");
-                //Stocke l'user connecté
-                UserSession.getInstance().setConnectedUser(userDao.getUserByEmail(mail));
-                new HomePageController(primaryStage).show();
+        Button loginButton = view.getLoginButton();
+
+        loginButton.setOnAction(e -> {
+            String email = view.getEmailField().getText();
+            String password = view.getPasswordField().getText();
+
+            if (email == null || email.trim().isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Champ requis", "Veuillez saisir votre adresse email.");
+                return;
             }
-            else {System.out.println("Erreur connexion, utilisateur introuvable");}
+            if (!isValidEmail(email)) {
+                showAlert(Alert.AlertType.WARNING, "Format invalide", "Veuillez saisir une adresse email valide.");
+                return;
+            }
+            if (password == null || password.trim().isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "Champ requis", "Veuillez saisir votre mot de passe.");
+                return;
+            }
+
+            loginButton.setDisable(true);
+
+            boolean success = false;
+            try {
+                success = userDao.connexionUser(email, password);
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Erreur serveur",
+                        "Une erreur est survenue lors de la connexion, réessayez plus tard.");
+            } finally {
+                loginButton.setDisable(false);
+            }
+
+            if (success) {
+                UserSession.getInstance().setConnectedUser(userDao.getUserByEmail(email));
+                new HomePageController(primaryStage).show();
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Échec de la connexion",
+                        "Email ou mot de passe incorrect.");
+            }
         });
 
-        // Lien "S'inscrire" dans le formulaire
         view.getRegisterLink().setOnAction(e -> {
             new RegisterPageController(primaryStage).show();
         });
-
-        // Navigation via la NavBar
         view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
             new HomePageController(primaryStage).show();
         });
-
         view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            this.show(); // On est déjà sur cette page
+            this.show();
         });
-
-
         view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
             new SearchPageController(primaryStage).show();
         });
-
         view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
             new ReservationController(primaryStage).show();
         });
+    }
+
+    /** Vérifie le format de l’email via une regex simple */
+    private boolean isValidEmail(String email) {
+        String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+        return Pattern.matches(regex, email);
+    }
+
+    /** Affiche une boîte d’alerte */
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     public void show() {
