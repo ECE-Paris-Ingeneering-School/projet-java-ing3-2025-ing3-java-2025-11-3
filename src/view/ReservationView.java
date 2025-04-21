@@ -1,22 +1,17 @@
 package view;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import modele.Avis;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -25,6 +20,8 @@ public class ReservationView {
     private Scene scene;
     private NavBarView navBarView;
     private VBox reservationsCardsContainer;
+    private VBox pastReservationsCardsContainer;
+
 
     public interface ReservationActionHandler {
         void onView(Reservation reservation);
@@ -49,26 +46,27 @@ public class ReservationView {
         headerBox.setAlignment(Pos.CENTER);
         headerBox.setPadding(new Insets(10));
 
-        // Section "Mes réservations à venir"
         Label reservationsLabel = new Label("Mes réservations à venir");
         reservationsLabel.setFont(new Font("Arial", 28));
         reservationsLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
-
-        // Conteneur des cartes de réservation (largeur étendue)
         reservationsCardsContainer = new VBox();
         reservationsCardsContainer.setAlignment(Pos.CENTER);
         reservationsCardsContainer.setSpacing(20);
 
+        // — après la création de reservationsCardsContainer…
+        Label pastLabel = new Label("Mes réservations passées");
+        pastLabel.setFont(new Font("Arial", 28));
+        pastLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #333333;");
+        pastReservationsCardsContainer = new VBox();
+        pastReservationsCardsContainer.setAlignment(Pos.CENTER);
+        pastReservationsCardsContainer.setSpacing(20);
 
-        // Conteneur pour les réservations
         VBox mainContainer = new VBox();
         mainContainer.setAlignment(Pos.CENTER);
         mainContainer.setSpacing(20);
         mainContainer.setPadding(new Insets(20));
         mainContainer.setMaxWidth(800);
-        mainContainer.getChildren().addAll(reservationsLabel, reservationsCardsContainer);
-
-
+        mainContainer.getChildren().addAll(reservationsLabel, reservationsCardsContainer, pastLabel, pastReservationsCardsContainer);
 
         // Section FAQ : conteneur étroit et centré avec label introductif "FAQ"
         Label faqLabel = new Label("FAQ");
@@ -118,6 +116,30 @@ public class ReservationView {
             }
         }
     }
+
+    public void setPastReservations(List<Reservation> pastReservations, ReservationActionHandler handler) {
+        pastReservationsCardsContainer.getChildren().clear();
+
+        if (pastReservations.isEmpty()) {
+            Label none = new Label("Vous n'avez aucune réservation passée.");
+            none.setFont(new Font("Arial", 18));
+            none.setStyle("-fx-text-fill: #7F8C8D;");
+            pastReservationsCardsContainer.getChildren().add(none);
+        } else {
+            for (Reservation r : pastReservations) {
+                HBox card = createReservationCard(r, handler);
+
+                //on remplace le texte du 2ᵉ bouton
+                VBox buttonBox = (VBox) card.getChildren().get(2);
+                Button secondBtn = (Button) buttonBox.getChildren().get(1);
+                secondBtn.setText("Évaluer");
+
+                pastReservationsCardsContainer.getChildren().add(card);
+
+            }
+        }
+    }
+
 
     private Accordion createFAQSection() {
         Accordion accordion = new Accordion();
@@ -232,6 +254,63 @@ public class ReservationView {
         buttonBox.getChildren().addAll(viewButton, cancelButton);
         card.getChildren().addAll(imageView, detailsBox, buttonBox);
         return card;
+    }
+
+    /**
+     * Affiche un dialog pour évaluer l'hébergement et retourne un Avis
+     * @param propertyName le nom de l'hébergement (pour le titre du dialog)
+     * @param idHebergement l'identifiant de l'hébergement à évaluer
+     * @param idClient      l'identifiant du client qui évalue
+     * @return Optional contenant un Avis si l’utilisateur clique sur Envoyer, sinon Optional.empty()
+     */
+    public Optional<Avis> showEvaluationDialog(String propertyName,
+                                               int idHebergement,
+                                               int idClient) {
+        Dialog<Avis> dialog = new Dialog<>();
+        dialog.setTitle("Évaluer votre séjour");
+        dialog.setHeaderText("Merci d’évaluer votre expérience à « " + propertyName + " »");
+
+        // Boutons Envoyer / Annuler
+        ButtonType sendBtn = new ButtonType("Envoyer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(sendBtn, ButtonType.CANCEL);
+
+        // Slider 1–5
+        Slider rating = new Slider(1, 5, 3);
+        rating.setMajorTickUnit(1);
+        rating.setMinorTickCount(0);
+        rating.setSnapToTicks(true);
+        rating.setShowTickLabels(true);
+        rating.setShowTickMarks(true);
+
+        // Zone de texte pour le commentaire
+        TextArea comment = new TextArea();
+        comment.setPromptText("Votre commentaire…");
+        comment.setWrapText(true);
+
+        // Mise en page avec GridPane
+        GridPane grid = new GridPane();
+        grid.setHgap(10); grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.add(new Label("Note (1–5) :"), 0, 0);
+        grid.add(rating,               1, 0);
+        grid.add(new Label("Commentaire :"), 0, 1);
+        grid.add(comment,              1, 1);
+        dialog.getDialogPane().setContent(grid);
+
+        // Conversion du résultat en Avis
+        dialog.setResultConverter(btn -> {
+            if (btn == sendBtn) {
+                return new Avis(
+                        (int) rating.getValue(),
+                        comment.getText(),
+                        idHebergement,
+                        idClient
+                );
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
     }
 
     public Scene getScene() {
