@@ -34,8 +34,7 @@ public class PaymentPageController {
         this.clientId = clientId;
         this.dateArrivee = dateArrivee;
         this.dateDepart = dateDepart;
-        this.currentPrice = initialPrice;
-
+        this.currentPrice = initialPrice * (dateDepart.toEpochDay() - dateArrivee.toEpochDay());
         this.view = new PaymentPageView(initialPrice);
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
         this.reductionDao  = new ReductionDaoImpl(new AzureDBConnector());
@@ -44,6 +43,8 @@ public class PaymentPageController {
     }
 
     private void configureEvents() {
+        view.getPriceLabel().setText(String.format("Montant à payer : %.2f €", currentPrice));
+
         view.getApplyPromoButton().setOnAction(e -> {
             String code = view.getPromoCodeField().getText().trim();
             if (code.isEmpty()) {
@@ -70,10 +71,6 @@ public class PaymentPageController {
         });
 
         view.getConfirmButton().setOnAction(e -> {
-            String numCarte = view.getCardNumberField().getText();
-            String expiry   = view.getExpiryField().getText();
-            String cvv      = view.getCvvField().getText();
-
             Reservation res = new Reservation(
                     dateArrivee.toString(),
                     dateDepart.toString(),
