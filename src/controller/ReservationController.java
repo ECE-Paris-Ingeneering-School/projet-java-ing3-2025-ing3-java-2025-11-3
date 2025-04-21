@@ -1,13 +1,17 @@
 package controller;
 
+import dao.AvisDao;
+import dao.AvisDaoImpl;
+import modele.Avis;
+
 import dao.ReservationDao;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
 import modele.Reservation;
-import controller.UserSession;
 import modele.User;
 import view.NavBarView;
 import view.ReservationView;
+
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,6 +22,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +38,7 @@ public class ReservationController {
     private final ReservationView view;
     private final ReservationDao reservationDao;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final AvisDao avisDao ;
 
     /**
      * Bundle of data loaded from the database.
@@ -56,6 +63,8 @@ public class ReservationController {
         this.primaryStage = primaryStage;
         this.view = new ReservationView();
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
+        this.avisDao = new AvisDaoImpl(new AzureDBConnector());  // <— initialisation
+
         configureEventHandlers();
     }
 
@@ -138,33 +147,50 @@ public class ReservationController {
      * @param data the loaded reservation data bundle
      */
     private void displayReservations(DataBundle data) {
-        List<ReservationView.Reservation> viewReservations = data.reservations.stream()
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter dbFmt = DateTimeFormatter.ISO_LOCAL_DATE;
+        LocalDate today = LocalDate.now();
+
+        List<ReservationView.Reservation> allViews = data.reservations.stream()
                 .map(res -> {
+                    LocalDate start = LocalDate.parse(res.getDateDebut(), dbFmt);
+                    LocalDate end = LocalDate.parse(res.getDateFin(), dbFmt);
+
+                    String arrival = start.format(fmt);
+                    String departure = end.format(fmt);
+
+
                     String image = Optional.ofNullable(res.getHebergement().getImage())
                             .filter(list -> !list.isEmpty())
-                            .map(list -> list.get(0))
+                            .map(ArrayList::getFirst)
                             .orElse("file:src/resources/larry.jpg");
 
                     return new ReservationView.Reservation(
                             res.getId(),
                             res.getHebergement().getNom(),
-                            res.getDateDebut(),
-                            res.getDateFin(),
+                            arrival,
+                            departure,
                             res.getPrix() + "€",
                             image,
                             res.getHebergement().getAdresse(),
                             res.getHebergement().getPrix() + "€"
                     );
                 })
+                .toList();
+
+        //filtrer reservations into past and upcoming
+        List<ReservationView.Reservation> past = allViews.stream()
+                .filter(rv -> LocalDate.parse(rv.getArrival(), fmt).isBefore(today))
+                .collect(Collectors.toList());
+        List<ReservationView.Reservation> upcoming = allViews.stream()
+                .filter(rv -> !LocalDate.parse(rv.getArrival(), fmt).isBefore(today))
                 .collect(Collectors.toList());
 
-        view.setReservations(viewReservations, new ReservationView.ReservationActionHandler() {
+        ReservationView.ReservationActionHandler upcomingHandler = new ReservationView.ReservationActionHandler() {
             @Override
             public void onView(ReservationView.Reservation rv) {
                 Reservation full = data.reservationMap.get(rv.getReservationId());
-                if (full != null) {
-                    new BookingPageController(primaryStage, full.getHebergement());
-                }
+                if (full != null) new BookingPageController(primaryStage, full.getHebergement());
             }
 
             @Override
@@ -173,18 +199,52 @@ public class ReservationController {
                 if (full != null) {
                     Alert conf = new Alert(Alert.AlertType.CONFIRMATION,
                             "Voulez-vous annuler la réservation de : " + full.getHebergement().getNom() + " ?");
-                    Optional<ButtonType> answer = conf.showAndWait();
-                    if (answer.isPresent() && answer.get() == ButtonType.OK) {
+                    Optional<ButtonType> ans = conf.showAndWait();
+                    if (ans.isPresent() && ans.get() == ButtonType.OK) {
                         reservationDao.annulerReservation(full.getId());
                         show();
                     }
                 }
             }
-        });
+        };
+
+        ReservationView.ReservationActionHandler pastHandler =
+                new ReservationView.ReservationActionHandler() {
+                    @Override
+                    public void onView(ReservationView.Reservation rv) {
+                        Reservation full = data.reservationMap.get(rv.getReservationId());
+                        if (full != null) new BookingPageController(primaryStage, full.getHebergement());
+                    }
+                    @Override
+                    public void onCancel(ReservationView.Reservation rv) {
+                        Reservation full = data.reservationMap.get(rv.getReservationId());
+                        if (full == null) return;
+
+                        int clientId = UserSession.getInstance().getConnectedUser().getId();
+
+                        //print avis DANS la console
+                        System.out.println(full.getHebergement().getHid());
+
+                        Optional<Avis> result = view.showEvaluationDialog(
+                                full.getHebergement().getNom(),
+                                full.getHebergement().getHid(),
+                                clientId
+                        );
+
+                        result.ifPresent(avis -> {
+                            avisDao.saveAvis(avis);
+
+                            new Alert(Alert.AlertType.INFORMATION,
+                                    "Merci pour votre évaluation !").showAndWait();
+                        });
+                    }
+                };
+
+        view.setReservations(upcoming, upcomingHandler);
+        view.setPastReservations(past, pastHandler);
 
         boolean wasFull = primaryStage.isFullScreen();
-        double w = primaryStage.getWidth();
-        double h = primaryStage.getHeight();
+        double w = primaryStage.getWidth(), h = primaryStage.getHeight();
         primaryStage.setScene(view.getScene());
         primaryStage.setWidth(w);
         primaryStage.setHeight(h);
