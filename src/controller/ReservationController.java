@@ -24,65 +24,38 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-/**
- * Controller for the reservations page: manages navigation, data loading, and user actions.
- */
 public class ReservationController {
 
     private final Stage primaryStage;
     private final ReservationView view;
     private final ReservationDao reservationDao;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final AvisDao avisDao ;
+    private final AvisDao avisDao;
 
-    /**
-     * Bundle of data loaded from the database.
-     */
-    private static class DataBundle {
-        final List<Reservation> reservations;
-        final Map<Integer, Reservation> reservationMap;
-
-        DataBundle(List<Reservation> reservations) {
-            this.reservations = reservations;
-            this.reservationMap = reservations.stream()
-                    .collect(Collectors.toMap(Reservation::getId, r -> r));
-        }
-    }
-
-    /**
-     * Initializes controller with DAO and event handlers.
-     *
-     * @param primaryStage the main application stage
-     */
     public ReservationController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new ReservationView();
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
-        this.avisDao = new AvisDaoImpl(new AzureDBConnector());  // <— initialisation
+        this.avisDao = new AvisDaoImpl(new AzureDBConnector());
 
         configureEventHandlers();
     }
 
-    /**
-     * Binds navigation actions to navbar items.
-     */
     private void configureEventHandlers() {
         NavBarView nav = view.getNavBarView();
-
         nav.getSignInLabel().setOnMouseClicked(e -> navigate(() -> new LoginPageController(primaryStage).show()));
         nav.getRechercheLabel().setOnMouseClicked(e -> navigate(() -> new SearchPageController(primaryStage).show()));
         nav.getReservationsLabel().setOnMouseClicked(e -> navigate(this::show));
         nav.getTitleLabel().setOnMouseClicked(e -> navigate(() -> new HomePageController(primaryStage).show()));
     }
 
-    /**
-     * Shows the reservations scene, or prompts login if user is not authenticated.
-     */
     public void show() {
         User currentUser = UserSession.getInstance().getConnectedUser();
         if (currentUser == null) {
@@ -98,9 +71,6 @@ public class ReservationController {
         loadReservations(currentUser.getId());
     }
 
-    /**
-     * Displays a loading spinner while data is fetched.
-     */
     private void showLoadingScreen() {
         ProgressIndicator loader = new ProgressIndicator();
         VBox container = new VBox(20, loader);
@@ -112,155 +82,87 @@ public class ReservationController {
         primaryStage.show();
     }
 
-    /**
-     * Fetches reservations asynchronously and displays them.
-     *
-     * @param userId the ID of the authenticated user
-     */
     private void loadReservations(int userId) {
-        Task<DataBundle> task = new Task<>() {
+        Task<List<Reservation>> task = new Task<>() {
             @Override
-            protected DataBundle call() {
-                List<Reservation> list = reservationDao.getAllReservationByClientId(userId);
-                return new DataBundle(list);
-            }
-
-            @Override
-            protected void succeeded() {
-                displayReservations(getValue());
-            }
-
-            @Override
-            protected void failed() {
-                Throwable ex = getException();
-                Alert errorAlert = new Alert(Alert.AlertType.ERROR,
-                        "Erreur lors du chargement : " + ex.getMessage());
-                errorAlert.showAndWait();
+            protected List<Reservation> call() {
+                return reservationDao.getAllReservationByClientId(userId);
             }
         };
+        task.setOnSucceeded(e -> displayReservations(task.getValue()));
+        task.setOnFailed(e -> {
+            Throwable ex = task.getException();
+            new Alert(Alert.AlertType.ERROR, "Erreur lors du chargement : " + ex.getMessage())
+                    .showAndWait();
+        });
         executor.submit(task);
     }
 
-    /**
-     * Populates the view with fetched reservations and binds item actions.
-     *
-     * @param data the loaded reservation data bundle
-     */
-    private void displayReservations(DataBundle data) {
+    private void displayReservations(List<Reservation> reservations) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         DateTimeFormatter dbFmt = DateTimeFormatter.ISO_LOCAL_DATE;
         LocalDate today = LocalDate.now();
 
-        List<ReservationView.Reservation> allViews = data.reservations.stream()
-                .map(res -> {
-                    LocalDate start = LocalDate.parse(res.getDateDebut(), dbFmt);
-                    LocalDate end = LocalDate.parse(res.getDateFin(), dbFmt);
+        // Partition into past and upcoming
+        Map<Boolean, List<Reservation>> partition = reservations.stream()
+                .collect(Collectors.partitioningBy(r -> {
+                    LocalDate start = LocalDate.parse(r.getDateDebut(), dbFmt);
+                    return !start.isBefore(today);
+                }));
 
-                    String arrival = start.format(fmt);
-                    String departure = end.format(fmt);
+        List<Reservation> upcoming = partition.get(true);
+        List<Reservation> past = partition.get(false);
 
-
-                    String image = Optional.ofNullable(res.getHebergement().getImage())
-                            .filter(list -> !list.isEmpty())
-                            .map(ArrayList::getFirst)
-                            .orElse("file:src/resources/larry.jpg");
-
-                    return new ReservationView.Reservation(
-                            res.getId(),
-                            res.getHebergement().getNom(),
-                            arrival,
-                            departure,
-                            res.getPrix() + "€",
-                            image,
-                            res.getHebergement().getAdresse(),
-                            res.getHebergement().getPrix() + "€"
-                    );
-                })
-                .toList();
-
-        //filtrer reservations into past and upcoming
-        List<ReservationView.Reservation> past = allViews.stream()
-                .filter(rv -> LocalDate.parse(rv.getArrival(), fmt).isBefore(today))
-                .collect(Collectors.toList());
-        List<ReservationView.Reservation> upcoming = allViews.stream()
-                .filter(rv -> !LocalDate.parse(rv.getArrival(), fmt).isBefore(today))
-                .collect(Collectors.toList());
-
+        // Handler for upcoming
         ReservationView.ReservationActionHandler upcomingHandler = new ReservationView.ReservationActionHandler() {
             @Override
-            public void onView(ReservationView.Reservation rv) {
-                Reservation full = data.reservationMap.get(rv.getReservationId());
-                if (full != null) new BookingPageController(primaryStage, full.getHebergement());
+            public void onView(Reservation r) {
+                new BookingPageController(primaryStage, r.getHebergement()).show();
             }
-
             @Override
-            public void onCancel(ReservationView.Reservation rv) {
-                Reservation full = data.reservationMap.get(rv.getReservationId());
-                if (full != null) {
-                    Alert conf = new Alert(Alert.AlertType.CONFIRMATION,
-                            "Voulez-vous annuler la réservation de : " + full.getHebergement().getNom() + " ?");
-                    Optional<ButtonType> ans = conf.showAndWait();
-                    if (ans.isPresent() && ans.get() == ButtonType.OK) {
-                        reservationDao.annulerReservation(full.getId());
-                        show();
-                    }
+            public void onCancel(Reservation r) {
+                Alert conf = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Voulez-vous annuler la réservation de : " + r.getHebergement().getNom() + " ?");
+                Optional<ButtonType> ans = conf.showAndWait();
+                if (ans.isPresent() && ans.get() == ButtonType.OK) {
+                    reservationDao.annulerReservation(r.getId());
+                    show();
                 }
             }
         };
 
-        ReservationView.ReservationActionHandler pastHandler =
-                new ReservationView.ReservationActionHandler() {
-                    @Override
-                    public void onView(ReservationView.Reservation rv) {
-                        Reservation full = data.reservationMap.get(rv.getReservationId());
-                        if (full != null) new BookingPageController(primaryStage, full.getHebergement());
-                    }
-                    @Override
-                    public void onCancel(ReservationView.Reservation rv) {
-                        Reservation full = data.reservationMap.get(rv.getReservationId());
-                        if (full == null) return;
-
-                        int clientId = UserSession.getInstance().getConnectedUser().getId();
-
-                        //print avis DANS la console
-                        System.out.println(full.getHebergement().getHid());
-
-                        Optional<Avis> result = view.showEvaluationDialog(
-                                full.getHebergement().getNom(),
-                                full.getHebergement().getHid(),
-                                clientId
-                        );
-
-                        result.ifPresent(avis -> {
-                            avisDao.saveAvis(avis);
-
-                            new Alert(Alert.AlertType.INFORMATION,
-                                    "Merci pour votre évaluation !").showAndWait();
-                        });
-                    }
-                };
+        // Handler for past (evaluation)
+        ReservationView.ReservationActionHandler pastHandler = new ReservationView.ReservationActionHandler() {
+            @Override
+            public void onView(Reservation r) {
+                new BookingPageController(primaryStage, r.getHebergement());
+            }
+            @Override
+            public void onCancel(Reservation r) {
+                int clientId = UserSession.getInstance().getConnectedUser().getId();
+                Optional<Avis> result = view.showEvaluationDialog(
+                        r.getHebergement().getNom(),
+                        r.getHebergement().getHid(),
+                        clientId);
+                result.ifPresent(avis -> {
+                    avisDao.saveAvis(avis);
+                    new Alert(Alert.AlertType.INFORMATION, "Merci pour votre évaluation !")
+                            .showAndWait();
+                });
+            }
+        };
 
         view.setReservations(upcoming, upcomingHandler);
         view.setPastReservations(past, pastHandler);
 
-        boolean wasFull = primaryStage.isFullScreen();
-        double w = primaryStage.getWidth(), h = primaryStage.getHeight();
-        primaryStage.setScene(view.getScene());
-        primaryStage.setWidth(w);
-        primaryStage.setHeight(h);
-        primaryStage.setFullScreen(wasFull);
+        Scene scene = view.getScene();
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    /**
-     * Helper to preserve window state across navigation.
-     *
-     * @param showAction action that sets and shows the new scene
-     */
     private void navigate(Runnable showAction) {
         boolean wasFull = primaryStage.isFullScreen();
-        double w = primaryStage.getWidth();
-        double h = primaryStage.getHeight();
+        double w = primaryStage.getWidth(), h = primaryStage.getHeight();
         showAction.run();
         primaryStage.setWidth(w);
         primaryStage.setHeight(h);
