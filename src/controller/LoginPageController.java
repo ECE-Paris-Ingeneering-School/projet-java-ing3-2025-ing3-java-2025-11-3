@@ -2,10 +2,16 @@ package controller;
 
 import dao.UserDaoImpl;
 import db.AzureDBConnector;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import view.LoginPageView;
+
+import javafx.util.Duration;
 
 import java.util.regex.Pattern;
 
@@ -44,23 +50,31 @@ public class LoginPageController {
 
             loginButton.setDisable(true);
 
-            boolean success = false;
-            try {
-                success = userDao.connexionUser(email, password);
-            } catch (Exception ex) {
+            Task<Boolean> loginTask = new Task<>() {
+                @Override
+                protected Boolean call() throws Exception {
+                    return userDao.connexionUser(email, password);
+                }
+            };
+
+            loginButton.disableProperty().bind(loginTask.runningProperty());
+
+            loginTask.setOnSucceeded(ev -> {
+                boolean success = loginTask.getValue();
+                if (success) {
+                    UserSession.getInstance().setConnectedUser(userDao.getUserByEmail(email));
+                    new HomePageController(primaryStage).show();
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Échec de la connexion",
+                            "Email ou mot de passe incorrect.");
+                }
+            });
+            loginTask.setOnFailed(ev -> {
                 showAlert(Alert.AlertType.ERROR, "Erreur serveur",
                         "Une erreur est survenue lors de la connexion, réessayez plus tard.");
-            } finally {
-                loginButton.setDisable(false);
-            }
+            });
 
-            if (success) {
-                UserSession.getInstance().setConnectedUser(userDao.getUserByEmail(email));
-                new HomePageController(primaryStage).show();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Échec de la connexion",
-                        "Email ou mot de passe incorrect.");
-            }
+            new Thread(loginTask).start();
         });
 
         view.getRegisterLink().setOnAction(e -> {
