@@ -74,7 +74,7 @@ public class PaymentPageView {
         styleSecondaryButton(applyPromoButton);
         grid.add(applyPromoButton, 2, 3);
 
-        priceLabel = new Label(String.format("Montant à payer : %.2f €", initialPrice));
+        priceLabel = new Label("Montant à payer");
         priceLabel.setFont(Font.font(18));
         priceLabel.setTextFill(Color.web("#333"));
 
