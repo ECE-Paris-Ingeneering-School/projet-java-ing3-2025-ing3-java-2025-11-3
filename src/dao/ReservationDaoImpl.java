@@ -4,6 +4,7 @@ import modele.Hebergement;
 import modele.Reservation;
 import db.AzureDBConnector;
 
+import java.io.Serial;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -109,6 +110,7 @@ public class ReservationDaoImpl implements ReservationDao {
                 );
 
                 Hebergement h = new Hebergement(
+                        rs.getInt("hebergement_id"),
                         rs.getString("hebergement_nom"),
                         rs.getInt("hebergement_type"),
                         rs.getString("hebergement_adresse"),
@@ -130,6 +132,7 @@ public class ReservationDaoImpl implements ReservationDao {
         String sql = """
                 SELECT 
                     r.*, 
+                    h.hebergement_id AS hebergement_id,
                     h.nom AS hebergement_nom,
                     h.type AS hebergement_type,
                     h.adresse AS hebergement_adresse,
@@ -147,6 +150,7 @@ public class ReservationDaoImpl implements ReservationDao {
         String sql = """
         SELECT 
             r.*,
+            h.hebergement_id AS hebergement_id,
             h.nom            AS hebergement_nom,
             h.type           AS hebergement_type,
             h.adresse        AS hebergement_adresse,
