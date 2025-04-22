@@ -27,10 +27,15 @@ public class NavBarController {
                 UserSession.getInstance().clearSession();
                 new HomePageController(stage).show();
             });
+            navBarView.getReservationsLabel().setVisible(true);
+            navBarView.getReservationsLabel().setManaged(true);
         } else {
             navBarView.getSignInLabel().setText("Connexion");
             navBarView.getSignInLabel().setOnMouseClicked(e ->
                     new LoginPageController(stage).show());
+            navBarView.getReservationsLabel().setVisible(false);
+            navBarView.getReservationsLabel().setManaged(false);
         }
+
     }
 }
