@@ -10,6 +10,7 @@ import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.Comparator;
 import java.util.List;
