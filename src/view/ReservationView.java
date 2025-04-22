@@ -56,7 +56,12 @@ public class ReservationView {
         pastReservationsCardsContainer = new VBox(20);
         pastReservationsCardsContainer.setAlignment(Pos.CENTER);
 
-        VBox mainContainer = new VBox(20, reservationsLabel, reservationsCardsContainer, pastLabel, pastReservationsCardsContainer);
+        VBox mainContainer = new VBox(20,
+                reservationsLabel,
+                reservationsCardsContainer,
+                pastLabel,
+                pastReservationsCardsContainer
+        );
         mainContainer.setAlignment(Pos.CENTER);
         mainContainer.setPadding(new Insets(20));
         mainContainer.setMaxWidth(800);
@@ -112,7 +117,7 @@ public class ReservationView {
         } else {
             for (Reservation r : pastReservations) {
                 HBox card = createReservationCard(r, handler);
-                // remplace le texte du 2ᵉ bouton
+                // Remplace le texte du 2ᵉ bouton par "Évaluer"
                 VBox buttonBox = (VBox) card.getChildren().get(2);
                 Button secondBtn = (Button) buttonBox.getChildren().get(1);
                 secondBtn.setText("Évaluer");
@@ -123,7 +128,33 @@ public class ReservationView {
 
     private Accordion createFAQSection() {
         Accordion accordion = new Accordion();
-        // ... (mêmes TitledPane que précédemment) ...
+
+        TitledPane pane1 = new TitledPane(
+                "Comment puis-je modifier une réservation ?",
+                new Label("Pour modifier une réservation, rendez-vous dans la section 'Mes réservations à venir' et cliquez sur le bouton 'Consulter le bien' de la réservation concernée.")
+        );
+
+        TitledPane pane2 = new TitledPane(
+                "Comment annuler une réservation ?",
+                new Label("Cliquez sur 'Annuler ma réservation' dans la carte de réservation concernée. Notez que des frais d’annulation peuvent s’appliquer selon la politique de l’établissement.")
+        );
+
+        TitledPane pane3 = new TitledPane(
+                "Quelles sont les méthodes de paiement acceptées ?",
+                new Label("Nous acceptons les paiements par carte bancaire (Visa, MasterCard, American Express) et PayPal.")
+        );
+
+        TitledPane pane4 = new TitledPane(
+                "Puis-je laisser un avis sur un hébergement ?",
+                new Label("Oui, une fois votre séjour terminé, vous pourrez cliquer sur 'Évaluer' dans la section 'Mes réservations passées' pour laisser un commentaire et une note.")
+        );
+
+        TitledPane pane5 = new TitledPane(
+                "Comment bénéficier des réductions ?",
+                new Label("Les réductions sont automatiquement appliquées aux anciens clients lors de la réservation, selon les offres disponibles.")
+        );
+
+        accordion.getPanes().addAll(pane1, pane2, pane3, pane4, pane5);
         return accordion;
     }
 
@@ -135,13 +166,10 @@ public class ReservationView {
         card.setStyle("-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
 
         ImageView imageView = new ImageView();
-        String imageUrl = null;
+        String imageUrl = "";
         Hebergement h = reservation.getHebergement();
-        if (h != null) {
+        if (h != null && h.getImage() != null) {
             imageUrl = String.valueOf(h.getImage());
-        }
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            imageUrl = "";
         }
         try {
             imageView.setImage(new Image(imageUrl, 150, 150, false, true));
@@ -211,7 +239,8 @@ public class ReservationView {
         comment.setWrapText(true);
 
         GridPane grid = new GridPane();
-        grid.setHgap(10); grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
         grid.add(new Label("Note (1–5) :"), 0, 0);
         grid.add(rating,               1, 0);

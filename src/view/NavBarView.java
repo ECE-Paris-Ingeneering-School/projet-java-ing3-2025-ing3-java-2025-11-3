@@ -32,7 +32,7 @@ public class NavBarView {
         navBar.setEffect(new DropShadow(5, 0, 2, Color.color(0, 0, 0, 0.3)));
 
         // -- Titre
-        titleLabel = new Label("Book");
+        titleLabel = new Label("Booking");
         titleLabel.setFont(new Font("Arial", 28));
         titleLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #000;");
 

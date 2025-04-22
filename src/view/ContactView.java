@@ -1,4 +1,3 @@
-// src/main/java/view/ContactView.java
 package view;
 
 import javafx.geometry.Insets;
@@ -9,27 +8,24 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+
 import java.io.InputStream;
 
 public class ContactView {
 
-    private Scene scene;
-    private BorderPane root;
-    private NavBarView navBarView;
+    private final Scene scene;
+    private final BorderPane root;
+    private final NavBarView navBarView;
 
     public ContactView() {
-        createUI();
-    }
-
-    private void createUI() {
-        // racine
+        // Construction de la vue
         root = new BorderPane();
 
-        // navbar en haut
+        // NavBar en haut
         navBarView = new NavBarView();
         root.setTop(navBarView.getNavBar());
 
-        // contenu central : titre, image, texte
+        // Contenu central
         VBox content = new VBox(20);
         content.setPadding(new Insets(20));
         content.setAlignment(Pos.TOP_CENTER);
@@ -37,12 +33,6 @@ public class ContactView {
         Label title = new Label("Contact");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
-        // charger l'image depuis le classpath (resources/images/contact.png)
-        InputStream imgStream = getClass().getResourceAsStream("/images/contact.png");
-        ImageView imageView = new ImageView(new Image(imgStream));
-        imageView.setFitWidth(300);
-        imageView.setPreserveRatio(true);
-        imageView.setSmooth(true);
 
         Label text = new Label(
                 "Pour toute question ou assistance,\n" +
@@ -54,10 +44,10 @@ public class ContactView {
         text.setMaxWidth(400);
         text.setAlignment(Pos.CENTER);
 
-        content.getChildren().addAll(title, imageView, text);
+        content.getChildren().addAll(title, text);
         root.setCenter(content);
 
-        scene = new Scene(root, 1200, 800);
+        scene = new Scene(root, 900, 600);
     }
 
     public Scene getScene() {
