@@ -21,7 +21,16 @@ public class NavBarController {
         navBarView.getContactLabel().setOnMouseClicked(e ->
                 new ContactController(stage).show());
 
-        navBarView.getSignInLabel().setOnMouseClicked(e ->
-                new LoginPageController(stage).show());
+        if (UserSession.getInstance().getConnectedUser() != null) {
+            navBarView.getSignInLabel().setText("Déconnexion");
+            navBarView.getSignInLabel().setOnMouseClicked(e -> {
+                UserSession.getInstance().clearSession();
+                new HomePageController(stage).show();
+            });
+        } else {
+            navBarView.getSignInLabel().setText("Connexion");
+            navBarView.getSignInLabel().setOnMouseClicked(e ->
+                    new LoginPageController(stage).show());
+        }
     }
 }
