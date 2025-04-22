@@ -3,6 +3,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import modele.Admin;
 import modele.User;
 import db.AzureDBConnector;
 
@@ -46,46 +48,49 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User getUserByID(int id) {
-
-        try {
-            Connection connection = conn.getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE user_id = ?");
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                String nom = rs.getString("nom");
-                String prenom = rs.getString("prenom");
-                String email = rs.getString("email");
-                String password = rs.getString("mdp");
-                return new User(id, nom, prenom, email, password);
-            }
-        }catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
+        return getUserFromQuery("SELECT * FROM user WHERE user_id = ?", id);
     }
 
     @Override
     public User getUserByEmail(String email) {
+        return getUserFromQuery("SELECT * FROM user WHERE email = ?", email);
+    }
 
+    private User getUserFromQuery(String query, Object param) {
         try {
             Connection connection = conn.getConnection();
-            PreparedStatement ps = connection.prepareStatement("SELECT * FROM user WHERE email = ?");
-            ps.setString(1, email);
+            PreparedStatement ps = connection.prepareStatement(query);
+
+            if (param instanceof Integer) {
+                ps.setInt(1, (int) param);
+            } else if (param instanceof String) {
+                ps.setString(1, (String) param);
+            } else {
+                throw new IllegalArgumentException("Unsupported parameter type");
+            }
+
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 int id = rs.getInt("user_id");
                 String nom = rs.getString("nom");
                 String prenom = rs.getString("prenom");
+                String email = rs.getString("email");
                 String password = rs.getString("mdp");
-                return new User(id, nom, prenom, email, password);
+                boolean isAdmin = rs.getBoolean("admin");
+
+                if (isAdmin) {
+                    return new Admin(id, nom, prenom, email, password);
+                } else {
+                    return new User(id, nom, prenom, email, password);
+                }
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         return null;
     }
-
+    
     @Override
     public void supprimerUser(int id) {
         try {
