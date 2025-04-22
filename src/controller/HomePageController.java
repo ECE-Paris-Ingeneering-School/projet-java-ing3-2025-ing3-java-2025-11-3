@@ -25,12 +25,7 @@ public class HomePageController {
      * Binds UI events to navigation actions.
      */
     private void configureEventHandlers() {
-        NavBarView nav = view.getNavBarView();
-
-        nav.getSignInLabel().setOnMouseClicked(e -> navigate(() -> new LoginPageController(primaryStage).show()));
-        nav.getReservationsLabel().setOnMouseClicked(e -> navigate(() -> new ReservationController(primaryStage).show()));
-        nav.getTitleLabel().setOnMouseClicked(e -> navigate(this::show));
-        nav.getRechercheLabel().setOnMouseClicked(e -> navigate(() -> new SearchPageController(primaryStage).show()));
+        new NavBarController(primaryStage, view.getNavBarView());
 
         view.getSearchField().setOnAction(e -> {
             String query = view.getSearchField().getText().trim();

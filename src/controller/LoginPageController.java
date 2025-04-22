@@ -2,16 +2,11 @@ package controller;
 
 import dao.UserDaoImpl;
 import db.AzureDBConnector;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import view.LoginPageView;
-
-import javafx.util.Duration;
 
 import java.util.regex.Pattern;
 
@@ -29,6 +24,8 @@ public class LoginPageController {
     }
 
     private void attachEventHandlers() {
+        new NavBarController(primaryStage, view.getNavBarView());
+
         Button loginButton = view.getLoginButton();
 
         loginButton.setOnAction(e -> {
@@ -79,18 +76,6 @@ public class LoginPageController {
 
         view.getRegisterLink().setOnAction(e -> {
             new RegisterPageController(primaryStage).show();
-        });
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            new HomePageController(primaryStage).show();
-        });
-        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            this.show();
-        });
-        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
-            new SearchPageController(primaryStage).show();
-        });
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            new ReservationController(primaryStage).show();
         });
     }
 

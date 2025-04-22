@@ -23,6 +23,8 @@ public class RegisterPageController {
     }
 
     private void attachEventHandlers() {
+        new NavBarController(primaryStage, view.getNavBarView());
+
         Button createButton = view.getCreateAccountButton();
 
         createButton.setOnAction(e -> {
@@ -88,19 +90,6 @@ public class RegisterPageController {
             new LoginPageController(primaryStage).show();
         });
 
-        // NavBar
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            new HomePageController(primaryStage).show();
-        });
-        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            new LoginPageController(primaryStage).show();
-        });
-        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
-            new SearchPageController(primaryStage).show();
-        });
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            new ReservationController(primaryStage).show();
-        });
     }
 
     /** Vérifie le format de l’email via une regex simple */

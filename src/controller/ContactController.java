@@ -17,35 +17,7 @@ public class ContactController {
     }
 
     private void attachEventHandlers() {
-        // Titre -> HomePage
-        view.getNavBarView().getTitleLabel().setOnMouseClicked(e -> {
-            HomePageController homeController = new HomePageController(primaryStage);
-            homeController.show();
-        });
-
-        // Recherche
-        view.getNavBarView().getRechercheLabel().setOnMouseClicked(e -> {
-            SearchPageController searchController = new SearchPageController(primaryStage);
-            searchController.show();
-        });
-
-        // Réservations
-        view.getNavBarView().getReservationsLabel().setOnMouseClicked(e -> {
-            new ReservationController(primaryStage).show();
-        });
-
-        // Contact (recharge la page Contact)
-        view.getNavBarView().getContactLabel().setOnMouseClicked(e -> {
-            ContactController contactController = new ContactController(primaryStage);
-            contactController.show();
-        });
-
-        // Sign in
-        view.getNavBarView().getSignInLabel().setOnMouseClicked(e -> {
-            LoginPageController loginController = new LoginPageController(primaryStage);
-            loginController.show();
-        });
-        
+        new NavBarController(primaryStage, view.getNavBarView());
     }
 
     public void show() {

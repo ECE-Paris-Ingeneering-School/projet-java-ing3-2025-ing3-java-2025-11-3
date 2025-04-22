@@ -5,7 +5,7 @@ import dao.ReservationDao;
 import dao.HebergementDaoImpl;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
-import javafx.scene.control.Alert;
+
 import modele.Avis;
 import modele.Options;
 import modele.Hebergement;
@@ -120,11 +120,7 @@ public class BookingPageController {
      * Sets up UI controls and navigation links.
      */
     private void configureEventHandlers() {
-        NavBarView nav = view.getNavBarView();
-        nav.getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
-        nav.getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
-        nav.getRechercheLabel().setOnMouseClicked(e -> new SearchPageController(primaryStage).show());
-        nav.getReservationsLabel().setOnMouseClicked(e -> new ReservationController(primaryStage).show());
+        new NavBarController(primaryStage, view.getNavBarView());
 
         view.getBackButton().setOnAction(e -> new SearchPageController(primaryStage).show());
         view.getReserverButton().setDisable(true);
@@ -218,8 +214,6 @@ public class BookingPageController {
                 prix
         ).show();
     }
-
-
 
     /**
      * Shows the booking view scene.

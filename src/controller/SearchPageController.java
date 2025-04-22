@@ -58,11 +58,7 @@ public class SearchPageController {
      * Binds UI events to controller actions.
      */
     private void configureEventHandlers() {
-        NavBarView navBar = view.getNavBarView();
-        navBar.getTitleLabel().setOnMouseClicked(e -> new HomePageController(primaryStage).show());
-        navBar.getSignInLabel().setOnMouseClicked(e -> new LoginPageController(primaryStage).show());
-        navBar.getRechercheLabel().setOnMouseClicked(e -> show());
-        navBar.getReservationsLabel().setOnMouseClicked(e -> new ReservationController(primaryStage).show());
+        new NavBarController(primaryStage, view.getNavBarView());
 
         // Filters and search triggers
         view.getMaisonCheck().setOnAction(e -> updateResults());

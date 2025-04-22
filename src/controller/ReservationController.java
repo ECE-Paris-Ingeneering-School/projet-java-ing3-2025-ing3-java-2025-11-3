@@ -49,11 +49,7 @@ public class ReservationController {
     }
 
     private void configureEventHandlers() {
-        NavBarView nav = view.getNavBarView();
-        nav.getSignInLabel().setOnMouseClicked(e -> navigate(() -> new LoginPageController(primaryStage).show()));
-        nav.getRechercheLabel().setOnMouseClicked(e -> navigate(() -> new SearchPageController(primaryStage).show()));
-        nav.getReservationsLabel().setOnMouseClicked(e -> navigate(this::show));
-        nav.getTitleLabel().setOnMouseClicked(e -> navigate(() -> new HomePageController(primaryStage).show()));
+        new NavBarController(primaryStage, view.getNavBarView());
     }
 
     public void show() {
