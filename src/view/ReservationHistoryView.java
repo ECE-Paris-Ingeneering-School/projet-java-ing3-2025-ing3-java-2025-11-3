@@ -6,17 +6,21 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.cell.PropertyValueFactory;
+import modele.Hebergement;
 import modele.Reservation;
+
+import java.util.List;
 
 public class ReservationHistoryView {
     private final VBox root;
+    private final TableView<Reservation> table;
 
     public ReservationHistoryView() {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label title = new Label("Toutes les réservations passées");
-        TableView<Reservation> table = new TableView<>();
+        table = new TableView<>();
 
         TableColumn<Reservation, Integer> idCol        = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -44,5 +48,10 @@ public class ReservationHistoryView {
 
     public VBox getRoot() {
         return root;
+    }
+
+    // méthode pour ajouter une liste d'hébergements
+    public void set(List<Reservation> reservations) {
+        table.getItems().setAll(reservations);
     }
 }

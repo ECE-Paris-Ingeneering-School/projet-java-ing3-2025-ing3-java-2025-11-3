@@ -6,17 +6,22 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.cell.PropertyValueFactory;
+import modele.Client;
+import modele.Hebergement;
 import modele.User;
+
+import java.util.List;
 
 public class UsersListView {
     private final VBox root;
+    private final TableView<User> table;
 
     public UsersListView() {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label title = new Label("Liste des utilisateurs");
-        TableView<User> table = new TableView<>();
+        table = new TableView<>();
 
         TableColumn<User, Integer> idCol    = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -42,4 +47,11 @@ public class UsersListView {
     public VBox getRoot() {
         return root;
     }
+
+    // méthode pour ajouter une liste d'hébergements
+    public void setUsers(List<Client> clients) {
+        table.getItems().setAll(clients);
+    }
+
+
 }

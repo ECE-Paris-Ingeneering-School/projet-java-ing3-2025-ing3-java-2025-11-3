@@ -3,6 +3,8 @@ package dao;
 
 import modele.Client;
 
+import java.util.List;
+
 public interface ClientDao {
 
     /*
@@ -17,4 +19,6 @@ public interface ClientDao {
      * @return Unew
      */
     int getClient_State(int id);
+
+    List<Client> getAllClients();
 }
