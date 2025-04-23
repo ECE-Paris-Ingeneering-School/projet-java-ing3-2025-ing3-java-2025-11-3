@@ -19,6 +19,7 @@ public class NavBarView {
     private Label reservationsLabel;
     private Label contactLabel;
     private Label signInLabel;
+    private Label adminLabel;
 
     public NavBarView() {
         createNavBar();
@@ -43,12 +44,14 @@ public class NavBarView {
         // -- Les items de nav
         rechercheLabel    = new Label("Recherche");
         reservationsLabel = new Label("Réservations");
+        adminLabel        = new Label("Admin");
         contactLabel      = new Label("Contact");
         signInLabel       = new Label("Sign in");
 
         HBox navOptions = new HBox(20,
                 rechercheLabel,
                 reservationsLabel,
+                adminLabel,
                 contactLabel,
                 signInLabel
         );
@@ -63,4 +66,7 @@ public class NavBarView {
     public Label getReservationsLabel() { return reservationsLabel; }
     public Label getContactLabel()      { return contactLabel; }
     public Label getSignInLabel()       { return signInLabel; }
+    public Label getAdminLabel()        {return adminLabel;}
+
 }
+
