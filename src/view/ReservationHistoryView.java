@@ -15,12 +15,13 @@ public class ReservationHistoryView {
     private final VBox root;
     private final TableView<Reservation> table;
 
-    public ReservationHistoryView() {
+    public ReservationHistoryView(List<Reservation> t) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label title = new Label("Toutes les réservations passées");
         table = new TableView<>();
+        table.getItems().setAll(t);
 
         TableColumn<Reservation, Integer> idCol        = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));

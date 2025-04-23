@@ -7,35 +7,35 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.cell.PropertyValueFactory;
 import modele.Client;
-import modele.Hebergement;
 import modele.User;
 
 import java.util.List;
 
 public class UsersListView {
     private final VBox root;
-    private final TableView<User> table;
+    private final TableView<Client> table;
 
-    public UsersListView() {
+    public UsersListView(List<Client> listeClients) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label title = new Label("Liste des utilisateurs");
         table = new TableView<>();
+        table.getItems().setAll(listeClients);
 
-        TableColumn<User, Integer> idCol    = new TableColumn<>("ID");
+        TableColumn<Client, Integer> idCol    = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        TableColumn<User, String> nomCol    = new TableColumn<>("Nom");
+        TableColumn<Client, String> nomCol    = new TableColumn<>("Nom");
         nomCol.setCellValueFactory(new PropertyValueFactory<>("nom"));
 
-        TableColumn<User, String> prenomCol = new TableColumn<>("Prénom");
+        TableColumn<Client, String> prenomCol = new TableColumn<>("Prénom");
         prenomCol.setCellValueFactory(new PropertyValueFactory<>("prenom"));
 
-        TableColumn<User, String> emailCol  = new TableColumn<>("Email");
+        TableColumn<Client, String> emailCol  = new TableColumn<>("Email");
         emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        TableColumn<User, String> pwdCol    = new TableColumn<>("Mot de passe");
+        TableColumn<Client, String> pwdCol    = new TableColumn<>("Mot de passe");
         pwdCol.setCellValueFactory(new PropertyValueFactory<>("password"));
 
         table.getColumns().addAll(idCol, nomCol, prenomCol, emailCol, pwdCol);
@@ -47,11 +47,4 @@ public class UsersListView {
     public VBox getRoot() {
         return root;
     }
-
-    // méthode pour ajouter une liste d'hébergements
-    public void setUsers(List<Client> clients) {
-        table.getItems().setAll(clients);
-    }
-
-
 }

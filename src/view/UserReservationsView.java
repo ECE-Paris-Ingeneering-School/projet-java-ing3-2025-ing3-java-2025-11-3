@@ -7,21 +7,29 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.cell.PropertyValueFactory;
 import modele.Reservation;
 import javafx.scene.layout.HBox;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserReservationsView {
     private final VBox root;
+    private final TableView<Reservation> table;
+    private final Button loadBtn;
+    private final ComboBox<String> userSelect;
 
-    public UserReservationsView() {
+    public UserReservationsView(ArrayList<String> usersName) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label title = new Label("Réservations d’un utilisateur");
-        ComboBox<String> userSelect = new ComboBox<>(
-                FXCollections.observableArrayList("Utilisateur #1", "Utilisateur #2")
+        userSelect = new ComboBox<>(
+                FXCollections.observableArrayList(usersName)
         );
         userSelect.setPromptText("Sélectionnez un utilisateur");
-        Button loadBtn = new Button("Charger");
+        loadBtn = new Button("Charger");
 
-        TableView<Reservation> table = new TableView<>();
+        table = new TableView<>();
+
         TableColumn<Reservation, Integer> idCol    = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
@@ -43,5 +51,18 @@ public class UserReservationsView {
 
     public VBox getRoot() {
         return root;
+    }
+
+    public Button getLoadBtn() {
+        return loadBtn;
+    }
+
+    public String getSelectedUser() {
+        return userSelect.getValue();
+    }
+
+    public void setTable(List<Reservation> reservations){
+        table.getItems().clear();
+        table.getItems().addAll(reservations);
     }
 }

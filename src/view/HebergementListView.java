@@ -16,12 +16,13 @@ public class HebergementListView {
     private final VBox root;
     private final TableView<Hebergement> table;
 
-    public HebergementListView() {
+    public HebergementListView(List<Hebergement> hebergements) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         Label title = new Label("Liste des hébergements");
         table = new TableView<>();
+        table.getItems().setAll(hebergements);
 
         TableColumn<Hebergement, Integer> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("hid"));
@@ -82,16 +83,5 @@ public class HebergementListView {
 
     public VBox getRoot() {
         return root;
-    }
-
-
-    // méthode pour ajouter une liste d'hébergements
-    public void setHebergements(List<Hebergement> hebergements) {
-        table.getItems().setAll(hebergements);
-    }
-
-    // méthode pour ajouter un hébergement individuel si besoin
-    public void addHebergement(Hebergement hebergement) {
-        table.getItems().add(hebergement);
     }
 }
