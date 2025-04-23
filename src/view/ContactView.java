@@ -13,7 +13,6 @@ public class ContactView {
     private final Scene scene;
     private final BorderPane root;
     private final NavBarView navBarView;
-    private final Button debugAdminButton;
 
     public ContactView() {
         // racine
@@ -41,11 +40,7 @@ public class ContactView {
         text.setMaxWidth(400);
         text.setAlignment(Pos.CENTER);
 
-        // bouton debug pour accéder à la vue admin
-        debugAdminButton = new Button("⚙️ Debug Admin");
-        // (on attache l'action dans le controller)
-
-        content.getChildren().addAll(title, text, debugAdminButton);
+        content.getChildren().addAll(title, text);
         root.setCenter(content);
 
         scene = new Scene(root, 900, 600);
@@ -57,10 +52,5 @@ public class ContactView {
 
     public NavBarView getNavBarView() {
         return navBarView;
-    }
-
-
-    public Button getDebugAdminButton() {
-        return debugAdminButton;
     }
 }
