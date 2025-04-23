@@ -20,7 +20,10 @@ public class HebergementDaoImpl implements HebergementDao {
     @Override
     public void ajouterHebergement(Hebergement hebergement) {
 
-        String images = compreserListe(hebergement.getImage());
+        String images = null;
+        if (hebergement.getImage()!=null) {
+            images = compreserListe(hebergement.getImage());
+        }
         try{
             Connection connection=conn.getConnection();
             String sql = "INSERT INTO hebergement (nom, type, adresse, description, prix_base,etoile,photo) VALUES (?, ?, ?, ?, ?,?,?)";
@@ -209,8 +212,13 @@ public class HebergementDaoImpl implements HebergementDao {
     }
     @Override
     public ArrayList<String> decompreserListe(String string) {
-        String[] parts = string.split(",");
-        return new ArrayList<String>(List.of(parts));
+
+        if (string !=null) {
+            String[] parts = string.split(",");
+            return new ArrayList<String>(List.of(parts));
+        }else{
+            return new ArrayList<>();
+        }
     }
 
     @Override

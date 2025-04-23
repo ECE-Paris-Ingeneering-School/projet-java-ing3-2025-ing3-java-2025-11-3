@@ -14,6 +14,19 @@ public class Hebergement {
     private ArrayList<Options> options;
     private ArrayList<Avis> avis;
 
+    public Hebergement(String nom, int type, String adresse, String description, int prix, int note){
+        this.nom = nom;
+        this.type = type;
+        this.adresse = adresse;
+        this.description = description;
+        this.prix = prix;
+
+        this.note = note;
+        this.image = null;
+        this.options = null;
+        this.avis = null;
+    }
+
     public Hebergement(int Hid,String nom, int type, String adresse, String description, int prix){
         this.Hid = Hid;
         this.nom = nom;
@@ -26,7 +39,6 @@ public class Hebergement {
         this.image = null;
         this.options = null;
         this.avis = null;
-
     }
     public Hebergement(int Hid, String nom, int type, String adresse, String description, int prix, int note, ArrayList<String> image, ArrayList<Options> options, ArrayList<Avis> avis){
         this.Hid = Hid;

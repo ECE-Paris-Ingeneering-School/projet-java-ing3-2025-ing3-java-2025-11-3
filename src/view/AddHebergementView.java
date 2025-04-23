@@ -7,32 +7,40 @@ import javafx.scene.layout.VBox;
 
 public class AddHebergementView {
     private final VBox root;
+    private final Button submit;
+    private final Label title;
+    private final TextField nomField;
+    private final ChoiceBox<Integer> typeBox;
+    private final TextField adresseField;
+    private final TextArea descriptionArea;
+    private final TextField prixField;
+    private final Spinner<Integer> noteSpin;
 
     public AddHebergementView() {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
-        Label title = new Label("Ajouter un logement");
+        title = new Label("Ajouter un logement");
 
-        TextField nomField        = new TextField();
+        nomField        = new TextField();
         nomField.setPromptText("Nom");
 
-        ChoiceBox<Integer> typeBox = new ChoiceBox<>(FXCollections.observableArrayList(0,1,2,3));
+        typeBox = new ChoiceBox<>(FXCollections.observableArrayList(0,1,2,3));
         typeBox.setValue(0);
 
-        TextField adresseField    = new TextField();
+        adresseField    = new TextField();
         adresseField.setPromptText("Adresse");
 
-        TextArea descriptionArea  = new TextArea();
+        descriptionArea  = new TextArea();
         descriptionArea.setPromptText("Description");
 
-        TextField prixField       = new TextField();
+        prixField       = new TextField();
         prixField.setPromptText("Prix");
 
-        Spinner<Integer> noteSpin = new Spinner<>(0, 5, 0);
+        noteSpin = new Spinner<>(0, 5, 0);
 
         // Bouton d'ajout
-        Button submit = new Button("Ajouter");
+        submit = new Button("Ajouter");
 
         root.getChildren().addAll(
                 title,
@@ -49,4 +57,18 @@ public class AddHebergementView {
     public VBox getRoot() {
         return root;
     }
+    public Button getBtnSubmit(){return submit;}
+
+    public TextField getNomField() {return nomField;}
+
+    public ChoiceBox<Integer> getTypeBox() {return typeBox;}
+
+    public TextField getAdresseField() {return adresseField;}
+
+    public TextArea getDescriptionArea() {return descriptionArea;}
+
+    public TextField getPrixField() {return prixField;}
+
+    public Spinner<Integer> getNoteSpin() {return noteSpin;}
+
 }
