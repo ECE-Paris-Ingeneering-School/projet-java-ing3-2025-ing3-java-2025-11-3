@@ -19,7 +19,7 @@ public class AdminView {
     private final Label reservationsUtilisateurLabel;
     private final Label ajouterLogementLabel;
     private final Label supprimerLogementLabel;
-    private final Button retourButton;
+    private final NavBarView navBarView;
 
     // Zone centrale où on injectera nos vues stub
     private final StackPane contentPane;
@@ -27,17 +27,17 @@ public class AdminView {
     public AdminView() {
         root = new BorderPane();
 
+        navBarView = new NavBarView();
+        navBarView.getTitleLabel().setText("Booking Pro");
+
+        root.setTop(navBarView.getNavBar());
+
         // --- Sidebar ---
         VBox sidebar = new VBox(15);
         sidebar.setPrefWidth(200);
         sidebar.setPadding(new Insets(20));
         sidebar.setStyle("-fx-background-color: #F5F5F5;");
 
-        Label title = new Label("Booking Pro");
-        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-        sidebar.getChildren().add(title);
-
-        // Création des labels
         logementsLabel               = createMenuLabel("Logements");
         utilisateursLabel            = createMenuLabel("Utilisateurs");
         reservationsPasseesLabel     = createMenuLabel("Réservations passées");
@@ -60,11 +60,6 @@ public class AdminView {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
         sidebar.getChildren().add(spacer);
-
-        // Bouton retour
-        retourButton = new Button("← Retour au site");
-        retourButton.setMaxWidth(Double.MAX_VALUE);
-        sidebar.getChildren().add(retourButton);
 
         root.setLeft(sidebar);
 
@@ -92,6 +87,7 @@ public class AdminView {
     public Label getReservationsUtilisateurLabel() { return reservationsUtilisateurLabel; }
     public Label getAjouterLogementLabel()         { return ajouterLogementLabel; }
     public Label getSupprimerLogementLabel()       { return supprimerLogementLabel; }
-    public Button getRetourButton()                { return retourButton; }
     public StackPane getContentPane()              { return contentPane; }
+    public NavBarView getNavBarView() { return navBarView;  }
+
 }

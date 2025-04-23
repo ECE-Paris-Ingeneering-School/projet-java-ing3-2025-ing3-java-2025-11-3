@@ -35,6 +35,8 @@ public class AdminController {
         this.clientDao = new ClientDaoImpl(new AzureDBConnector());
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
 
+        new NavBarController(primaryStage, view.getNavBarView());
+
         // liaisons menu → affichage du stub correspondant
         view.getLogementsLabel().setOnMouseClicked(e -> {
             HebergementListView hebergementView =new HebergementListView();
@@ -48,34 +50,22 @@ public class AdminController {
             usersListView.setUsers(list);
             showSection(usersListView.getRoot());
         });
-        view.getReservationsPasseesLabel().setOnMouseClicked(e -> {
+        /*view.getReservationsPasseesLabel().setOnMouseClicked(e -> {
             ReservationHistoryView reservationHistoryView = new ReservationHistoryView();
             List<Reservation> list = reservationDao.getAllReservation();
             reservationHistoryView.set(list);
             showSection(new ReservationHistoryView().getRoot());
-        });
+        });*/
         view.getReservationsUtilisateurLabel().setOnMouseClicked(e -> showSection(new UserReservationsView().getRoot()));
         view.getAjouterLogementLabel().setOnMouseClicked(e -> showSection(new AddHebergementView().getRoot()));
         view.getSupprimerLogementLabel().setOnMouseClicked(e -> showSection(new RemoveHebergementView().getRoot()));
-
-        // lieu de retour vers la homepage
-        view.getRetourButton().setOnAction(e -> new HomePageController(primaryStage).show());
     }
 
     public void show() {
-        User currentUser = UserSession.getInstance().getConnectedUser();
-        if (!(currentUser instanceof Admin)) {//currentUser == null || !(currentUser instanceof Admin)
-            Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                    "Veuillez-vous connecter avec un compte admin");
-            Optional<ButtonType> result = alert.showAndWait();
-
-            return;
-        }
         primaryStage.setScene(view.getScene());
         primaryStage.show();
-        // par défaut on charge la liste des logements
-        showSection(new HebergementListView().getRoot());
 
+        showSection(new HebergementListView().getRoot());
     }
 
     private void showLoadingScreen() {

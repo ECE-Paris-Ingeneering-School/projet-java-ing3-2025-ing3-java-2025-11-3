@@ -14,13 +14,7 @@ public class ContactController {
         this.primaryStage = primaryStage;
         this.view = new ContactView();
 
-        // on rattache la nav-bar
         new NavBarController(primaryStage, view.getNavBarView());
-
-        // on rattache le bouton debug pour ouvrir AdminView
-        view.getDebugAdminButton().setOnAction(e ->
-                new AdminController(primaryStage).show()
-        );
     }
 
     public void show() {
