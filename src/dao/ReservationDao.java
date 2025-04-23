@@ -41,6 +41,12 @@ public interface ReservationDao {
     ArrayList<Reservation> getAllReservationByHebergementId(int idHebergement);
 
     /*
+     * Return toutes les reservation d un hebergements  via son idHebergement
+     * @param idHebergement
+     */
+    ArrayList<Reservation> getAllReservation();
+
+    /*
      * Convertion d'une date en String
      * @param date
      * @return String

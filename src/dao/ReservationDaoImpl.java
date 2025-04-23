@@ -7,6 +7,7 @@ import db.AzureDBConnector;
 import java.io.Serial;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReservationDaoImpl implements ReservationDao {
     private final AzureDBConnector conn;
@@ -162,6 +163,31 @@ public class ReservationDaoImpl implements ReservationDao {
         WHERE r.hebergement_id = ?
         """;
         return getallReservationSQL(sql, idHebergement);
+    }
+    @Override
+    public ArrayList<Reservation> getAllReservation() {
+        ArrayList<Reservation> resa = new ArrayList<>();
+        String sql = "SELECT reservation_id,date_debut,date_fin,hebergement_id,user_id,tarif_final FROM reservation ";
+        try {
+            Connection connection = conn.getConnection();
+            PreparedStatement prst = connection.prepareStatement(sql);
+            ResultSet rs = prst.executeQuery();
+            while (rs.next()) {
+                resa.add( new Reservation(
+                        rs.getInt("reservation_id"),
+                        convertDateToString(rs.getDate("date_debut")),
+                        convertDateToString(rs.getDate("date_fin")),
+                        rs.getInt("hebergement_id"),
+                        rs.getInt("user_id"),
+                        rs.getFloat("tarif_final")
+                ));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return resa;
     }
 
 
