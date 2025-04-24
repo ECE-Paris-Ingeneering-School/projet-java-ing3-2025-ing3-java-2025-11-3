@@ -28,49 +28,52 @@ public class AdminController {
     private final Stage primaryStage;
     private final AdminView view;
     private final HebergementDaoImpl hebergementDao;
-    private  final ClientDaoImpl clientDao;
+    private final ClientDaoImpl clientDao;
     private final ReservationDaoImpl reservationDao;
-    private  UserReservationsView viewUserReservation;
+    private UserReservationsView viewUserReservation;
 
     public AdminController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new AdminView();
-        this.hebergementDao= new HebergementDaoImpl(new AzureDBConnector());
+        this.hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
         this.clientDao = new ClientDaoImpl(new AzureDBConnector());
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
-        this.viewUserReservation=null;
+        this.viewUserReservation = null;
 
         new NavBarController(primaryStage, view.getNavBarView());
 
-        loadAsync(
-                hebergementDao::getAllHebergements,
-                list -> {
-                    HebergementListView hv = new HebergementListView(list);
+        view.getLogementsLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        hebergementDao::getAllHebergements,
+                        list -> {
+                            HebergementListView hv = new HebergementListView(list);
 
-                    TableView<Hebergement> table = hv.getTable();
+                            TableView<Hebergement> table = hv.getTable();
 
-                    //Créer la colonne Action avec bouton Supprimer
-                    TableColumn<Hebergement, Void> actionCol = new TableColumn<>("Action");
-                    actionCol.setCellFactory(col -> new TableCell<>() {
-                        private final Button deleteBtn = new Button("Supprimer");
-                        {
-                            deleteBtn.setOnAction(e -> {
-                                Hebergement h = getTableView().getItems().get(getIndex());
-                                hebergementDao.supprimerHebergement(h.getHid());
-                                table.getItems().remove(h);
+                            TableColumn<Hebergement, Void> actionCol = new TableColumn<>("Action");
+                            actionCol.setCellFactory(col -> new TableCell<>() {
+                                private final Button deleteBtn = new Button("Supprimer");
+
+                                {
+                                    deleteBtn.setOnAction(e -> {
+                                        Hebergement h = getTableView().getItems().get(getIndex());
+                                        hebergementDao.supprimerHebergement(h.getHid());
+                                        table.getItems().remove(h);
+                                    });
+                                }
+
+                                @Override
+                                protected void updateItem(Void item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    setGraphic(empty ? null : deleteBtn);
+                                }
                             });
-                        }
-                        @Override
-                        protected void updateItem(Void item, boolean empty) {
-                            super.updateItem(item, empty);
-                            setGraphic(empty ? null : deleteBtn);
-                        }
-                    });
 
-                    table.getColumns().add(actionCol);
+                            table.getColumns().add(actionCol);
 
-                    showSection(hv.getRoot());
-                }
+                            showSection(hv.getRoot());
+                        }
+                )
         );
 
 
@@ -152,17 +155,22 @@ public class AdminController {
      * Méthode générique pour charger des données en asynchrone.
      */
     private <T> void loadAsync(Callable<List<T>> fetchData, Consumer<List<T>> onSuccess) {
+
+        // Afficher du chargement
+        ProgressIndicator pi = new ProgressIndicator();
+        VBox loaderBox = new VBox(pi);
+        loaderBox.setAlignment(Pos.CENTER);
+        view.getContentPane().getChildren().setAll(loaderBox);
+
         Task<List<T>> task = new Task<>() {
             @Override
             protected List<T> call() throws Exception {
                 return fetchData.call();
             }
-
             @Override
             protected void succeeded() {
                 onSuccess.accept(getValue());
             }
-
             @Override
             protected void failed() {
                 Throwable ex = getException();
@@ -175,6 +183,7 @@ public class AdminController {
         thread.setDaemon(true);
         thread.start();
     }
+
 
     public void show() {
         primaryStage.setScene(view.getScene());
