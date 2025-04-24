@@ -4,6 +4,7 @@ import dao.ClientDaoImpl;
 import dao.HebergementDaoImpl;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.ProgressIndicator;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 
 public class AdminController {
@@ -37,68 +40,74 @@ public class AdminController {
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
         this.viewUserReservation=null;
 
-        // initialisation listeResa donnee
-        List<Hebergement> listeHebergement = hebergementDao.getAllHebergements();
-        List<Client> listeClients = clientDao.getAllClients();
-        List<Reservation> listeResa = reservationDao.getAllReservation();
-
         new NavBarController(primaryStage, view.getNavBarView());
 
-        // liaisons menu → affichage du stub correspondant
-        view.getLogementsLabel().setOnMouseClicked(e -> {//Herbegements
-            HebergementListView hebergementView =new HebergementListView(listeHebergement);
-            showSection(hebergementView.getRoot());
-        });
-        view.getUtilisateursLabel().setOnMouseClicked(e -> {//Utilisateurs
-            UsersListView usersListView = new UsersListView(listeClients);
-            showSection(usersListView.getRoot());
-        });
-        view.getReservationsPasseesLabel().setOnMouseClicked(e -> {//Réservation passées
-            // Filtrer les réservations passées (fin avant aujourd’hui)
-            LocalDate aujourdHui = LocalDate.now();
-            List<Reservation> resaPassees = listeResa.stream()
-                    .filter(resa -> {
-                        try {
-                            LocalDate dateFin = LocalDate.parse(resa.getDateFin());
-                            return dateFin.isBefore(aujourdHui);
-                        } catch (Exception ex) {
-                            ex.printStackTrace(); // pour voir les erreurs de parsing
-                            return false;
+        view.getLogementsLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        hebergementDao::getAllHebergements,
+                        list -> {
+                            HebergementListView hv = new HebergementListView(list);
+                            showSection(hv.getRoot());
                         }
-                    })
-                    .toList();
+                )
+        );
 
-            ReservationHistoryView reservationHistoryView = new ReservationHistoryView(resaPassees);
-            showSection(reservationHistoryView.getRoot());
+        view.getUtilisateursLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        clientDao::getAllClients,
+                        list -> {
+                            UsersListView uv = new UsersListView(list);
+                            showSection(uv.getRoot());
+                        }
+                )
+        );
+
+        view.getReservationsPasseesLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        () -> reservationDao.getAllReservation().stream()
+                                .filter(r -> {
+                                    try {
+                                        return LocalDate.parse(r.getDateFin())
+                                                .isBefore(LocalDate.now());
+                                    } catch (Exception ex) {
+                                        return false;
+                                    }
+                                })
+                                .toList(),
+                        list -> {
+                            ReservationHistoryView rhv = new ReservationHistoryView(list);
+                            showSection(rhv.getRoot());
+                        }
+                )
+        );
+
+        view.getReservationsUtilisateurLabel().setOnMouseClicked(e -> {
+            loadAsync(
+                    clientDao::getAllClients,
+                    clients -> {
+                        List<String> names = clients.stream()
+                                .map(c -> c.getNom() + " " + c.getPrenom())
+                                .toList();
+                        viewUserReservation = new UserReservationsView((ArrayList<String>) names);
+
+                        viewUserReservation.getLoadBtn().setOnAction(ev -> {
+                            String sel = viewUserReservation.getSelectedUser();
+                            clients.stream()
+                                    .filter(c -> (c.getNom() + " " + c.getPrenom()).equals(sel))
+                                    .findFirst()
+                                    .ifPresent(client -> {
+                                        loadAsync(
+                                                () -> reservationDao.getAllReservationByClientId(client.getId()),
+                                                resas -> viewUserReservation.setTable(resas)
+                                        );
+                                    });
+                        });
+                        showSection(viewUserReservation.getRoot());
+                    }
+            );
         });
-        view.getReservationsUtilisateurLabel().setOnMouseClicked(e -> {//Réservation en fct du client choose
-            ArrayList<String> usersName = new ArrayList<>();
-            for(Client client : listeClients) {
-                usersName.add(client.getNom()+" "+client.getPrenom());
-            }
-            this.viewUserReservation= new UserReservationsView(usersName);
 
-            viewUserReservation.getLoadBtn().setOnAction(ev -> {
-                String selectedUser = viewUserReservation.getSelectedUser();
-                System.out.println("Utilisateur choisi : " + selectedUser);
-
-                Client client = listeClients.stream()
-                        .filter(c -> (c.getNom() +" "+ c.getPrenom()).equals(selectedUser))
-                        .findFirst()
-                        .orElse(null);
-
-                if (client != null) {
-                    List<Reservation> resaDuClient = listeResa.stream()
-                            .filter(r -> r.getIdClient() == client.getId())
-                            .toList();
-                    viewUserReservation.setTable(resaDuClient);
-                }
-            });
-
-            showSection(viewUserReservation.getRoot());
-        });
-
-        view.getAjouterLogementLabel().setOnMouseClicked(e -> {//Ajouter un hebergement
+        view.getAjouterLogementLabel().setOnMouseClicked(e -> {
             AddHebergementView addHView = new AddHebergementView();
             showSection(addHView.getRoot());
             addHView.getBtnSubmit().setOnAction(ev -> {
@@ -109,39 +118,40 @@ public class AdminController {
                 int prix = Integer.parseInt(addHView.getPrixField().getText());
                 int note = addHView.getNoteSpin().getValue();
 
-                // Tu peux ensuite créer un objet Hebergement ici
                 Hebergement hebergement = new Hebergement(nom, type, adresse, description, prix, note);
                 hebergementDao.ajouterHebergement(hebergement);
                 new AdminController(primaryStage).show();
             });
 
         });
-        view.getSupprimerLogementLabel().setOnMouseClicked(e -> {
-            ArrayList<String> hebergements = new ArrayList<>();
-            for(Hebergement hebergement : listeHebergement) {
-                hebergements.add(hebergement.getNom());
+    }
+
+    /**
+     * Méthode générique pour charger des données en asynchrone.
+     */
+    private <T> void loadAsync(Callable<List<T>> fetchData, Consumer<List<T>> onSuccess) {
+        Task<List<T>> task = new Task<>() {
+            @Override
+            protected List<T> call() throws Exception {
+                return fetchData.call();
             }
-            RemoveHebergementView removeView= new RemoveHebergementView(hebergements);
-            showSection(removeView.getRoot());
 
-            removeView.deleteBtn().setOnAction(ev ->{
-                String nomChoisi = removeView.getSelectLog().getValue();
+            @Override
+            protected void succeeded() {
+                onSuccess.accept(getValue());
+            }
 
-                Optional<Hebergement> hebergementTrouve = listeHebergement.stream()
-                        .filter(h -> h.getNom().equals(nomChoisi))
-                        .findFirst();
+            @Override
+            protected void failed() {
+                Throwable ex = getException();
+                System.err.println("Erreur lors du chargement : " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        };
 
-                if (hebergementTrouve.isPresent()) {
-                    int id = hebergementTrouve.get().getHid();
-                    System.out.println("ID du logement sélectionné : " + id);
-                    hebergementDao.supprimerHebergement(id);
-                    new AdminController(primaryStage).show();
-                } else {
-                    System.out.println("Aucun hébergement trouvé avec ce nom !");
-                }
-
-            });
-        });
+        Thread thread = new Thread(task, "Loader-Thread");
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public void show() {
