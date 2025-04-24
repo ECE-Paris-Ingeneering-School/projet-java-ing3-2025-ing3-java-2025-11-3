@@ -4,9 +4,10 @@ import dao.ClientDaoImpl;
 import dao.HebergementDaoImpl;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -16,6 +17,9 @@ import javafx.scene.layout.Region;
 
 import java.util.*;
 import java.time.LocalDate;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 
 public class AdminController {
@@ -23,77 +27,108 @@ public class AdminController {
     private final Stage primaryStage;
     private final AdminView view;
     private final HebergementDaoImpl hebergementDao;
-    private  final ClientDaoImpl clientDao;
+    private final ClientDaoImpl clientDao;
     private final ReservationDaoImpl reservationDao;
-    private  UserReservationsView viewUserReservation;
+    private UserReservationsView viewUserReservation;
 
     public AdminController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new AdminView();
-        this.hebergementDao= new HebergementDaoImpl(new AzureDBConnector());
+        this.hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
         this.clientDao = new ClientDaoImpl(new AzureDBConnector());
         this.reservationDao = new ReservationDaoImpl(new AzureDBConnector());
-        this.viewUserReservation=null;
-
-        // initialisation listeResa donnee
-        List<Hebergement> listeHebergement = hebergementDao.getAllHebergements();
-        List<Client> listeClients = clientDao.getAllClients();
-        List<Reservation> listeResa = reservationDao.getAllReservation();
+        this.viewUserReservation = null;
 
         new NavBarController(primaryStage, view.getNavBarView());
 
-        // liaisons menu → affichage du stub correspondant
-        view.getLogementsLabel().setOnMouseClicked(e -> {//Listes des herbegements
-            HebergementListView hebergementView =new HebergementListView(listeHebergement);
-            showSection(hebergementView.getRoot());
-        });
-        view.getUtilisateursLabel().setOnMouseClicked(e -> {//Utilisateurs
-            UsersListView usersListView = new UsersListView(listeClients);
-            showSection(usersListView.getRoot());
-        });
-        view.getReservationsPasseesLabel().setOnMouseClicked(e -> {//Réservation passées
-            // Filtrer les réservations passées (fin avant aujourd’hui)
-            LocalDate aujourdHui = LocalDate.now();
-            List<Reservation> resaPassees = listeResa.stream()
-                    .filter(resa -> {
-                        try {
-                            LocalDate dateFin = LocalDate.parse(resa.getDateFin());
-                            return dateFin.isBefore(aujourdHui);
-                        } catch (Exception ex) {
-                            ex.printStackTrace(); // pour voir les erreurs de parsing
-                            return false;
+        view.getLogementsLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        hebergementDao::getAllHebergements,
+                        list -> {
+                            HebergementListView hv = new HebergementListView(list);
+
+                            TableView<Hebergement> table = hv.getTable();
+
+                            TableColumn<Hebergement, Void> actionCol = new TableColumn<>("Action");
+                            actionCol.setCellFactory(col -> new TableCell<>() {
+                                private final Button deleteBtn = new Button("Supprimer");
+
+                                {
+                                    deleteBtn.setOnAction(e -> {
+                                        Hebergement h = getTableView().getItems().get(getIndex());
+                                        hebergementDao.supprimerHebergement(h.getHid());
+                                        table.getItems().remove(h);
+                                    });
+                                }
+
+                                @Override
+                                protected void updateItem(Void item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    setGraphic(empty ? null : deleteBtn);
+                                }
+                            });
+
+                            table.getColumns().add(actionCol);
+
+                            showSection(hv.getRoot());
                         }
-                    })
-                    .toList();
+                )
+        );
 
-            ReservationHistoryView reservationHistoryView = new ReservationHistoryView(resaPassees);
-            showSection(reservationHistoryView.getRoot());
-        });
-        view.getReservationsUtilisateurLabel().setOnMouseClicked(e -> {//Réservation en fct du client choose
-            ArrayList<String> usersName = new ArrayList<>();
-            for(Client client : listeClients) {
-                usersName.add(client.getNom()+" "+client.getPrenom());
-            }
-            this.viewUserReservation= new UserReservationsView(usersName);
 
-            viewUserReservation.getLoadBtn().setOnAction(ev -> {
-                String selectedUser = viewUserReservation.getSelectedUser();
-                System.out.println("Utilisateur choisi : " + selectedUser);
+        view.getUtilisateursLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        clientDao::getAllClients,
+                        list -> {
+                            UsersListView uv = new UsersListView(list);
+                            showSection(uv.getRoot());
+                        }
+                )
+        );
 
-                Client client = listeClients.stream()
-                        .filter(c -> (c.getNom() +" "+ c.getPrenom()).equals(selectedUser))
-                        .findFirst()
-                        .orElse(null);
+        view.getReservationsPasseesLabel().setOnMouseClicked(e ->
+                loadAsync(
+                        () -> reservationDao.getAllReservation().stream()
+                                .filter(r -> {
+                                    try {
+                                        return LocalDate.parse(r.getDateFin())
+                                                .isBefore(LocalDate.now());
+                                    } catch (Exception ex) {
+                                        return false;
+                                    }
+                                })
+                                .toList(),
+                        list -> {
+                            ReservationHistoryView rhv = new ReservationHistoryView(list);
+                            showSection(rhv.getRoot());
+                        }
+                )
+        );
 
-                if (client != null) {
-                    List<Reservation> resaDuClient = listeResa.stream()
-                            .filter(r -> r.getIdClient() == client.getId())
-                            .toList();
-                    viewUserReservation.setTable(resaDuClient);
-                }
-            });
+        view.getReservationsUtilisateurLabel().setOnMouseClicked(e -> {
+            loadAsync(
+                    clientDao::getAllClients,
+                    clients -> {
+                        List<String> names = clients.stream()
+                                .map(c -> c.getNom() + " " + c.getPrenom())
+                                .toList();
+                        viewUserReservation = new UserReservationsView((ArrayList<String>) names);
 
-            showSection(viewUserReservation.getRoot());
+                        viewUserReservation.getLoadBtn().setOnAction(ev -> {
+                            String sel = viewUserReservation.getSelectedUser();
+                            clients.stream()
+                                    .filter(c -> (c.getNom() + " " + c.getPrenom()).equals(sel))
+                                    .findFirst()
+                                    .ifPresent(client -> {
+                                        loadAsync(
+                                                () -> reservationDao.getAllReservationByClientId(client.getId()),
+                                                resas -> viewUserReservation.setTable(resas)
+                                        );
+                                    });
+                        });
+                        showSection(viewUserReservation.getRoot());
+                    }
+            );
         });
 
         view.getAjouterLogementLabel().setOnMouseClicked(e -> {
@@ -120,39 +155,45 @@ public class AdminController {
                 int prix = Integer.parseInt(addHView.getPrixField().getText());
                 int note = addHView.getNoteSpin().getValue();
 
-                // Créer l'objet Hebergement
                 Hebergement hebergement = new Hebergement(nom, type, adresse, description, prix, note);
                 hebergementDao.ajouterHebergement(hebergement);
                 new AdminController(primaryStage).show();
             });
-        });
 
-        view.getSupprimerLogementLabel().setOnMouseClicked(e -> {
-            ArrayList<String> hebergements = new ArrayList<>();
-            for(Hebergement hebergement : listeHebergement) {
-                hebergements.add(hebergement.getNom());
+        });
+    }
+
+    /**
+     * Méthode générique pour charger des données en asynchrone.
+     */
+    private <T> void loadAsync(Callable<List<T>> fetchData, Consumer<List<T>> onSuccess) {
+
+        // Afficher du chargement
+        ProgressIndicator pi = new ProgressIndicator();
+        VBox loaderBox = new VBox(pi);
+        loaderBox.setAlignment(Pos.CENTER);
+        view.getContentPane().getChildren().setAll(loaderBox);
+
+        Task<List<T>> task = new Task<>() {
+            @Override
+            protected List<T> call() throws Exception {
+                return fetchData.call();
             }
-            RemoveHebergementView removeView= new RemoveHebergementView(hebergements);
-            showSection(removeView.getRoot());
+            @Override
+            protected void succeeded() {
+                onSuccess.accept(getValue());
+            }
+            @Override
+            protected void failed() {
+                Throwable ex = getException();
+                System.err.println("Erreur lors du chargement : " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        };
 
-            removeView.deleteBtn().setOnAction(ev ->{
-                String nomChoisi = removeView.getSelectLog().getValue();
-
-                Optional<Hebergement> hebergementTrouve = listeHebergement.stream()
-                        .filter(h -> h.getNom().equals(nomChoisi))
-                        .findFirst();
-
-                if (hebergementTrouve.isPresent()) {
-                    int id = hebergementTrouve.get().getHid();
-                    System.out.println("ID du logement sélectionné : " + id);
-                    hebergementDao.supprimerHebergement(id);
-                    new AdminController(primaryStage).show();
-                } else {
-                    System.out.println("Aucun hébergement trouvé avec ce nom !");
-                }
-
-            });
-        });
+        Thread thread = new Thread(task, "Loader-Thread");
+        thread.setDaemon(true);
+        thread.start();
     }
 
     public void show() {
@@ -160,17 +201,6 @@ public class AdminController {
         primaryStage.show();
         List<Hebergement> listeHebergement = hebergementDao.getAllHebergements();
         showSection(new HebergementListView(listeHebergement).getRoot());
-    }
-
-    private void showLoadingScreen() {
-        ProgressIndicator loader = new ProgressIndicator();
-        VBox container = new VBox(20, loader);
-        container.setAlignment(Pos.CENTER);
-        BorderPane root = new BorderPane(container);
-        root.setStyle("-fx-background-color: #F9F9F9;");
-        Scene scene = new Scene(root, 900, 700);
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
     private void showSection(Region sectionRoot) {

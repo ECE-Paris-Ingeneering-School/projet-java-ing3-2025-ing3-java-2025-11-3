@@ -18,7 +18,6 @@ public class AdminView {
     private final Label reservationsPasseesLabel;
     private final Label reservationsUtilisateurLabel;
     private final Label ajouterLogementLabel;
-    private final Label supprimerLogementLabel;
     private final NavBarView navBarView;
 
     // Zone centrale où on injectera nos vues stub
@@ -39,19 +38,17 @@ public class AdminView {
         sidebar.setStyle("-fx-background-color: #F5F5F5;");
 
         logementsLabel               = createMenuLabel("Logements");
+        ajouterLogementLabel         = createMenuLabel("Ajouter logement");
         utilisateursLabel            = createMenuLabel("Utilisateurs");
         reservationsPasseesLabel     = createMenuLabel("Réservations passées");
         reservationsUtilisateurLabel = createMenuLabel("Réservations par utilisateur");
-        ajouterLogementLabel         = createMenuLabel("Ajouter logement");
-        supprimerLogementLabel       = createMenuLabel("Supprimer logement");
 
         VBox menuBox = new VBox(10,
                 logementsLabel,
+                ajouterLogementLabel,
                 utilisateursLabel,
                 reservationsPasseesLabel,
-                reservationsUtilisateurLabel,
-                ajouterLogementLabel,
-                supprimerLogementLabel
+                reservationsUtilisateurLabel
         );
         menuBox.setPadding(new Insets(20, 0, 0, 0));
         sidebar.getChildren().add(menuBox);
@@ -86,7 +83,6 @@ public class AdminView {
     public Label getReservationsPasseesLabel()     { return reservationsPasseesLabel; }
     public Label getReservationsUtilisateurLabel() { return reservationsUtilisateurLabel; }
     public Label getAjouterLogementLabel()         { return ajouterLogementLabel; }
-    public Label getSupprimerLogementLabel()       { return supprimerLogementLabel; }
     public StackPane getContentPane()              { return contentPane; }
     public NavBarView getNavBarView() { return navBarView;  }
 

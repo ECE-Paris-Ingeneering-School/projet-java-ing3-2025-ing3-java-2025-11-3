@@ -6,12 +6,16 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import modele.Hebergement;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
 
+/**
+ * Vue affichant une liste d'hébergements.
+ * La logique d'action (suppression, modification, etc.) doit être gérée par le contrôleur.
+ */
 public class HebergementListView {
     private final VBox root;
     private final TableView<Hebergement> table;
@@ -24,8 +28,7 @@ public class HebergementListView {
         table = new TableView<>();
         table.getItems().setAll(hebergements);
 
-        // Configuration des colonnes pour la TableView
-
+        // Colonnes standards
         TableColumn<Hebergement, Integer> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("hid"));
 
@@ -56,7 +59,6 @@ public class HebergementListView {
                 )
         );
 
-        // Colonne pour le nombre d'options
         TableColumn<Hebergement, Integer> optionsCol = new TableColumn<>("Nb Options");
         optionsCol.setCellValueFactory(cell ->
                 new SimpleIntegerProperty(
@@ -66,7 +68,6 @@ public class HebergementListView {
                 ).asObject()
         );
 
-        // Colonne pour le nombre d'avis
         TableColumn<Hebergement, Integer> avisCol = new TableColumn<>("Nb Avis");
         avisCol.setCellValueFactory(cell ->
                 new SimpleIntegerProperty(
@@ -76,19 +77,26 @@ public class HebergementListView {
                 ).asObject()
         );
 
-        // Ajout des colonnes à la TableView
         table.getColumns().addAll(
                 idCol, nomCol, typeCol, addrCol, descCol,
                 prixCol, noteCol, imagesCol, optionsCol, avisCol
         );
-
-        // Message quand la TableView est vide
         table.setPlaceholder(new Label("Aucun hébergement"));
 
         root.getChildren().addAll(title, table);
     }
 
+    /**
+     * Retourne le root pour l'affichage.
+     */
     public VBox getRoot() {
         return root;
+    }
+
+    /**
+     * Accès au TableView pour ajouter des colonnes ou configurer des actions depuis le contrôleur.
+     */
+    public TableView<Hebergement> getTable() {
+        return table;
     }
 }
