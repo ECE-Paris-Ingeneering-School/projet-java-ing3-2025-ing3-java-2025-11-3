@@ -3,6 +3,7 @@ package controller;
 import dao.HebergementDao;
 import dao.HebergementDaoImpl;
 import db.AzureDBConnector;
+import javafx.geometry.Pos;
 import modele.Hebergement;
 import view.NavBarView;
 import view.SearchPageView;
@@ -81,6 +82,7 @@ public class SearchPageController {
     private void updateResults() {
         ProgressIndicator loader = new ProgressIndicator();
         var pane = view.getLodgingFlowPane();
+        pane.setAlignment(Pos.CENTER);
         pane.getChildren().setAll(loader);
 
         Task<List<Hebergement>> searchTask = new Task<>() {
@@ -132,6 +134,7 @@ public class SearchPageController {
      */
     private void displayResults(List<Hebergement> hebergements) {
         var pane = view.getLodgingFlowPane();
+        pane.setAlignment(Pos.TOP_LEFT);
         pane.getChildren().clear();
         hebergements.forEach(h -> {
             VBox item = view.createLodgingItem(h);
