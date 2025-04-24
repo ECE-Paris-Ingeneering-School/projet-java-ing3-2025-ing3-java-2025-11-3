@@ -6,12 +6,16 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import modele.Hebergement;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.List;
 
+/**
+ * Vue affichant une liste d'hébergements.
+ * La logique d'action (suppression, modification, etc.) doit être gérée par le contrôleur.
+ */
 public class HebergementListView {
     private final VBox root;
     private final TableView<Hebergement> table;
@@ -24,6 +28,7 @@ public class HebergementListView {
         table = new TableView<>();
         table.getItems().setAll(hebergements);
 
+        // Colonnes standards
         TableColumn<Hebergement, Integer> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("hid"));
 
@@ -81,7 +86,17 @@ public class HebergementListView {
         root.getChildren().addAll(title, table);
     }
 
+    /**
+     * Retourne le root pour l'affichage.
+     */
     public VBox getRoot() {
         return root;
+    }
+
+    /**
+     * Accès au TableView pour ajouter des colonnes ou configurer des actions depuis le contrôleur.
+     */
+    public TableView<Hebergement> getTable() {
+        return table;
     }
 }

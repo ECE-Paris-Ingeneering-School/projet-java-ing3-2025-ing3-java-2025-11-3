@@ -7,7 +7,7 @@ import db.AzureDBConnector;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -42,15 +42,37 @@ public class AdminController {
 
         new NavBarController(primaryStage, view.getNavBarView());
 
-        view.getLogementsLabel().setOnMouseClicked(e ->
-                loadAsync(
-                        hebergementDao::getAllHebergements,
-                        list -> {
-                            HebergementListView hv = new HebergementListView(list);
-                            showSection(hv.getRoot());
+        loadAsync(
+                hebergementDao::getAllHebergements,
+                list -> {
+                    HebergementListView hv = new HebergementListView(list);
+
+                    TableView<Hebergement> table = hv.getTable();
+
+                    //Créer la colonne Action avec bouton Supprimer
+                    TableColumn<Hebergement, Void> actionCol = new TableColumn<>("Action");
+                    actionCol.setCellFactory(col -> new TableCell<>() {
+                        private final Button deleteBtn = new Button("Supprimer");
+                        {
+                            deleteBtn.setOnAction(e -> {
+                                Hebergement h = getTableView().getItems().get(getIndex());
+                                hebergementDao.supprimerHebergement(h.getHid());
+                                table.getItems().remove(h);
+                            });
                         }
-                )
+                        @Override
+                        protected void updateItem(Void item, boolean empty) {
+                            super.updateItem(item, empty);
+                            setGraphic(empty ? null : deleteBtn);
+                        }
+                    });
+
+                    table.getColumns().add(actionCol);
+
+                    showSection(hv.getRoot());
+                }
         );
+
 
         view.getUtilisateursLabel().setOnMouseClicked(e ->
                 loadAsync(
