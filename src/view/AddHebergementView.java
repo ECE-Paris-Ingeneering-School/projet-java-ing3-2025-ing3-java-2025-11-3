@@ -5,18 +5,20 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
+
 public class AddHebergementView {
     private final VBox root;
     private final Button submit;
     private final Label title;
     private final TextField nomField;
-    private final ChoiceBox<Integer> typeBox;
+    private final ChoiceBox<String> typeBox;
     private final TextField adresseField;
     private final TextArea descriptionArea;
     private final TextField prixField;
     private final Spinner<Integer> noteSpin;
 
-    public AddHebergementView() {
+    public AddHebergementView(ArrayList<String> types) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
@@ -25,8 +27,8 @@ public class AddHebergementView {
         nomField        = new TextField();
         nomField.setPromptText("Nom");
 
-        typeBox = new ChoiceBox<>(FXCollections.observableArrayList(0,1,2,3));
-        typeBox.setValue(0);
+        typeBox = new ChoiceBox<>(FXCollections.observableArrayList(types));
+        //typeBox.setValue(0);
 
         adresseField    = new TextField();
         adresseField.setPromptText("Adresse");
@@ -61,7 +63,7 @@ public class AddHebergementView {
 
     public TextField getNomField() {return nomField;}
 
-    public ChoiceBox<Integer> getTypeBox() {return typeBox;}
+    //public ChoiceBox<Integer> getTypeBox() {return typeBox;}
 
     public TextField getAdresseField() {return adresseField;}
 
@@ -71,4 +73,5 @@ public class AddHebergementView {
 
     public Spinner<Integer> getNoteSpin() {return noteSpin;}
 
+    public String getType() {return typeBox.getValue();}
 }

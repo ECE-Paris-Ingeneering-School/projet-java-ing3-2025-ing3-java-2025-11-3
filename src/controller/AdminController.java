@@ -14,10 +14,8 @@ import modele.*;
 import view.*;
 import javafx.scene.layout.Region;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.time.LocalDate;
-import java.util.Optional;
 
 
 public class AdminController {
@@ -45,7 +43,7 @@ public class AdminController {
         new NavBarController(primaryStage, view.getNavBarView());
 
         // liaisons menu → affichage du stub correspondant
-        view.getLogementsLabel().setOnMouseClicked(e -> {//Herbegements
+        view.getLogementsLabel().setOnMouseClicked(e -> {//Listes des herbegements
             HebergementListView hebergementView =new HebergementListView(listeHebergement);
             showSection(hebergementView.getRoot());
         });
@@ -98,24 +96,37 @@ public class AdminController {
             showSection(viewUserReservation.getRoot());
         });
 
-        view.getAjouterLogementLabel().setOnMouseClicked(e -> {//Ajouter un hebergement
-            AddHebergementView addHView = new AddHebergementView();
+        view.getAjouterLogementLabel().setOnMouseClicked(e -> {
+            // Créer un dictionnaire type => ID
+            Map<String, Integer> typeMap = new HashMap<>();
+            typeMap.put("Hotel", 0);
+            typeMap.put("Auberge", 1);
+            typeMap.put("Appartement", 2);
+            typeMap.put("Maison", 3);
+            typeMap.put("Camping", 4);
+
+            // Créer une liste pour l'affichage (combo box ou autre)
+            ArrayList<String> types = new ArrayList<>(typeMap.keySet());
+
+            AddHebergementView addHView = new AddHebergementView(types);
+
             showSection(addHView.getRoot());
             addHView.getBtnSubmit().setOnAction(ev -> {
                 String nom = addHView.getNomField().getText();
-                int type = addHView.getTypeBox().getValue();
+                String selectedType = addHView.getType(); // Assure-toi que tu récupères bien la valeur sélectionnée
+                int type = typeMap.getOrDefault(selectedType, -1); // Par sécurité, si jamais le type n'est pas trouvé
                 String adresse = addHView.getAdresseField().getText();
                 String description = addHView.getDescriptionArea().getText();
                 int prix = Integer.parseInt(addHView.getPrixField().getText());
                 int note = addHView.getNoteSpin().getValue();
 
-                // Tu peux ensuite créer un objet Hebergement ici
+                // Créer l'objet Hebergement
                 Hebergement hebergement = new Hebergement(nom, type, adresse, description, prix, note);
                 hebergementDao.ajouterHebergement(hebergement);
                 new AdminController(primaryStage).show();
             });
-
         });
+
         view.getSupprimerLogementLabel().setOnMouseClicked(e -> {
             ArrayList<String> hebergements = new ArrayList<>();
             for(Hebergement hebergement : listeHebergement) {

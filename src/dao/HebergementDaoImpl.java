@@ -64,11 +64,12 @@ public class HebergementDaoImpl implements HebergementDao {
 
     @Override
     public ArrayList<Hebergement> getAllHebergements() {
-        try{
-            Connection connection= AzureDBConnector.getConnection();
+        try {
+            Connection connection = AzureDBConnector.getConnection();
             PreparedStatement ps = connection.prepareStatement("SELECT * FROM hebergement");
             ResultSet rs = ps.executeQuery();
             ArrayList<Hebergement> hebergements = new ArrayList<>();
+
             while (rs.next()) {
                 int id = rs.getInt("hebergement_id");
                 String nom = rs.getString("nom");
@@ -80,15 +81,22 @@ public class HebergementDaoImpl implements HebergementDao {
                 String images = rs.getString("photo");
                 ArrayList<String> imageList = decompreserListe(images);
 
-                hebergements.add(new Hebergement(id, nom, type, adresse, description, prix, etoile, imageList, null, null));
+                // Récupérer les options pour cet hébergement
+                ArrayList<Options> options = getOption(id);
+
+                // Récupérer les avis pour cet hébergement
+                ArrayList<Avis> avis = getAllAvis(id);
+
+                // Créer un objet Hebergement avec les données récupérées
+                hebergements.add(new Hebergement(id, nom, type, adresse, description, prix, etoile, imageList, options, avis));
             }
             return hebergements;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
+
 
     @Override
     public Hebergement getHebergement(int id) {

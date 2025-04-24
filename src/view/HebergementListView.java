@@ -24,6 +24,8 @@ public class HebergementListView {
         table = new TableView<>();
         table.getItems().setAll(hebergements);
 
+        // Configuration des colonnes pour la TableView
+
         TableColumn<Hebergement, Integer> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("hid"));
 
@@ -54,6 +56,7 @@ public class HebergementListView {
                 )
         );
 
+        // Colonne pour le nombre d'options
         TableColumn<Hebergement, Integer> optionsCol = new TableColumn<>("Nb Options");
         optionsCol.setCellValueFactory(cell ->
                 new SimpleIntegerProperty(
@@ -63,6 +66,7 @@ public class HebergementListView {
                 ).asObject()
         );
 
+        // Colonne pour le nombre d'avis
         TableColumn<Hebergement, Integer> avisCol = new TableColumn<>("Nb Avis");
         avisCol.setCellValueFactory(cell ->
                 new SimpleIntegerProperty(
@@ -72,10 +76,13 @@ public class HebergementListView {
                 ).asObject()
         );
 
+        // Ajout des colonnes à la TableView
         table.getColumns().addAll(
                 idCol, nomCol, typeCol, addrCol, descCol,
                 prixCol, noteCol, imagesCol, optionsCol, avisCol
         );
+
+        // Message quand la TableView est vide
         table.setPlaceholder(new Label("Aucun hébergement"));
 
         root.getChildren().addAll(title, table);
