@@ -38,17 +38,17 @@ public class AdminView {
         sidebar.setStyle("-fx-background-color: #F5F5F5;");
 
         logementsLabel               = createMenuLabel("Logements");
+        ajouterLogementLabel         = createMenuLabel("Ajouter logement");
         utilisateursLabel            = createMenuLabel("Utilisateurs");
         reservationsPasseesLabel     = createMenuLabel("Réservations passées");
         reservationsUtilisateurLabel = createMenuLabel("Réservations par utilisateur");
-        ajouterLogementLabel         = createMenuLabel("Ajouter logement");
 
         VBox menuBox = new VBox(10,
                 logementsLabel,
+                ajouterLogementLabel,
                 utilisateursLabel,
                 reservationsPasseesLabel,
-                reservationsUtilisateurLabel,
-                ajouterLogementLabel
+                reservationsUtilisateurLabel
         );
         menuBox.setPadding(new Insets(20, 0, 0, 0));
         sidebar.getChildren().add(menuBox);
