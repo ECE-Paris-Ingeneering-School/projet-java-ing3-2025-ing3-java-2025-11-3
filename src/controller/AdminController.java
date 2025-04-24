@@ -184,23 +184,11 @@ public class AdminController {
         thread.start();
     }
 
-
     public void show() {
         primaryStage.setScene(view.getScene());
         primaryStage.show();
         List<Hebergement> listeHebergement = hebergementDao.getAllHebergements();
         showSection(new HebergementListView(listeHebergement).getRoot());
-    }
-
-    private void showLoadingScreen() {
-        ProgressIndicator loader = new ProgressIndicator();
-        VBox container = new VBox(20, loader);
-        container.setAlignment(Pos.CENTER);
-        BorderPane root = new BorderPane(container);
-        root.setStyle("-fx-background-color: #F9F9F9;");
-        Scene scene = new Scene(root, 900, 700);
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
 
     private void showSection(Region sectionRoot) {
