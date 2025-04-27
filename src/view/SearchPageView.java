@@ -25,7 +25,7 @@ public class SearchPageView {
 
     private CheckBox hotelCheck, aubergeCheck,campingCheck ,maisonCheck, appartementCheck, autreCheck;
     private Slider prixSlider;
-    private DatePicker dateArriveePicker;
+    private DatePicker dateArriveePicker,dateDepartePicker;
 
     public SearchPageView() {
         createUI();
@@ -53,6 +53,7 @@ public class SearchPageView {
         autreCheck = new CheckBox("Autre");
         prixSlider = new Slider(0, 500, 100);
         dateArriveePicker = new DatePicker(LocalDate.now());
+        dateDepartePicker = new DatePicker(LocalDate.now().plusDays(1));
 
         maisonCheck.setSelected(false);
         appartementCheck.setSelected(false);
@@ -65,7 +66,8 @@ public class SearchPageView {
                 new Label("Filtres"),
                 maisonCheck,campingCheck,hotelCheck,aubergeCheck, appartementCheck, autreCheck,
                 new Label("Prix max:"), prixSlider,
-                new Label("Arrivée:"), dateArriveePicker
+                new Label("Arrivée:"), dateArriveePicker,
+                new Label("Départ:"), dateDepartePicker
         );
 
         // -- Zone de droite (recherche + tri + logements)
@@ -177,10 +179,11 @@ public class SearchPageView {
         return prixSlider;
     }
 
-
     public DatePicker getDateArriveePicker() {
         return dateArriveePicker;
     }
+
+    public DatePicker getDateDepartPicker() {return dateDepartePicker;}
 
     public FlowPane getLodgingFlowPane() {
         return lodgingFlowPane;
