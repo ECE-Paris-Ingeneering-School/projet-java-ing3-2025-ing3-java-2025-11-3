@@ -2,6 +2,7 @@ package controller;
 
 import dao.ClientDaoImpl;
 import dao.HebergementDaoImpl;
+import dao.OptionDaoImpl;
 import dao.ReservationDaoImpl;
 import db.AzureDBConnector;
 import javafx.concurrent.Task;
@@ -34,8 +35,9 @@ public class AdminController {
     private final HebergementDaoImpl hebergementDao;
     private final ClientDaoImpl clientDao;
     private final ReservationDaoImpl reservationDao;
-
+    private final OptionDaoImpl optionDao;
     private UserReservationsView viewUserReservation;
+    private AddOptionView addOptionView;
 
     public AdminController(Stage primaryStage) {
         AzureDBConnector azureDBConnector = new AzureDBConnector();
@@ -45,7 +47,9 @@ public class AdminController {
         this.hebergementDao = new HebergementDaoImpl(azureDBConnector);
         this.clientDao = new ClientDaoImpl(azureDBConnector);
         this.reservationDao = new ReservationDaoImpl(azureDBConnector);
+        this.optionDao = new OptionDaoImpl(azureDBConnector);
         this.viewUserReservation = null;
+        this.addOptionView = null;
 
         new NavBarController(primaryStage, view.getNavBarView());
 
@@ -133,11 +137,37 @@ public class AdminController {
         });
 
         view.getAjouterOptionLabel().setOnMouseClicked(e -> {
-            AddOptionView addHView = new AddOptionView();
-            showSection(addHView.getRoot());
+            showAddOption();
         });
     }
+    private void showAddOption(){
+        loadAsync(
+                hebergementDao::getAllHebergements,
+                hebergements -> {
+                    ArrayList<String> names = hebergements.stream()
+                            .map(h -> h.getNom())
+                            .collect(Collectors.toCollection(ArrayList::new));  // ici on obtient vraiment un ArrayList
 
+                    addOptionView = new AddOptionView(names);
+                    showSection(addOptionView.getRoot());
+
+                    addOptionView.getBtnSubmit().setOnAction(ev -> {
+                        // Récupération des valeurs
+                        String nom = addOptionView.getNomField().getText();
+                        String description = addOptionView.getDescriptionField().getText();
+                        // Récupération de l'hébergement sélectionné
+                        String selectedHebergement = addOptionView.getHebergementSelect();
+                        int hebergementId = hebergementDao.getIdHebergement(selectedHebergement);
+                        // Vérification de l'existence de l'option sinon ajout
+                        Options option = new Options(nom,description);
+                        optionDao.ajouterOption(option);
+                        // Ajout de l'option à l'hébergement
+                        hebergementDao.ajouterOption(hebergementId,optionDao.getIdOption(nom) );
+                        addOptionView.resetFields();
+                    });
+                }
+        );
+    }
     private void showHebergementsList(){
         loadAsync(
                 hebergementDao::getAllHebergements,
