@@ -103,21 +103,19 @@ public class AdminController {
                     String srcPath = addHView.getImagePath();
                     ArrayList<String> images = new ArrayList<>();
                     if (srcPath != null && !srcPath.isBlank()) {
-                        Path destDir = Paths.get("../src/resources/images");
+                        Path destDir  = Paths.get("src","resources", "images");
                         Files.createDirectories(destDir);
-                        String ext = srcPath.substring(srcPath.lastIndexOf('.'));
+                        String ext      = srcPath.substring(srcPath.lastIndexOf('.'));
                         String fileName = UUID.randomUUID().toString() + ext;
-                        Path destPath = destDir.resolve(fileName);
+                        Path destPath   = destDir.resolve(fileName);
                         Files.copy(Paths.get(srcPath), destPath);
 
-                        String imageUrl = destPath.toUri().toString();
-                        images.add(imageUrl);
+                        images.add(fileName);
                     }
 
                     ArrayList<Options> options = new ArrayList<>();
                     ArrayList<Avis> avis        = new ArrayList<>();
-                    Hebergement hebergement = new Hebergement(
-                            /* Hid */       0,
+                    Hebergement hebergement = new Hebergement(0,
                             nom, type, adresse,
                             description, prix, note,
                             images, options, avis
