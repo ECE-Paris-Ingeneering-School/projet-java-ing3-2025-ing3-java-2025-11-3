@@ -75,9 +75,7 @@ public class Hebergement {
     public int getNote() {
         return note;
     }
-    public ArrayList<String> getImage() {
-        return image;
-    }
+
     public ArrayList<Options> getOptions() {
         return options;
     }

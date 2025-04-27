@@ -168,12 +168,11 @@ public class ReservationView {
         ImageView imageView = new ImageView();
         String imageUrl = "";
         Hebergement h = reservation.getHebergement();
-        if (h != null && h.getImage() != null) {
-            imageUrl = String.valueOf(h.getImage());
-        }
 
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            imageUrl = "file:src/resources/larry.jpeg"; // Image par défaut
+        imageUrl = h.getImageFilename();
+
+        if (imageUrl == null) {
+            imageUrl = "file:src/resources/images/larry.jpeg"; // Image par défaut
         }
         try {
             imageView.setImage(new Image(imageUrl, 150, 150, false, true));

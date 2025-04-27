@@ -53,9 +53,9 @@ public class HebergementListView {
         TableColumn<Hebergement, String> imagesCol = new TableColumn<>("Images");
         imagesCol.setCellValueFactory(cell ->
                 new SimpleStringProperty(
-                        cell.getValue().getImage() == null
-                                ? ""
-                                : String.join(", ", cell.getValue().getImage())
+                        cell.getValue().getImageFilename() == null
+                                ? "file:src/resources/images/larry.jpg"
+                                : cell.getValue().getImageFilename()
                 )
         );
 

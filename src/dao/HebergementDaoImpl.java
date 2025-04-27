@@ -21,10 +21,13 @@ public class HebergementDaoImpl implements HebergementDao {
     @Override
     public void ajouterHebergement(Hebergement hebergement) {
 
-        String images = null;
-        if (hebergement.getImage()!=null) {
-            images = compreserListe(hebergement.getImage());
+        String images;
+        if (hebergement.getImageFilename()!=null) {
+            images = hebergement.getImageFilename();
+        }else{
+            images = "larry.jpg";
         }
+
         try{
             Connection connection=conn.getConnection();
             String sql = "INSERT INTO hebergement (nom, type, adresse, description, prix_base,etoile,photo) VALUES (?, ?, ?, ?, ?,?,?)";
@@ -140,7 +143,6 @@ public class HebergementDaoImpl implements HebergementDao {
 
     @Override
     public void modifierHebergement(Hebergement hebergement) {
-        String images = compreserListe(hebergement.getImage());
         try{
             Connection connection=conn.getConnection();
             String sql = "UPDATE hebergement SET nom = ?, type = ?, adresse = ?, description = ?, prix_base = ?, etoile = ?, photo = ? WHERE hebergement_id = ?";
@@ -151,15 +153,13 @@ public class HebergementDaoImpl implements HebergementDao {
             ps.setString(4, hebergement.getDescription());
             ps.setInt(5, hebergement.getPrix());
             ps.setInt(6, hebergement.getNote());
-            ps.setString(7, images);
+            ps.setString(7, hebergement.getImageFilename());
             ps.setInt(8, hebergement.getHid());
             ps.executeUpdate();
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     @Override
