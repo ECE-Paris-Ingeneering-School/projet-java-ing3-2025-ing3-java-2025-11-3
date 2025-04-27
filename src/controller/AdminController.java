@@ -17,6 +17,7 @@ import java.util.*;
 import java.time.LocalDate;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class AdminController {
 
@@ -160,10 +161,11 @@ public class AdminController {
         loadAsync(
                 clientDao::getAllClients,
                 clients -> {
-                    List<String> names = clients.stream()
+                    ArrayList<String> names = clients.stream()
                             .map(c -> c.getNom() + " " + c.getPrenom())
-                            .toList();
-                    viewUserReservation = new UserReservationsView((ArrayList<String>) names);
+                            .collect(Collectors.toCollection(ArrayList::new));  // ici on obtient vraiment un ArrayList
+
+                    viewUserReservation = new UserReservationsView(names);
 
                     viewUserReservation.getLoadBtn().setOnAction(ev -> {
                         String sel = viewUserReservation.getSelectedUser();
