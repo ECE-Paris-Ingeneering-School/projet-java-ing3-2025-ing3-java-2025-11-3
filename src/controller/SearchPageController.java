@@ -5,18 +5,17 @@ import dao.HebergementDaoImpl;
 import db.AzureDBConnector;
 import javafx.geometry.Pos;
 import modele.Hebergement;
-import view.NavBarView;
 import view.SearchPageView;
 import javafx.concurrent.Task;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.ArrayList;
 
 /**
  * Controller for the search page, handling user interactions and data loading.
@@ -65,10 +64,11 @@ public class SearchPageController {
         // Filters and search triggers
         view.getMaisonCheck().setOnAction(e -> updateResults());
         view.getAppartementCheck().setOnAction(e -> updateResults());
+        view.getCampingCheck().setOnAction(e -> updateResults());
+        view.getHotelCheck().setOnAction(e -> updateResults());
+        view.getAubergeCheck().setOnAction(e -> updateResults());
         view.getAutreCheck().setOnAction(e -> updateResults());
         view.getPrixSlider().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
-        view.getPersonnesSpinner().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
-        view.getNuitsSpinner().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
         view.getDateArriveePicker().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
 
         view.getSearchField().setOnAction(e -> updateResults());
@@ -110,14 +110,19 @@ public class SearchPageController {
      *
      * @return a list of filtered and sorted Hebergement objects
      */
-    private List<Hebergement> fetchFilteredHebergements() {
-        boolean maison = view.getMaisonCheck().isSelected();
-        boolean appart = view.getAppartementCheck().isSelected();
-        boolean autre = view.getAutreCheck().isSelected();
+    public List<Hebergement> fetchFilteredHebergements() {
+        List<String> types = new ArrayList<>();
+        if (view.getMaisonCheck().isSelected())   types.add("MAISON");
+        if (view.getAppartementCheck().isSelected()) types.add("APPARTEMENT");
+        if (view.getCampingCheck().isSelected())  types.add("CAMPING");
+        if (view.getHotelCheck().isSelected())    types.add("HOTEL");
+        if (view.getAubergeCheck().isSelected())  types.add("AUBERGE");
+        if (view.getAutreCheck().isSelected())    types.add("AUTRE");
+
         int prixMax = (int) view.getPrixSlider().getValue();
         String recherche = view.getSearchField().getText().toLowerCase().trim();
 
-        List<Hebergement> result = dao.getFilteredHebergements(maison, appart, autre, prixMax, recherche);
+        List<Hebergement> result = dao.getFilteredHebergements(types, prixMax, recherche);
 
         if (view.getSortPriceButton().isFocused()) {
             result.sort(Comparator.comparingInt(Hebergement::getPrix));
@@ -126,6 +131,7 @@ public class SearchPageController {
         }
         return result;
     }
+
 
     /**
      * Populates the view with the provided list of accommodations.

@@ -25,7 +25,6 @@ public class SearchPageView {
 
     private CheckBox hotelCheck, aubergeCheck,campingCheck ,maisonCheck, appartementCheck, autreCheck;
     private Slider prixSlider;
-    private Spinner<Integer> personnesSpinner, nuitsSpinner;
     private DatePicker dateArriveePicker;
 
     public SearchPageView() {
@@ -53,8 +52,6 @@ public class SearchPageView {
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
         prixSlider = new Slider(0, 500, 100);
-        personnesSpinner = new Spinner<>(1, 10, 1);
-        nuitsSpinner = new Spinner<>(1, 30, 1);
         dateArriveePicker = new DatePicker(LocalDate.now());
 
         maisonCheck.setSelected(false);
@@ -68,9 +65,7 @@ public class SearchPageView {
                 new Label("Filtres"),
                 maisonCheck,campingCheck,hotelCheck,aubergeCheck, appartementCheck, autreCheck,
                 new Label("Prix max:"), prixSlider,
-                new Label("Arrivée:"), dateArriveePicker,
-                new Label("Personnes:"), personnesSpinner,
-                new Label("Nuits:"), nuitsSpinner
+                new Label("Arrivée:"), dateArriveePicker
         );
 
         // -- Zone de droite (recherche + tri + logements)
@@ -182,13 +177,6 @@ public class SearchPageView {
         return prixSlider;
     }
 
-    public Spinner<Integer> getPersonnesSpinner() {
-        return personnesSpinner;
-    }
-
-    public Spinner<Integer> getNuitsSpinner() {
-        return nuitsSpinner;
-    }
 
     public DatePicker getDateArriveePicker() {
         return dateArriveePicker;
