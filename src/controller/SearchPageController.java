@@ -3,6 +3,7 @@ package controller;
 import dao.HebergementDao;
 import dao.HebergementDaoImpl;
 import db.AzureDBConnector;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
@@ -92,6 +93,13 @@ public class SearchPageController {
         view.getHotelCheck().setOnAction(e -> updateResults());
         view.getAubergeCheck().setOnAction(e -> updateResults());
         view.getAutreCheck().setOnAction(e -> updateResults());
+        
+        view.getPrixLabel().textProperty().bind(
+                Bindings.createStringBinding(
+                        () -> String.format("Prix max : %.0f €", view.getPrixSlider().getValue()),
+                        view.getPrixSlider().valueProperty()
+                )
+        );
 
         view.getPrixSlider().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
 

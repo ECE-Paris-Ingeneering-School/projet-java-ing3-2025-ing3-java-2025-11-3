@@ -1,5 +1,6 @@
 package view;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,6 +23,7 @@ public class SearchPageView {
     private TextField searchField;
     private Button sortPriceButton, sortRatingButton;
     private FlowPane lodgingFlowPane;
+    private Label prixLabel;
 
     private CheckBox hotelCheck, aubergeCheck,campingCheck ,maisonCheck, appartementCheck, autreCheck;
     private Slider prixSlider;
@@ -49,9 +51,10 @@ public class SearchPageView {
         aubergeCheck = new CheckBox("Auberge");
         campingCheck = new CheckBox("Camping");
         maisonCheck = new CheckBox("Maison");
+        prixLabel = new Label();
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
-        prixSlider = new Slider(0, 500, 100);
+        prixSlider = new Slider(0, 10000, 100);
         dateArriveePicker = new DatePicker(LocalDate.now());
         dateDepartePicker = new DatePicker();
 
@@ -60,12 +63,16 @@ public class SearchPageView {
         campingCheck.setSelected(false);
         hotelCheck.setSelected(false);
         autreCheck.setSelected(false);
-        prixSlider.setValue(500);
+
+        prixSlider.setBlockIncrement(100);
+        prixSlider.setMajorTickUnit(1000);
+        prixSlider.setShowTickMarks(true);
+        prixSlider.setShowTickLabels(true);
 
         filtersBox.getChildren().addAll(
                 new Label("Filtres"),
                 maisonCheck,campingCheck,hotelCheck,aubergeCheck, appartementCheck, autreCheck,
-                new Label("Prix max:"), prixSlider,
+                prixLabel, prixSlider,
                 new Label("Arrivée:"), dateArriveePicker,
                 new Label("Départ:"), dateDepartePicker
         );
@@ -187,5 +194,9 @@ public class SearchPageView {
 
     public FlowPane getLodgingFlowPane() {
         return lodgingFlowPane;
+    }
+
+    public Label getPrixLabel() {
+        return prixLabel;
     }
 }
