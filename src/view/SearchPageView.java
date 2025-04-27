@@ -53,7 +53,7 @@ public class SearchPageView {
         prixLabel = new Label();
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
-        prixSlider = new Slider(0, 10000, 100);
+        prixSlider = new Slider(0, 10000, 10000);
         dateArriveePicker = new DatePicker(LocalDate.now());
         dateDepartePicker = new DatePicker();
 
@@ -62,6 +62,7 @@ public class SearchPageView {
         campingCheck.setSelected(false);
         hotelCheck.setSelected(false);
         autreCheck.setSelected(false);
+        aubergeCheck.setSelected(false);
 
         prixSlider.setBlockIncrement(100);
         prixSlider.setMajorTickUnit(1000);
