@@ -5,9 +5,22 @@ import modele.Admin;
 import modele.User;
 import view.NavBarView;
 
+/**
+ * Contrôleur pour la barre de navigation.
+ * Gère les interactions de la barre de navigation selon l'état de connexion de l'utilisateur
+ * et adapte les options visibles en fonction de son rôle (utilisateur ou administrateur).
+ */
 public class NavBarController {
     private final Stage stage;
 
+    /**
+     * Constructeur du NavBarController.
+     * Initialise les événements de clic sur les éléments de la barre de navigation,
+     * ajuste l'affichage selon l'utilisateur connecté (simple utilisateur ou administrateur).
+     *
+     * @param stage La fenêtre principale de l'application.
+     * @param navBarView La vue associée à la barre de navigation.
+     */
     public NavBarController(Stage stage, NavBarView navBarView) {
         this.stage = stage;
 

@@ -11,17 +11,33 @@ import view.RegisterPageView;
 
 import java.util.regex.Pattern;
 
+/**
+ * Contrôleur de la page d'inscription.
+ * Gère la création d'un compte utilisateur, la validation des champs saisis,
+ * ainsi que la navigation vers la page de connexion ou la page d'accueil après inscription réussie.
+ */
 public class RegisterPageController {
 
     private Stage primaryStage;
     private RegisterPageView view;
 
+    /**
+     * Constructeur du RegisterPageController.
+     * Initialise la vue d'inscription et configure les gestionnaires d'événements.
+     *
+     * @param primaryStage La fenêtre principale de l'application.
+     */
     public RegisterPageController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new RegisterPageView();
         attachEventHandlers();
     }
 
+    /**
+     * Attache les événements utilisateurs aux éléments interactifs de la vue :
+     * - Création du compte utilisateur après validation.
+     * - Redirection vers la page de connexion.
+     */
     private void attachEventHandlers() {
         new NavBarController(primaryStage, view.getNavBarView());
 
@@ -92,13 +108,24 @@ public class RegisterPageController {
 
     }
 
-    /** Vérifie le format de l’email via une regex simple */
+    /**
+     * Vérifie si une adresse email est au format valide à l'aide d'une expression régulière.
+     *
+     * @param email L'adresse email à valider.
+     * @return true si l'email est valide, false sinon.
+     */
     private boolean isValidEmail(String email) {
         String regex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
         return Pattern.matches(regex, email);
     }
 
-    /** Affiche une boîte d’alerte JavaFX */
+    /**
+     * Affiche une boîte d'alerte avec un titre et un contenu spécifiés.
+     *
+     * @param type Le type d'alerte (INFORMATION, WARNING, ERROR, etc.).
+     * @param title Le titre de la boîte d'alerte.
+     * @param content Le message de contenu de la boîte d'alerte.
+     */
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -107,6 +134,10 @@ public class RegisterPageController {
         alert.showAndWait();
     }
 
+    /**
+     * Affiche la page d'inscription.
+     * Préserve les dimensions et l'état plein écran de la fenêtre principale.
+     */
     public void show() {
         boolean fullScreen = primaryStage.isFullScreen();
         double width = primaryStage.getWidth();

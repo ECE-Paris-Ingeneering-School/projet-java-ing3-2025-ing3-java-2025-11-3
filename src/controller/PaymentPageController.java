@@ -13,6 +13,11 @@ import view.PaymentPageView;
 
 import java.time.LocalDate;
 
+/**
+ * Contrôleur de la page de paiement.
+ * Gère l'affichage du prix, l'application d'un code promotionnel, la validation ou l'annulation du paiement,
+ * ainsi que la création d'une nouvelle réservation en base de données.
+ */
 public class PaymentPageController {
     private final Stage stage;
     private final Scene previousScene;
@@ -27,6 +32,19 @@ public class PaymentPageController {
     private double currentPrice;
     private int appliedReductionId = -1;
 
+    /**
+     * Constructeur du PaymentPageController.
+     * Initialise la vue de paiement, calcule le prix total, connecte aux bases de données de réservation et de réduction,
+     * et configure les événements utilisateurs pour l'application d'un code promo, la validation ou l'annulation du paiement.
+     *
+     * @param stage La fenêtre principale de l'application.
+     * @param previousScene La scène précédente à afficher en cas d'annulation.
+     * @param hebergementId L'identifiant de l'hébergement réservé.
+     * @param clientId L'identifiant du client effectuant la réservation.
+     * @param dateArrivee La date d'arrivée prévue.
+     * @param dateDepart La date de départ prévue.
+     * @param initialPrice Le prix par nuit initial sans réduction.
+     */
     public PaymentPageController(Stage stage,Scene previousScene, int hebergementId, int clientId, LocalDate dateArrivee, LocalDate dateDepart, double initialPrice) {
         this.stage = stage;
         this.previousScene = previousScene;
@@ -42,6 +60,12 @@ public class PaymentPageController {
         configureEvents();
     }
 
+    /**
+     * Configure les événements associés aux boutons de la page de paiement :
+     * - Application d'un code promotionnel.
+     * - Validation du paiement et enregistrement de la réservation.
+     * - Annulation du paiement et retour à la scène précédente.
+     */
     private void configureEvents() {
         view.getPriceLabel().setText(String.format("Montant à payer : %.2f €", currentPrice));
 
@@ -89,6 +113,12 @@ public class PaymentPageController {
         });
     }
 
+    /**
+     * Affiche une alerte de type spécifié avec un message donné.
+     *
+     * @param type Le type d'alerte (INFORMATION, WARNING, ERROR, etc.).
+     * @param msg Le message à afficher dans l'alerte.
+     */
     private void showAlert(Alert.AlertType type, String msg) {
         Alert a = new Alert(type);
         a.setHeaderText(null);
@@ -96,6 +126,10 @@ public class PaymentPageController {
         a.showAndWait();
     }
 
+    /**
+     * Affiche la scène de la page de paiement.
+     * Met à jour la scène de la fenêtre principale avec la vue de paiement.
+     */
     public void show() {
         stage.setScene(view.getScene());
         stage.show();

@@ -27,7 +27,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 
-
+/**
+ * Contrôleur principal pour la gestion de l'interface administrateur.
+ * Gère l'affichage et les actions sur les hébergements, utilisateurs, réservations, et options.
+ */
 public class AdminController {
 
     private final Stage primaryStage;
@@ -39,6 +42,12 @@ public class AdminController {
     private UserReservationsView viewUserReservation;
     private AddOptionView addOptionView;
 
+    /**
+     * Constructeur du contrôleur AdminController.
+     * Initialise les DAO, les vues, et configure les actions de navigation.
+     *
+     * @param primaryStage La fenêtre principale de l'application.
+     */
     public AdminController(Stage primaryStage) {
         AzureDBConnector azureDBConnector = new AzureDBConnector();
 
@@ -147,6 +156,10 @@ public class AdminController {
             showAddOption();
         });
     }
+
+    /**
+     * Affiche la vue pour ajouter une nouvelle option.
+     */
     private void showAddOption(){
         addOptionView = new AddOptionView();
         showSection(addOptionView.getRoot());
@@ -162,6 +175,9 @@ public class AdminController {
         });
     }
 
+    /**
+     * Affiche la liste des hébergements disponibles avec options de suppression.
+     */
     private void showHebergementsList(){
         loadAsync(
                 hebergementDao::getAllHebergements,
@@ -196,6 +212,9 @@ public class AdminController {
         );
     }
 
+    /**
+     * Affiche la liste des utilisateurs enregistrés.
+     */
     private void showUsersList() {
         loadAsync(
                 clientDao::getAllClients,
@@ -206,6 +225,9 @@ public class AdminController {
         );
     }
 
+    /**
+     * Affiche la liste des réservations passées (déjà terminées).
+     */
     private void showPassedReservations() {
         loadAsync(
                 () -> reservationDao.getAllReservation().stream()
@@ -225,6 +247,9 @@ public class AdminController {
         );
     }
 
+    /**
+     * Affiche la liste des réservations par utilisateur sélectionné.
+     */
     private void showReservationsList() {
         loadAsync(
                 clientDao::getAllClients,
@@ -253,7 +278,11 @@ public class AdminController {
     }
 
     /**
-     * Méthode générique pour charger des données en asynchrone.
+     * Méthode générique pour charger des données de manière asynchrone.
+     *
+     * @param fetchData Fonction pour récupérer les données.
+     * @param onSuccess Fonction appelée avec les données récupérées en cas de succès.
+     * @param <T> Type des éléments récupérés.
      */
     private <T> void loadAsync(Callable<List<T>> fetchData, Consumer<List<T>> onSuccess) {
 
@@ -284,6 +313,9 @@ public class AdminController {
         thread.start();
     }
 
+    /**
+     * Affiche la vue administrateur et lance l'affichage initial des hébergements.
+     */
     public void show() {
         primaryStage.setScene(view.getScene());
         primaryStage.show();
@@ -291,6 +323,11 @@ public class AdminController {
         showHebergementsList();
     }
 
+    /**
+     * Remplace le contenu principal par une nouvelle section.
+     *
+     * @param sectionRoot La racine de la nouvelle section à afficher.
+     */
     private void showSection(Region sectionRoot) {
         view.getContentPane().getChildren().setAll(sectionRoot);
     }

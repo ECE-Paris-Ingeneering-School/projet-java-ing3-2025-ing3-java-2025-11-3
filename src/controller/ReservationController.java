@@ -31,6 +31,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
+/**
+ * Contrôleur de la page des réservations utilisateur.
+ * Gère l'affichage des réservations en cours et passées,
+ * ainsi que les actions associées (annulation, évaluation).
+ */
 public class ReservationController {
 
     private final Stage primaryStage;
@@ -39,6 +44,12 @@ public class ReservationController {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final AvisDao avisDao;
 
+    /**
+     * Constructeur de ReservationController.
+     * Initialise la vue de réservation, les DAO et configure les événements.
+     *
+     * @param primaryStage La fenêtre principale de l'application.
+     */
     public ReservationController(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.view = new ReservationView();
@@ -48,10 +59,17 @@ public class ReservationController {
         configureEventHandlers();
     }
 
+    /**
+     * Configure les gestionnaires d'événements pour les éléments de la vue.
+     */
     private void configureEventHandlers() {
         new NavBarController(primaryStage, view.getNavBarView());
     }
 
+    /**
+     * Affiche la page des réservations.
+     * Redirige vers la page de connexion si l'utilisateur n'est pas authentifié.
+     */
     public void show() {
         User currentUser = UserSession.getInstance().getConnectedUser();
         if (currentUser == null) {
@@ -67,6 +85,9 @@ public class ReservationController {
         loadReservations(currentUser.getId());
     }
 
+    /**
+     * Affiche un écran de chargement pendant le chargement des données.
+     */
     private void showLoadingScreen() {
         ProgressIndicator loader = new ProgressIndicator();
         VBox container = new VBox(20, loader);
@@ -78,6 +99,11 @@ public class ReservationController {
         primaryStage.show();
     }
 
+    /**
+     * Charge les réservations de l'utilisateur connecté.
+     *
+     * @param userId L'identifiant de l'utilisateur.
+     */
     private void loadReservations(int userId) {
         Task<List<Reservation>> task = new Task<>() {
             @Override
@@ -94,6 +120,12 @@ public class ReservationController {
         executor.submit(task);
     }
 
+    /**
+     * Affiche les réservations dans la vue en séparant celles à venir et passées.
+     * Permet l'annulation ou l'évaluation selon le type de réservation.
+     *
+     * @param reservations La liste des réservations de l'utilisateur.
+     */
     private void displayReservations(List<Reservation> reservations) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         DateTimeFormatter dbFmt = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -156,6 +188,11 @@ public class ReservationController {
         primaryStage.show();
     }
 
+    /**
+     * Garde la taille et le mode plein écran de la fenêtre en changeant de page.
+     *
+     * @param showAction L'action à exécuter pour changer de page.
+     */
     private void navigate(Runnable showAction) {
         boolean wasFull = primaryStage.isFullScreen();
         double w = primaryStage.getWidth(), h = primaryStage.getHeight();
