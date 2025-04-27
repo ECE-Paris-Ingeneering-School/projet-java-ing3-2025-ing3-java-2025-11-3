@@ -12,35 +12,40 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-import java.util.Objects;
-
+/**
+ * Vue représentant la page d'accueil de l'application.
+ * Contient un message principal, une barre de recherche et une image d'illustration.
+ */
 public class HomePageView {
 
     private Scene scene;
     private TextField searchField;
     private NavBarView navBarView;
 
+    /**
+     * Construit la page d'accueil et initialise son interface graphique.
+     */
     public HomePageView() {
         createUI();
     }
 
+    /**
+     * Crée tous les éléments graphiques de la page d'accueil
+     * et configure leur disposition.
+     */
     private void createUI() {
-        // Crée la NavBar
         navBarView = new NavBarView();
         HBox navBar = navBarView.getNavBar();
 
-        // Zone centrale
         VBox centerBox = new VBox(30);
         centerBox.setAlignment(Pos.CENTER);
 
-        // Message principal
         Label mainMessage = new Label("Réservez l’hébergement de vos rêves\nen quelques clics");
         mainMessage.setFont(new Font("Arial", 28));
         mainMessage.setStyle("-fx-font-weight: bold; -fx-text-fill: #000000;");
         mainMessage.setWrapText(true);
         mainMessage.setTextAlignment(TextAlignment.CENTER);
 
-        // Barre de recherche
         HBox searchContainer = new HBox(10);
         searchContainer.setAlignment(Pos.CENTER);
         searchContainer.setStyle(
@@ -53,19 +58,15 @@ public class HomePageView {
 
         searchField = new TextField();
         searchField.setPromptText("Recherche");
-        // Ajoute la zone de saisie à la barre de recherche
         searchContainer.getChildren().add(searchField);
         searchContainer.setPrefWidth(400);
         searchContainer.setMaxWidth(400);
 
-        // Chargement de l'image à afficher sous la barre de recherche
-        // Remplacez le chemin "/images/monImage.png" par le chemin réel de votre image dans votre projet
-        Image image = new Image("file:/Users/elishabajemon/IdeaProjects/projet-java-ing3-2025-ing3-java-2025-11-3/src/resources/homepage.png"); ImageView imageView = new ImageView(image); imageView.setFitWidth(300); // ajustez la taille selon vos besoins imageView.setPreserveRatio(true);
-        imageView = new ImageView(image);
-        imageView.setFitWidth(300); // ajustez la largeur de l'image si nécessaire
+        Image image = new Image("file:src/resources/homepage.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(300);
         imageView.setPreserveRatio(true);
 
-        // Ajoute le message principal, la barre de recherche et l'image dans le conteneur central
         centerBox.getChildren().addAll(mainMessage, searchContainer, imageView);
 
         BorderPane root = new BorderPane();
@@ -75,19 +76,33 @@ public class HomePageView {
 
         scene = new Scene(root, 1000, 600);
 
-        // Responsive
         searchContainer.prefWidthProperty().bind(scene.widthProperty().multiply(0.4));
         searchField.prefWidthProperty().bind(searchContainer.widthProperty().subtract(40));
     }
 
+    /**
+     * Retourne la scène principale de la page d'accueil.
+     *
+     * @return La scène contenant l'ensemble de la vue.
+     */
     public Scene getScene() {
         return scene;
     }
 
+    /**
+     * Retourne le champ de recherche.
+     *
+     * @return Champ de texte permettant la recherche.
+     */
     public TextField getSearchField() {
         return searchField;
     }
 
+    /**
+     * Retourne la barre de navigation associée à la page.
+     *
+     * @return Instance de NavBarView.
+     */
     public NavBarView getNavBarView() {
         return navBarView;
     }
