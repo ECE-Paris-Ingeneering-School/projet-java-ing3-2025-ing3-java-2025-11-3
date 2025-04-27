@@ -6,7 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-
+/**
+ * La classe {@code LoginPageView} représente la vue de la page de connexion
+ * de l'application. Elle organise une interface graphique contenant un formulaire
+ * d'authentification avec les champs requis, un bouton de connexion, ainsi que
+ * des liens vers la récupération de mot de passe et l'inscription.
+ */
 public class LoginPageView {
 
     private Scene scene;
@@ -15,11 +20,17 @@ public class LoginPageView {
     private Button loginButton;
     private Hyperlink registerLink;
     private NavBarView navBarView;
-
+    /**
+     * Construit une nouvelle instance de {@code LoginPageView}.
+     * Initialise tous les éléments graphiques et structure l'affichage de la page de connexion.
+     */
     public LoginPageView() {
         createUI();
     }
-
+    /**
+     * Construit et organise les composants graphiques de la page de connexion.
+     * Cette méthode initialise également la barre de navigation supérieure.
+     */
     private void createUI() {
         // Barre de navigation
         navBarView = new NavBarView();
@@ -114,27 +125,51 @@ public class LoginPageView {
 
         scene = new Scene(root, 800, 500);
     }
-
+    /**
+     * Retourne la scène contenant l'interface graphique de la page de connexion.
+     *
+     * @return la {@code Scene} affichant la page de connexion
+     */
     public Scene getScene() {
         return scene;
     }
-
+    /**
+     * Retourne le champ de saisie de l'email.
+     *
+     * @return le champ {@code TextField} pour l'email
+     */
     public TextField getEmailField() {
         return emailField;
     }
-
+    /**
+     * Retourne le champ de saisie du mot de passe.
+     *
+     * @return le champ {@code PasswordField} pour le mot de passe
+     */
     public PasswordField getPasswordField() {
         return passwordField;
     }
-
+    /**
+     * Retourne le bouton de connexion.
+     *
+     * @return le bouton {@code Button} permettant de lancer la connexion
+     */
     public Button getLoginButton() {
         return loginButton;
     }
-
+    /**
+     * Retourne le lien vers la page d'inscription.
+     *
+     * @return le lien hypertexte {@code Hyperlink} menant à l'inscription
+     */
     public Hyperlink getRegisterLink() {
         return registerLink;
     }
-
+    /**
+     * Retourne l'instance de la barre de navigation associée à cette vue.
+     *
+     * @return la barre de navigation {@code NavBarView}
+     */
     public NavBarView getNavBarView() {
         return navBarView;
     }
