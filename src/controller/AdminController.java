@@ -43,6 +43,8 @@ public class AdminController {
                 showHebergementsList()
         );
 
+
+
         view.getUtilisateursLabel().setOnMouseClicked(e ->
                 showUsersList()
         );
@@ -83,6 +85,10 @@ public class AdminController {
                 new AdminController(primaryStage).show();
             });
 
+        });
+
+        view.getAjouterOptionLabel().setOnMouseClicked(e -> {
+            AddOptionView addHView = new AddOptionView();
         });
     }
 
