@@ -53,7 +53,7 @@ public class SearchPageView {
         autreCheck = new CheckBox("Autre");
         prixSlider = new Slider(0, 500, 100);
         dateArriveePicker = new DatePicker(LocalDate.now());
-        dateDepartePicker = new DatePicker(LocalDate.now().plusDays(1));
+        dateDepartePicker = new DatePicker();
 
         maisonCheck.setSelected(false);
         appartementCheck.setSelected(false);

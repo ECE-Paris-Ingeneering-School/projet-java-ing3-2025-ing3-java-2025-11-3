@@ -4,6 +4,8 @@ import dao.HebergementDao;
 import dao.HebergementDaoImpl;
 import db.AzureDBConnector;
 import javafx.geometry.Pos;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import modele.Hebergement;
 import view.SearchPageView;
 import javafx.concurrent.Task;
@@ -11,6 +13,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -51,6 +54,28 @@ public class SearchPageController {
             view.getSearchField().setText(initialQuery);
         }
 
+        DatePicker dateArrivee = view.getDateArriveePicker();
+        dateArrivee.setValue(LocalDate.now());
+        dateArrivee.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(empty || date.isBefore(LocalDate.now()));
+            }
+        });
+
+        DatePicker dateDepart = view.getDateDepartPicker();
+        dateDepart.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                LocalDate minDep = dateArrivee.getValue() != null
+                        ? dateArrivee.getValue().plusDays(1)
+                        : LocalDate.now().plusDays(1);
+                setDisable(empty || date.isBefore(minDep));
+            }
+        });
+
         configureEventHandlers();
         updateResults();
     }
@@ -61,19 +86,40 @@ public class SearchPageController {
     private void configureEventHandlers() {
         new NavBarController(primaryStage, view.getNavBarView());
 
-        // Filters and search triggers
         view.getMaisonCheck().setOnAction(e -> updateResults());
         view.getAppartementCheck().setOnAction(e -> updateResults());
         view.getCampingCheck().setOnAction(e -> updateResults());
         view.getHotelCheck().setOnAction(e -> updateResults());
         view.getAubergeCheck().setOnAction(e -> updateResults());
         view.getAutreCheck().setOnAction(e -> updateResults());
+
         view.getPrixSlider().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
+
         view.getDateArriveePicker().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
+        view.getDateDepartPicker().valueProperty().addListener((obs, oldVal, newVal) -> updateResults());
 
         view.getSearchField().setOnAction(e -> updateResults());
         view.getSortPriceButton().setOnAction(e -> updateResults());
         view.getSortRatingButton().setOnAction(e -> updateResults());
+
+        DatePicker dateArrivee = view.getDateArriveePicker();
+        dateArrivee.valueProperty().addListener((obs, oldV, newV) -> {
+            DatePicker dpDep = view.getDateDepartPicker();
+            dpDep.setDayCellFactory(picker -> new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    LocalDate minDep = newV != null
+                            ? newV.plusDays(1)
+                            : LocalDate.now().plusDays(1);
+                    setDisable(empty || date.isBefore(minDep));
+                }
+            });
+            if (dpDep.getValue() != null && newV != null
+                    && dpDep.getValue().isBefore(newV.plusDays(1))) {
+                dpDep.setValue(null);
+            }
+        });
     }
 
     /**
@@ -122,7 +168,17 @@ public class SearchPageController {
         int prixMax = (int) view.getPrixSlider().getValue();
         String recherche = view.getSearchField().getText().toLowerCase().trim();
 
-        List<Hebergement> result = dao.getFilteredHebergements(types, prixMax, recherche);
+        LocalDate dateArrivee = view.getDateArriveePicker().getValue();
+        LocalDate dateDepart  = view.getDateDepartPicker().getValue();
+
+        // Validation des dates
+        if (dateArrivee != null && dateDepart != null && dateArrivee.isAfter(dateDepart)) {
+            return List.of();
+        }
+
+        List<Hebergement> result = dao.getFilteredHebergements(
+                types, prixMax, recherche, dateArrivee, dateDepart
+        );
 
         if (view.getSortPriceButton().isFocused()) {
             result.sort(Comparator.comparingInt(Hebergement::getPrix));
