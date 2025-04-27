@@ -4,6 +4,7 @@ import dao.ClientDaoImpl;
 import dao.HebergementDaoImpl;
 import dao.OptionDaoImpl;
 import dao.ReservationDaoImpl;
+import dao.ReductionDaoImpl;
 import db.AzureDBConnector;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
@@ -41,6 +42,8 @@ public class AdminController {
     private final OptionDaoImpl optionDao;
     private UserReservationsView viewUserReservation;
     private AddOptionView addOptionView;
+    private AddReductionView addReductionView;
+    private final ReductionDaoImpl reductionDao;
 
     /**
      * Constructeur du contrôleur AdminController.
@@ -57,8 +60,10 @@ public class AdminController {
         this.clientDao = new ClientDaoImpl(azureDBConnector);
         this.reservationDao = new ReservationDaoImpl(azureDBConnector);
         this.optionDao = new OptionDaoImpl(azureDBConnector);
+        this.reductionDao = new ReductionDaoImpl(azureDBConnector);
         this.viewUserReservation = null;
         this.addOptionView = null;
+        this.addReductionView = null;
 
         new NavBarController(primaryStage, view.getNavBarView());
 
@@ -155,6 +160,22 @@ public class AdminController {
         view.getAjouterOptionLabel().setOnMouseClicked(e -> {
             showAddOption();
         });
+
+        view.getAjouterReductionLabel().setOnMouseClicked(e -> {
+            addReductionView = new AddReductionView();
+            showSection(addReductionView.getRoot());
+
+            addReductionView.getBtnSubmit().setOnAction(ev -> {
+                String codePromo = addReductionView.getCodePromo().getText();
+                int pourcentage = Integer.parseInt(addReductionView.getPourcentage().getText());
+
+                Reduction reduction = new Reduction(0, codePromo, pourcentage);
+                reductionDao.addReduction(reduction);
+
+                addReductionView.resetFields();
+            });
+        });
+
     }
 
     /**

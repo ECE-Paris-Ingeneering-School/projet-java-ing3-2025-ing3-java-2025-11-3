@@ -19,6 +19,7 @@ public class AdminView {
     private final Label reservationsUtilisateurLabel;
     private final Label ajouterLogementLabel,ajouterOptionLabel;
     private final NavBarView navBarView;
+    private final Label ajouterReductionLabel;
 
     // Zone centrale où on injectera nos vues stub
     private final StackPane contentPane;
@@ -43,6 +44,7 @@ public class AdminView {
         utilisateursLabel            = createMenuLabel("Utilisateurs");
         reservationsPasseesLabel     = createMenuLabel("Réservations passées");
         reservationsUtilisateurLabel = createMenuLabel("Réservations par utilisateur");
+        ajouterReductionLabel        = createMenuLabel("Ajouter réduction");
 
         VBox menuBox = new VBox(10,
                 logementsLabel,
@@ -50,7 +52,8 @@ public class AdminView {
                 ajouterOptionLabel,
                 utilisateursLabel,
                 reservationsPasseesLabel,
-                reservationsUtilisateurLabel
+                reservationsUtilisateurLabel,
+                ajouterReductionLabel
         );
         menuBox.setPadding(new Insets(20, 0, 0, 0));
         sidebar.getChildren().add(menuBox);
@@ -88,5 +91,5 @@ public class AdminView {
     public StackPane getContentPane()              { return contentPane; }
     public NavBarView getNavBarView() { return navBarView;  }
     public Label getAjouterOptionLabel() { return ajouterOptionLabel;  }
-
+    public Label getAjouterReductionLabel() { return ajouterReductionLabel;  }
 }
