@@ -4,13 +4,16 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import modele.Options;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Vue pour ajouter un hébergement.
- * Contient tous les champs nécessaires pour saisir les informations d'un logement.
+ * Vue pour ajouter un hébergement avec sélection d'options.
  */
 public class AddHebergementView {
+
     private final VBox root;
     private final Button submit;
     private final Label title;
@@ -23,12 +26,16 @@ public class AddHebergementView {
     private final Button btnChooseImage;
     private final TextField imagePathField;
 
+    private final VBox optionsBox;
+    private final List<CheckBox> checkBoxes;
+
     /**
-     * Construit la vue pour ajouter un hébergement avec les types spécifiés.
+     * Construit la vue pour ajouter un hébergement avec les types et options spécifiés.
      *
      * @param types Liste des types d'hébergement disponibles.
+     * @param options Liste des options disponibles.
      */
-    public AddHebergementView(ArrayList<String> types) {
+    public AddHebergementView(ArrayList<String> types, List<Options> options) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
@@ -57,6 +64,16 @@ public class AddHebergementView {
 
         submit = new Button("Ajouter");
 
+        optionsBox = new VBox(5);
+        checkBoxes = new ArrayList<>();
+
+        for (Options option : options) {
+            CheckBox cb = new CheckBox(option.getNom());
+            cb.setUserData(option);
+            checkBoxes.add(cb);
+            optionsBox.getChildren().add(cb);
+        }
+
         root.getChildren().addAll(
                 title,
                 new Label("Nom"), nomField,
@@ -66,107 +83,62 @@ public class AddHebergementView {
                 new Label("Prix"), prixField,
                 new Label("Note"), noteSpin,
                 new Label("Image"), btnChooseImage, imagePathField,
+                new Label("Options disponibles"), optionsBox,
                 submit
         );
     }
 
-    /**
-     * Retourne le conteneur principal de la vue.
-     *
-     * @return VBox racine.
-     */
     public VBox getRoot() {
         return root;
     }
 
-    /**
-     * Retourne le bouton de soumission.
-     *
-     * @return Bouton pour ajouter un hébergement.
-     */
     public Button getBtnSubmit() {
         return submit;
     }
 
-    /**
-     * Retourne le champ de saisie du nom.
-     *
-     * @return Champ de texte pour le nom.
-     */
     public TextField getNomField() {
         return nomField;
     }
 
-    /**
-     * Retourne le champ de saisie de l'adresse.
-     *
-     * @return Champ de texte pour l'adresse.
-     */
     public TextField getAdresseField() {
         return adresseField;
     }
 
-    /**
-     * Retourne le champ de saisie de la description.
-     *
-     * @return Zone de texte pour la description.
-     */
     public TextArea getDescriptionArea() {
         return descriptionArea;
     }
 
-    /**
-     * Retourne le champ de saisie du prix.
-     *
-     * @return Champ de texte pour le prix.
-     */
     public TextField getPrixField() {
         return prixField;
     }
 
-    /**
-     * Retourne le sélecteur de note.
-     *
-     * @return Spinner pour la note (0-5).
-     */
     public Spinner<Integer> getNoteSpin() {
         return noteSpin;
     }
 
-    /**
-     * Retourne le type d'hébergement sélectionné.
-     *
-     * @return Type sélectionné dans la ChoiceBox.
-     */
     public String getType() {
         return typeBox.getValue();
     }
 
-    /**
-     * Retourne le bouton pour choisir une image.
-     *
-     * @return Bouton de sélection d'image.
-     */
     public Button getBtnChooseImage() {
         return btnChooseImage;
     }
 
-    /**
-     * Retourne le chemin de l'image sélectionnée.
-     *
-     * @return Chemin de l'image sous forme de texte.
-     */
     public String getImagePath() {
         return imagePathField.getText();
     }
 
-    /**
-     * Définit le chemin de l'image sélectionnée.
-     *
-     * @param path Chemin du fichier image.
-     */
     public void setImagePath(String path) {
         imagePathField.setText(path);
     }
 
+    public List<Options> getSelectedOptions() {
+        List<Options> selected = new ArrayList<>();
+        for (CheckBox cb : checkBoxes) {
+            if (cb.isSelected()) {
+                selected.add((Options) cb.getUserData());
+            }
+        }
+        return selected;
+    }
 }

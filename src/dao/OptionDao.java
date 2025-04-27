@@ -1,6 +1,9 @@
 package dao;
 import modele.Options;
 
+import javax.swing.text.html.Option;
+import java.util.List;
+
 public interface OptionDao {
     /*
     * Sauvegarde une nouvelle Option dans la BDD
@@ -31,5 +34,5 @@ public interface OptionDao {
      */
     int getIdOption(String nom);
 
-
+    List<Options> getAllOptions();
 }

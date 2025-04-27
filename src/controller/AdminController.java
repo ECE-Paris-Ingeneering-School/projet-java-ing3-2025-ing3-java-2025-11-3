@@ -77,10 +77,11 @@ public class AdminController {
             typeMap.put("Maison", 3);
             typeMap.put("Camping", 4);
 
-            // Créer une liste pour l'affichage (combo box ou autre)
             ArrayList<String> types = new ArrayList<>(typeMap.keySet());
 
-            AddHebergementView addHView = new AddHebergementView(types);
+            List<Options> optionsFromDB = optionDao.getAllOptions();
+
+            AddHebergementView addHView = new AddHebergementView(types,optionsFromDB); // ici on passe les options
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Sélectionner une image pour le logement");
@@ -95,6 +96,7 @@ public class AdminController {
             });
 
             showSection(addHView.getRoot());
+
             addHView.getBtnSubmit().setOnAction(ev -> {
                 try {
                     String nom         = addHView.getNomField().getText();
@@ -107,7 +109,7 @@ public class AdminController {
                     String srcPath = addHView.getImagePath();
                     ArrayList<String> images = new ArrayList<>();
                     if (srcPath != null && !srcPath.isBlank()) {
-                        Path destDir  = Paths.get("src","resources", "images");
+                        Path destDir  = Paths.get("src", "resources", "images");
                         Files.createDirectories(destDir);
                         String ext      = srcPath.substring(srcPath.lastIndexOf('.'));
                         String fileName = UUID.randomUUID().toString() + ext;
@@ -117,56 +119,37 @@ public class AdminController {
                         images.add(fileName);
                     }
 
-                    ArrayList<Options> options = new ArrayList<>();
-                    ArrayList<Avis> avis        = new ArrayList<>();
-                    Hebergement hebergement = new Hebergement(0,
-                            nom, type, adresse,
-                            description, prix, note,
+                    ArrayList<Options> options = new ArrayList<>(addHView.getSelectedOptions());
+                    ArrayList<Avis> avis = new ArrayList<>();
+                    Hebergement hebergement = new Hebergement(
+                            0, nom, type, adresse, description, prix, note,
                             images, options, avis
                     );
 
                     hebergementDao.ajouterHebergement(hebergement);
+
+                    int hebergementId = hebergementDao.getIdHebergement(nom);
+
+                    for (Options option : options) {
+                        int optionId = optionDao.getIdOption(option.getNom());
+                        hebergementDao.ajouterOption(hebergementId, optionId);
+                    }
 
                     new AdminController(primaryStage).show();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             });
-
-
         });
+
 
         view.getAjouterOptionLabel().setOnMouseClicked(e -> {
             showAddOption();
         });
     }
     private void showAddOption(){
-        loadAsync(
-                hebergementDao::getAllHebergements,
-                hebergements -> {
-                    ArrayList<String> names = hebergements.stream()
-                            .map(h -> h.getNom())
-                            .collect(Collectors.toCollection(ArrayList::new));  // ici on obtient vraiment un ArrayList
-
-                    addOptionView = new AddOptionView(names);
-                    showSection(addOptionView.getRoot());
-
-                    addOptionView.getBtnSubmit().setOnAction(ev -> {
-                        // Récupération des valeurs
-                        String nom = addOptionView.getNomField().getText();
-                        String description = addOptionView.getDescriptionField().getText();
-                        // Récupération de l'hébergement sélectionné
-                        String selectedHebergement = addOptionView.getHebergementSelect();
-                        int hebergementId = hebergementDao.getIdHebergement(selectedHebergement);
-                        // Vérification de l'existence de l'option sinon ajout
-                        Options option = new Options(nom,description);
-                        optionDao.ajouterOption(option);
-                        // Ajout de l'option à l'hébergement
-                        hebergementDao.ajouterOption(hebergementId,optionDao.getIdOption(nom) );
-                        addOptionView.resetFields();
-                    });
-                }
-        );
+        addOptionView = new AddOptionView();
+        showSection(addOptionView.getRoot());
     }
     private void showHebergementsList(){
         loadAsync(

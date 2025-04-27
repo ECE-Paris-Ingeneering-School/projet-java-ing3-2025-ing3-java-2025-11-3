@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OptionDaoImpl implements OptionDao{
     private AzureDBConnector conn;
@@ -100,5 +102,25 @@ public class OptionDaoImpl implements OptionDao{
             throw new RuntimeException(e);
         }
         return 0;
+    }
+
+    @Override
+    public List<Options> getAllOptions() {
+        String sql = "SELECT * FROM options";
+        List<Options> optionsList = new ArrayList<>();
+        try {
+            Connection connection= conn.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("option_id");
+                String nom = rs.getString("nom_option");
+                String description = rs.getString("description");
+                optionsList.add(new Options(id, nom, description));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return optionsList;
     }
 }
