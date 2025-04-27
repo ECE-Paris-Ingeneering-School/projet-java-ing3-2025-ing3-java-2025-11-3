@@ -1,14 +1,14 @@
 package controller;
 
-import dao.ReductionDao;
-import dao.ReductionDaoImpl;
-import dao.ReservationDao;
-import dao.ReservationDaoImpl;
+import dao.*;
 import db.AzureDBConnector;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import modele.Admin;
+import modele.Client;
 import modele.Reservation;
+import modele.User;
 import view.PaymentPageView;
 
 import java.time.LocalDate;
@@ -79,6 +79,20 @@ public class PaymentPageController {
             if (!exists) {
                 showAlert(Alert.AlertType.ERROR, "Code promo invalide.");
                 return;
+            }
+            User currentUser = UserSession.getInstance().getConnectedUser();
+            if (currentUser == null) {
+                showAlert(Alert.AlertType.WARNING, "Veuillez vous connecter pour appliquer un code promo.");
+                return;
+            }
+            if(!(currentUser instanceof Admin)) {
+                int id = currentUser.getId();
+                ClientDao clientDao = new ClientDaoImpl(new AzureDBConnector());
+
+                if (clientDao.getClient_State(id) == 1) {
+                    showAlert(Alert.AlertType.WARNING, "Les nouveaux clients ne peuvent pas utiliser de code promo.");
+                    return;
+                }
             }
 
             int redId = reductionDao.getreductionId(new modele.Reduction(code, 0));

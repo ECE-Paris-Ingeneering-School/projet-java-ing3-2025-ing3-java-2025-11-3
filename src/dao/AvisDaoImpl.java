@@ -6,7 +6,7 @@ import db.AzureDBConnector;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class AvisDaoImpl implements AvisDao {
+public class    AvisDaoImpl implements AvisDao {
     private final AzureDBConnector conn;
 
     public AvisDaoImpl(AzureDBConnector conn) {this.conn = conn;}
