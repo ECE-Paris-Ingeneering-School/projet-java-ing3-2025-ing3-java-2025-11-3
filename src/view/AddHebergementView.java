@@ -4,12 +4,12 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-
-import javafx.stage.FileChooser;
-import java.io.File;
-
 import java.util.ArrayList;
 
+/**
+ * Vue pour ajouter un hébergement.
+ * Contient tous les champs nécessaires pour saisir les informations d'un logement.
+ */
 public class AddHebergementView {
     private final VBox root;
     private final Button submit;
@@ -20,41 +20,41 @@ public class AddHebergementView {
     private final TextArea descriptionArea;
     private final TextField prixField;
     private final Spinner<Integer> noteSpin;
-
     private final Button btnChooseImage;
     private final TextField imagePathField;
 
-
+    /**
+     * Construit la vue pour ajouter un hébergement avec les types spécifiés.
+     *
+     * @param types Liste des types d'hébergement disponibles.
+     */
     public AddHebergementView(ArrayList<String> types) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
 
         title = new Label("Ajouter un logement");
 
-        nomField        = new TextField();
+        nomField = new TextField();
         nomField.setPromptText("Nom");
 
         typeBox = new ChoiceBox<>(FXCollections.observableArrayList(types));
-        //typeBox.setValue(0);
 
-        adresseField    = new TextField();
+        adresseField = new TextField();
         adresseField.setPromptText("Adresse");
 
-        descriptionArea  = new TextArea();
+        descriptionArea = new TextArea();
         descriptionArea.setPromptText("Description");
 
-        prixField       = new TextField();
+        prixField = new TextField();
         prixField.setPromptText("Prix");
 
         noteSpin = new Spinner<>(0, 5, 0);
 
-        // juste après noteSpin = new Spinner<>(...)
-        btnChooseImage   = new Button("Choisir une image");
-        imagePathField   = new TextField();
+        btnChooseImage = new Button("Choisir une image");
+        imagePathField = new TextField();
         imagePathField.setPromptText("Aucun fichier sélectionné");
         imagePathField.setEditable(false);
 
-        // Bouton d'ajout
         submit = new Button("Ajouter");
 
         root.getChildren().addAll(
@@ -70,29 +70,103 @@ public class AddHebergementView {
         );
     }
 
+    /**
+     * Retourne le conteneur principal de la vue.
+     *
+     * @return VBox racine.
+     */
     public VBox getRoot() {
         return root;
     }
-    public Button getBtnSubmit(){return submit;}
 
-    public TextField getNomField() {return nomField;}
+    /**
+     * Retourne le bouton de soumission.
+     *
+     * @return Bouton pour ajouter un hébergement.
+     */
+    public Button getBtnSubmit() {
+        return submit;
+    }
 
-    //public ChoiceBox<Integer> getTypeBox() {return typeBox;}
+    /**
+     * Retourne le champ de saisie du nom.
+     *
+     * @return Champ de texte pour le nom.
+     */
+    public TextField getNomField() {
+        return nomField;
+    }
 
-    public TextField getAdresseField() {return adresseField;}
+    /**
+     * Retourne le champ de saisie de l'adresse.
+     *
+     * @return Champ de texte pour l'adresse.
+     */
+    public TextField getAdresseField() {
+        return adresseField;
+    }
 
-    public TextArea getDescriptionArea() {return descriptionArea;}
+    /**
+     * Retourne le champ de saisie de la description.
+     *
+     * @return Zone de texte pour la description.
+     */
+    public TextArea getDescriptionArea() {
+        return descriptionArea;
+    }
 
-    public TextField getPrixField() {return prixField;}
+    /**
+     * Retourne le champ de saisie du prix.
+     *
+     * @return Champ de texte pour le prix.
+     */
+    public TextField getPrixField() {
+        return prixField;
+    }
 
-    public Spinner<Integer> getNoteSpin() {return noteSpin;}
+    /**
+     * Retourne le sélecteur de note.
+     *
+     * @return Spinner pour la note (0-5).
+     */
+    public Spinner<Integer> getNoteSpin() {
+        return noteSpin;
+    }
 
-    public String getType() {return typeBox.getValue();}
+    /**
+     * Retourne le type d'hébergement sélectionné.
+     *
+     * @return Type sélectionné dans la ChoiceBox.
+     */
+    public String getType() {
+        return typeBox.getValue();
+    }
 
-    public Button getBtnChooseImage() { return btnChooseImage; }
+    /**
+     * Retourne le bouton pour choisir une image.
+     *
+     * @return Bouton de sélection d'image.
+     */
+    public Button getBtnChooseImage() {
+        return btnChooseImage;
+    }
 
-    public String getImagePath() { return imagePathField.getText(); }
+    /**
+     * Retourne le chemin de l'image sélectionnée.
+     *
+     * @return Chemin de l'image sous forme de texte.
+     */
+    public String getImagePath() {
+        return imagePathField.getText();
+    }
 
-    public void setImagePath(String path) { imagePathField.setText(path); }
+    /**
+     * Définit le chemin de l'image sélectionnée.
+     *
+     * @param path Chemin du fichier image.
+     */
+    public void setImagePath(String path) {
+        imagePathField.setText(path);
+    }
 
 }
