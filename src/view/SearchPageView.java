@@ -23,7 +23,7 @@ public class SearchPageView {
     private Button sortPriceButton, sortRatingButton;
     private FlowPane lodgingFlowPane;
 
-    private CheckBox maisonCheck, appartementCheck, autreCheck;
+    private CheckBox hotelCheck, aubergeCheck,campingCheck ,maisonCheck, appartementCheck, autreCheck;
     private Slider prixSlider;
     private Spinner<Integer> personnesSpinner, nuitsSpinner;
     private DatePicker dateArriveePicker;
@@ -45,6 +45,10 @@ public class SearchPageView {
         filtersBox.setPrefWidth(250);
         filtersBox.setAlignment(Pos.TOP_LEFT);
 
+
+        hotelCheck = new CheckBox("Hôtel");
+        aubergeCheck = new CheckBox("Auberge");
+        campingCheck = new CheckBox("Camping");
         maisonCheck = new CheckBox("Maison");
         appartementCheck = new CheckBox("Appartement");
         autreCheck = new CheckBox("Autre");
@@ -55,12 +59,14 @@ public class SearchPageView {
 
         maisonCheck.setSelected(false);
         appartementCheck.setSelected(false);
+        campingCheck.setSelected(false);
+        hotelCheck.setSelected(false);
         autreCheck.setSelected(false);
         prixSlider.setValue(500);
 
         filtersBox.getChildren().addAll(
                 new Label("Filtres"),
-                maisonCheck, appartementCheck, autreCheck,
+                maisonCheck,campingCheck,hotelCheck,aubergeCheck, appartementCheck, autreCheck,
                 new Label("Prix max:"), prixSlider,
                 new Label("Arrivée:"), dateArriveePicker,
                 new Label("Personnes:"), personnesSpinner,
@@ -154,6 +160,18 @@ public class SearchPageView {
 
     public CheckBox getAppartementCheck() {
         return appartementCheck;
+    }
+
+    public CheckBox getCampingCheck() {
+        return campingCheck;
+    }
+
+    public CheckBox getHotelCheck() {
+        return hotelCheck;
+    }
+
+    public CheckBox getAubergeCheck() {
+        return aubergeCheck;
     }
 
     public CheckBox getAutreCheck() {

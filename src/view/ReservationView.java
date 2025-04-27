@@ -171,6 +171,10 @@ public class ReservationView {
         if (h != null && h.getImage() != null) {
             imageUrl = String.valueOf(h.getImage());
         }
+
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            imageUrl = "file:src/resources/larry.jpeg"; // Image par défaut
+        }
         try {
             imageView.setImage(new Image(imageUrl, 150, 150, false, true));
         } catch (Exception e) {
