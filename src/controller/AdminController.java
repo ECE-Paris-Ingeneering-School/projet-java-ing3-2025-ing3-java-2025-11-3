@@ -8,16 +8,24 @@ import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import modele.*;
 import view.*;
 import javafx.scene.layout.Region;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.time.LocalDate;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+
 
 public class AdminController {
 
@@ -26,6 +34,7 @@ public class AdminController {
     private final HebergementDaoImpl hebergementDao;
     private final ClientDaoImpl clientDao;
     private final ReservationDaoImpl reservationDao;
+
     private UserReservationsView viewUserReservation;
 
     public AdminController(Stage primaryStage) {
@@ -43,8 +52,6 @@ public class AdminController {
         view.getLogementsLabel().setOnMouseClicked(e ->
                 showHebergementsList()
         );
-
-
 
         view.getUtilisateursLabel().setOnMouseClicked(e ->
                 showUsersList()
@@ -71,20 +78,59 @@ public class AdminController {
 
             AddHebergementView addHView = new AddHebergementView(types);
 
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Sélectionner une image pour le logement");
+            fileChooser.getExtensionFilters().add(
+                    new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
+            );
+            addHView.getBtnChooseImage().setOnAction(ev -> {
+                File file = fileChooser.showOpenDialog(primaryStage);
+                if (file != null) {
+                    addHView.setImagePath(file.getAbsolutePath());
+                }
+            });
+
             showSection(addHView.getRoot());
             addHView.getBtnSubmit().setOnAction(ev -> {
-                String nom = addHView.getNomField().getText();
-                String selectedType = addHView.getType(); // Assure-toi que tu récupères bien la valeur sélectionnée
-                int type = typeMap.getOrDefault(selectedType, -1); // Par sécurité, si jamais le type n'est pas trouvé
-                String adresse = addHView.getAdresseField().getText();
-                String description = addHView.getDescriptionArea().getText();
-                int prix = Integer.parseInt(addHView.getPrixField().getText());
-                int note = addHView.getNoteSpin().getValue();
+                try {
+                    String nom         = addHView.getNomField().getText();
+                    int type           = typeMap.getOrDefault(addHView.getType(), -1);
+                    String adresse     = addHView.getAdresseField().getText();
+                    String description = addHView.getDescriptionArea().getText();
+                    int prix           = Integer.parseInt(addHView.getPrixField().getText());
+                    int note           = addHView.getNoteSpin().getValue();
 
-                Hebergement hebergement = new Hebergement(nom, type, adresse, description, prix, note);
-                hebergementDao.ajouterHebergement(hebergement);
-                new AdminController(primaryStage).show();
+                    String srcPath = addHView.getImagePath();
+                    ArrayList<String> images = new ArrayList<>();
+                    if (srcPath != null && !srcPath.isBlank()) {
+                        Path destDir = Paths.get("../src/resources/images");
+                        Files.createDirectories(destDir);
+                        String ext = srcPath.substring(srcPath.lastIndexOf('.'));
+                        String fileName = UUID.randomUUID().toString() + ext;
+                        Path destPath = destDir.resolve(fileName);
+                        Files.copy(Paths.get(srcPath), destPath);
+
+                        String imageUrl = destPath.toUri().toString();
+                        images.add(imageUrl);
+                    }
+
+                    ArrayList<Options> options = new ArrayList<>();
+                    ArrayList<Avis> avis        = new ArrayList<>();
+                    Hebergement hebergement = new Hebergement(
+                            /* Hid */       0,
+                            nom, type, adresse,
+                            description, prix, note,
+                            images, options, avis
+                    );
+
+                    hebergementDao.ajouterHebergement(hebergement);
+
+                    new AdminController(primaryStage).show();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             });
+
 
         });
 
