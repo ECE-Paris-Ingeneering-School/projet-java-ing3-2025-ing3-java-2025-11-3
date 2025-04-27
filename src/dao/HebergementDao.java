@@ -5,6 +5,7 @@ import modele.Hebergement;
 import modele.Options;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public interface HebergementDao {
@@ -71,6 +72,6 @@ public interface HebergementDao {
       */
      void ajouterOption(int id_hebergement, int id_option);
 
+     public List<Hebergement> getFilteredHebergements(List<String> types, int prixMax, String rechercheTexte);
 
-     public ArrayList<Hebergement> getFilteredHebergements(boolean maison, boolean appart, boolean autre, int prixMax, String rechercheTexte);
 }
