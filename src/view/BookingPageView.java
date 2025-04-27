@@ -73,7 +73,7 @@ public class BookingPageView {
         StackPane imagePane = new StackPane();
         imagePane.setMaxWidth(500);
         imagePane.setMaxHeight(500);
-        ImageView mainImage = new ImageView(new Image("file:src/resources/" + hebergement.getImage()));
+        ImageView mainImage = new ImageView(new Image("file:src/resources/images/" + hebergement.getImageFilename()));
         mainImage.setFitWidth(500);
         mainImage.setFitHeight(500);
         mainImage.setPreserveRatio(false);

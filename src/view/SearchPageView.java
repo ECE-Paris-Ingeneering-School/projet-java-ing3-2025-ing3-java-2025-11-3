@@ -131,9 +131,6 @@ public class SearchPageView {
         iv.setFitWidth(200);
         iv.setFitHeight(250);
 
-        //print le chemin de l'image
-        System.out.println("file:src/resources/images/" + hebergement.getImageFilename());
-
         box.getChildren().addAll(iv, new Label(hebergement.getNom()));
         return box;
     }
