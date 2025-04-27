@@ -150,7 +150,18 @@ public class AdminController {
     private void showAddOption(){
         addOptionView = new AddOptionView();
         showSection(addOptionView.getRoot());
+
+        addOptionView.getBtnSubmit().setOnAction(ev -> {
+            String nom = addOptionView.getNomField().getText();
+            String description = addOptionView.getDescriptionField().getText();
+
+            Options option = new Options(0, nom, description);
+            optionDao.ajouterOption(option);
+
+            addOptionView.resetFields();
+        });
     }
+
     private void showHebergementsList(){
         loadAsync(
                 hebergementDao::getAllHebergements,
