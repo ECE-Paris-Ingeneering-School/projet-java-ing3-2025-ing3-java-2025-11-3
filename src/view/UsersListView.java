@@ -11,10 +11,20 @@ import modele.User;
 
 import java.util.List;
 
+/**
+ * Vue affichant une liste d'utilisateurs.
+ * La logique d'action (suppression, modification, etc.) doit être gérée par le contrôleur.
+ */
 public class UsersListView {
     private final VBox root;
     private final TableView<Client> table;
 
+    /**
+     * Construit une nouvelle instance de {@code UsersListView}.
+     * Initialise la vue avec un titre et un tableau listant les utilisateurs fournis.
+     *
+     * @param listeClients la liste des utilisateurs à afficher
+     */
     public UsersListView(List<Client> listeClients) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
@@ -44,6 +54,11 @@ public class UsersListView {
         root.getChildren().addAll(title, table);
     }
 
+    /**
+     * Retourne la racine de cette vue de liste d'utilisateurs.
+     *
+     * @return la racine de la vue
+     */
     public VBox getRoot() {
         return root;
     }

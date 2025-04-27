@@ -9,7 +9,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.effect.BlurType;
-
+/**
+ * La classe {@code PaymentPageView} représente la vue de la page de paiement de l'application.
+ * Elle organise une interface graphique simple avec des champs pour entrer les informations de paiement
+ * et un bouton pour valider le paiement.
+ */
 public class PaymentPageView {
     private final Scene scene;
 
@@ -22,6 +26,12 @@ public class PaymentPageView {
     private Label priceLabel;
     private Button cancelButton;        // ← nouveau
 
+    /**
+     * Construit une nouvelle instance de {@code PaymentPageView}.
+     * Initialise l'interface utilisateur et affiche le montant initial à payer.
+     *
+     * @param initialPrice le prix initial du paiement
+     */
     public PaymentPageView(double initialPrice) {
         StackPane root = new StackPane();
         root.setStyle("-fx-background-color: #f0f2f5;");
@@ -98,7 +108,11 @@ public class PaymentPageView {
 
         scene = new Scene(root, 600, 450);
     }
-
+    /**
+     * Applique un style standard aux champs de texte.
+     *
+     * @param tf le champ de texte à styliser
+     */
     private void styleTextField(TextField tf) {
         tf.setStyle(
                 "-fx-background-color: white;" +
@@ -108,7 +122,11 @@ public class PaymentPageView {
                         "-fx-padding: 8 10;"
         );
     }
-
+    /**
+     * Applique un style primaire aux boutons principaux (ex: bouton de validation).
+     *
+     * @param btn le bouton à styliser
+     */
     private void stylePrimaryButton(Button btn) {
         btn.setFont(Font.font(14));
         btn.setTextFill(Color.WHITE);
@@ -117,7 +135,11 @@ public class PaymentPageView {
         )));
         btn.setPadding(new Insets(10, 20, 10, 20));
     }
-
+    /**
+     * Applique un style secondaire aux boutons secondaires (ex: bouton d'annulation, bouton appliquer).
+     *
+     * @param btn le bouton à styliser
+     */
     private void styleSecondaryButton(Button btn) {
         btn.setFont(Font.font(14));
         btn.setTextFill(Color.web("#333"));
@@ -132,14 +154,59 @@ public class PaymentPageView {
         )));
         btn.setPadding(new Insets(8, 16, 8, 16));
     }
-
+    /**
+     * Retourne la scène principale de la page de paiement.
+     *
+     * @return la {@code Scene} affichant l'interface de paiement
+     */
     public Scene getScene() { return scene; }
+
+    /**
+     * Retourne le champ de saisie du numéro de carte bancaire.
+     *
+     * @return le champ {@code TextField} pour le numéro de carte
+     */
     public TextField getCardNumberField() { return cardNumberField; }
+    /**
+     * Retourne le champ de saisie de la date d'expiration de la carte.
+     *
+     * @return le champ {@code TextField} pour la date d'expiration
+     */
     public TextField getExpiryField()    { return expiryField; }
+    /**
+     * Retourne le champ de saisie du code CVV de la carte.
+     *
+     * @return le champ {@code TextField} pour le code CVV
+     */
     public TextField getCvvField()       { return cvvField; }
+    /**
+     * Retourne le champ de saisie du code promotionnel.
+     *
+     * @return le champ {@code TextField} pour le code promo
+     */
     public TextField getPromoCodeField() { return promoCodeField; }
+    /**
+     * Retourne le bouton d'application du code promotionnel.
+     *
+     * @return le bouton {@code Button} pour appliquer le code promo
+     */
     public Button    getApplyPromoButton(){ return applyPromoButton; }
+    /**
+     * Retourne le bouton de validation du paiement.
+     *
+     * @return le bouton {@code Button} pour valider le paiement
+     */
     public Button    getConfirmButton()  { return confirmButton; }
+    /**
+     * Retourne l'étiquette affichant le montant à payer.
+     *
+     * @return l'étiquette {@code Label} pour le montant
+     */
     public Label     getPriceLabel()     { return priceLabel; }
+    /**
+     * Retourne le bouton d'annulation du paiement.
+     *
+     * @return le bouton {@code Button} pour annuler le paiement
+     */
     public Button getCancelButton() { return cancelButton; }
 }

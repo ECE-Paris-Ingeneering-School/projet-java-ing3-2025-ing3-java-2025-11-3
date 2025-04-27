@@ -10,7 +10,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import modele.Hebergement;
 import java.time.LocalDate;
-
+/*
+ * Page de recherche d'hébergements.
+ * Permet à l'utilisateur de filtrer et trier les hébergements disponibles.
+ */
 public class SearchPageView {
 
     private Scene scene;
@@ -28,11 +31,16 @@ public class SearchPageView {
     private CheckBox hotelCheck, aubergeCheck,campingCheck ,maisonCheck, appartementCheck, autreCheck;
     private Slider prixSlider;
     private DatePicker dateArriveePicker,dateDepartePicker;
-
+/*
+    * Constructeur de la vue de recherche.
+ */
     public SearchPageView() {
         createUI();
     }
-
+/**
+     * Crée l'interface utilisateur de la page de recherche.
+     * Configure les éléments graphiques et leur disposition.
+     */
     private void createUI() {
         // racine et barre de navigation
         root = new BorderPane();
@@ -121,7 +129,12 @@ public class SearchPageView {
         // création de la scène
         scene = new Scene(root, 1200, 800);
     }
-
+/**
+     * Crée un élément d'hébergement à afficher dans le FlowPane.
+     *
+     * @param hebergement L'hébergement à afficher.
+     * @return Un VBox contenant l'image et le nom de l'hébergement.
+     */
     public VBox createLodgingItem(Hebergement hebergement) {
         VBox box = new VBox(5);
         box.setAlignment(Pos.CENTER);
@@ -135,67 +148,114 @@ public class SearchPageView {
         box.getChildren().addAll(iv, new Label(hebergement.getNom()));
         return box;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return La barre de navigation.
+     */
     public Scene getScene() {
         return scene;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return La barre de navigation.
+     */
     public NavBarView getNavBarView() {
         return navBarView;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de recherche.
+     */
     // -- Getters pour les contrôles de recherche et de tri
     public TextField getSearchField() {
         return searchField;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date d'arrivée.
+     */
     public Button getSortPriceButton() {
         return sortPriceButton;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date d'arrivée.
+     */
     public Button getSortRatingButton() {
         return sortRatingButton;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date d'arrivée.
+     */
     // -- Getters pour les filtres
     public CheckBox getMaisonCheck() {
         return maisonCheck;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date d'arrivée.
+     */
     public CheckBox getAppartementCheck() {
         return appartementCheck;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date d'arrivée.
+     */
     public CheckBox getCampingCheck() {
         return campingCheck;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date d'arrivée.
+     */
     public CheckBox getHotelCheck() {
         return hotelCheck;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * * @return Le champ de date de départ.
+     */
     public CheckBox getAubergeCheck() {
         return aubergeCheck;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+     */
     public CheckBox getAutreCheck() {
         return autreCheck;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+ * *     * @return Le slider de prix.
+     */
     public Slider getPrixSlider() {
         return prixSlider;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+     * @return Le champ de date d'arrivée.
+     */
     public DatePicker getDateArriveePicker() {
         return dateArriveePicker;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+     * @return Le champ de date de départ.
+     */
     public DatePicker getDateDepartPicker() {return dateDepartePicker;}
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+     * @return Le FlowPane contenant les hébergements.
+     */
     public FlowPane getLodgingFlowPane() {
         return lodgingFlowPane;
     }
-
+/**
+     * Met à jour le texte du label de prix en fonction de la valeur du slider.
+     * @return Le label affichant le prix maximum.
+     */
     public Label getPrixLabel() {
         return prixLabel;
     }

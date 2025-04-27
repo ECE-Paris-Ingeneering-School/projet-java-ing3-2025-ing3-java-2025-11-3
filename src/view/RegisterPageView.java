@@ -6,7 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-
+/**
+ * La classe {@code RegisterPageView} représente la vue de la page d'enregistrement
+ * d'un nouvel utilisateur dans l'application. Elle organise une interface graphique
+ * avec des champs pour le prénom, le nom, l'email, le mot de passe et un bouton
+ * pour créer un compte.
+ */
 public class RegisterPageView {
 
     private Scene scene;
@@ -19,10 +24,16 @@ public class RegisterPageView {
     private TextField firstNameField;
     private TextField lastNameField;
 
+    /**
+     * Constructeur pour initialiser la vue d'enregistrement.
+     */
     public RegisterPageView() {
         createUI();
     }
-
+/**
+     * Crée l'interface utilisateur de la page d'enregistrement.
+     * Configure la barre de navigation, les champs de saisie et le bouton de création de compte.
+     */
     private void createUI() {
         // Barre de navigation
         navBarView = new NavBarView();
@@ -136,36 +147,72 @@ public class RegisterPageView {
         scene = new Scene(root, 800, 500);
     }
 
-
+/**
+     * Retourne la scène principale de cette vue d'enregistrement.
+     *
+     * @return la scène contenant l'interface graphique de la page d'enregistrement
+     */
     public Scene getScene() {
         return scene;
     }
-
+/**
+     * Retourne le champ de texte pour l'email.
+     *
+     * @return le champ de texte pour l'email
+     */
     public TextField getEmailField() {
         return emailField;
     }
-
+/**
+     * Retourne le champ de texte pour le mot de passe.
+     *
+     * @return le champ de texte pour le mot de passe
+     */
     public PasswordField getPasswordField() {
         return passwordField;
     }
-
+/**
+     * Retourne le champ de texte pour la confirmation du mot de passe.
+     *
+     * @return le champ de texte pour la confirmation du mot de passe
+     */
     public PasswordField getConfirmPasswordField() {
         return confirmPasswordField;
     }
-
+/**
+     * Retourne le bouton de création de compte.
+     *
+     * @return le bouton de création de compte
+     */
     public Button getCreateAccountButton() {
         return createAccountButton;
     }
-
+/**
+     * Retourne le lien pour se connecter.
+     *
+     * @return le lien pour se connecter
+     */
     public Hyperlink getLoginLink() {
         return loginLink;
     }
-
+/**
+     * Retourne la barre de navigation.
+     *
+     * @return la barre de navigation {@code NavBarView}
+     */
     public NavBarView getNavBarView() {
         return navBarView;
     }
-
+/**
+     * Retourne le champ de texte pour le prénom.
+     *
+     * @return le champ de texte pour le prénom
+     */
     public TextField getFirstNameField() {return firstNameField;}
-
+/**
+     * Retourne le champ de texte pour le nom.
+     *
+     * @return le champ de texte pour le nom
+     */
     public TextField getLastNameField() {return lastNameField;}
 }

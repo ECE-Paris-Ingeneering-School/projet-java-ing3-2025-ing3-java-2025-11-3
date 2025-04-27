@@ -19,7 +19,12 @@ import java.util.List;
 public class HebergementListView {
     private final VBox root;
     private final TableView<Hebergement> table;
-
+    /**
+     * Construit une nouvelle instance de {@code HebergementListView}.
+     * Initialise la vue avec un titre et un tableau listant les hébergements fournis.
+     *
+     * @param hebergements la liste des hébergements à afficher
+     */
     public HebergementListView(List<Hebergement> hebergements) {
         root = new VBox(10);
         root.setPadding(new Insets(20));

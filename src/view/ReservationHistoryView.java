@@ -10,11 +10,19 @@ import modele.Hebergement;
 import modele.Reservation;
 
 import java.util.List;
-
+/**
+ * Vue affichant l'historique des réservations.
+ * La logique d'action (suppression, modification, etc.) doit être gérée par le contrôleur.
+ */
 public class ReservationHistoryView {
     private final VBox root;
     private final TableView<Reservation> table;
-
+/**
+     * Construit une nouvelle instance de {@code ReservationHistoryView}.
+     * Initialise la vue avec un titre et un tableau listant les réservations fournies.
+     *
+     * @param t la liste des réservations à afficher
+     */
     public ReservationHistoryView(List<Reservation> t) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
@@ -46,12 +54,21 @@ public class ReservationHistoryView {
 
         root.getChildren().addAll(title, table);
     }
-
+/**
+     * Retourne la racine de cette vue d'historique de réservations.
+     *
+     * @return la racine de la vue
+     */
     public VBox getRoot() {
         return root;
     }
 
     // méthode pour ajouter une liste d'hébergements
+    /**
+     * Définit la liste des réservations à afficher dans le tableau.
+     *
+     * @param reservations la liste des réservations à afficher
+     */
     public void set(List<Reservation> reservations) {
         table.getItems().setAll(reservations);
     }

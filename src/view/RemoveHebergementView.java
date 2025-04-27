@@ -6,12 +6,18 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-
+/**
+ * View for removing a lodging (hebergement).
+ */
 public class RemoveHebergementView {
     private final VBox root;
     private final Button deleteBtn;
     private final ComboBox<String> selectLog;
 
+    /**
+     * Constructor for RemoveHebergementView.
+     * @param hebergement
+     */
     public RemoveHebergementView(ArrayList<String> hebergement) {
         root = new VBox(10);
         root.setPadding(new Insets(20));
@@ -27,7 +33,9 @@ public class RemoveHebergementView {
 
         root.getChildren().addAll(title, selectLog, deleteBtn);
     }
-
+/**
+     * Constructor for RemoveHebergementView with no initial lodging.
+     */
     public VBox getRoot() {
         return root;
     }
