@@ -88,8 +88,10 @@ public class AddHebergementView {
         );
     }
 
-    public VBox getRoot() {
-        return root;
+    public ScrollPane getRoot() {
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setFitToHeight(true);
+        return scrollPane;
     }
 
     public Button getBtnSubmit() {
