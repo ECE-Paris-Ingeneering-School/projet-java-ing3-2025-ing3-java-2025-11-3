@@ -5,10 +5,8 @@ import modele.Hebergement;
 import modele.Options;
 import db.AzureDBConnector;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -257,59 +255,68 @@ public class HebergementDaoImpl implements HebergementDao {
     );
 
     @Override
-    public List<Hebergement> getFilteredHebergements(List<String> types, int prixMax, String rechercheTexte) {
+    public List<Hebergement> getFilteredHebergements(List<String> types, int prixMax, String rechercheTexte, LocalDate dateArrivee, LocalDate dateDepart) {
         List<Hebergement> hebergements = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
-                "SELECT * FROM hebergement WHERE prix_base <= ?");
+                "SELECT * FROM hebergement h WHERE prix_base <= ?");
         List<Object> params = new ArrayList<>();
         params.add(prixMax);
-        
+
+        // Filtre par types
         if (types != null && !types.isEmpty()) {
             String placeholders = types.stream()
                     .map(t -> "?")
                     .collect(Collectors.joining(", "));
-            sql.append(" AND type IN (").append(placeholders).append(")");
+            sql.append(" AND h.type IN (").append(placeholders).append(")");
             for (String type : types) {
                 Integer code = TYPE_CODES.get(type.toUpperCase());
-                if (code != null) {
-                    params.add(code);
-                }
+                if (code != null) params.add(code);
             }
         }
 
-        // Filtre textuel sur le nom
+        // Filtre textuel
         if (rechercheTexte != null && !rechercheTexte.isBlank()) {
-            sql.append(" AND LOWER(nom) LIKE ?");
+            sql.append(" AND LOWER(h.nom) LIKE ?");
             params.add("%" + rechercheTexte.toLowerCase().trim() + "%");
+        }
+
+        // Filtre de disponibilité via table reservation
+        if (dateArrivee != null && dateDepart != null) {
+            sql.append(" AND NOT EXISTS (")
+                    .append("SELECT 1 FROM reservation r ")
+                    .append("WHERE r.hebergement_id = h.hebergement_id ")
+                    .append("AND r.date_debut < ? ")
+                    .append("AND r.date_fin > ?")
+                    .append(")");
+            // dateDepart pour le test < date_debut, puis dateArrivee pour > date_fin
+            params.add(Date.valueOf(dateDepart));
+            params.add(Date.valueOf(dateArrivee));
         }
 
         try (Connection connection = conn.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql.toString())) {
-            
+
+            // Injection des paramètres
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    int id       = rs.getInt("hebergement_id");
-                    String nom   = rs.getString("nom");
-                    int typeCode = rs.getInt("type");
-                    String adresse     = rs.getString("adresse");
-                    String description = rs.getString("description");
-                    int prix          = rs.getInt("prix_base");
-                    int etoile        = rs.getInt("etoile");
-                    String images     = rs.getString("photo");
-                    ArrayList<String> imageList = decompreserListe(images);
-
                     hebergements.add(new Hebergement(
-                            id, nom, typeCode, adresse,
-                            description, prix, etoile,
-                            imageList, null, null
+                            rs.getInt("hebergement_id"),
+                            rs.getString("nom"),
+                            rs.getInt("type"),
+                            rs.getString("adresse"),
+                            rs.getString("description"),
+                            rs.getInt("prix_base"),
+                            rs.getInt("etoile"),
+                            decompreserListe(rs.getString("photo")),
+                            null,
+                            null
                     ));
                 }
             }
-
         } catch (SQLException e) {
             throw new RuntimeException("Erreur DAO getFilteredHebergements", e);
         }

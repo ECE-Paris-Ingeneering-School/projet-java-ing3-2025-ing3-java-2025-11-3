@@ -4,6 +4,7 @@ import modele.Avis;
 import modele.Hebergement;
 import modele.Options;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +73,6 @@ public interface HebergementDao {
       */
      void ajouterOption(int id_hebergement, int id_option);
 
-     public List<Hebergement> getFilteredHebergements(List<String> types, int prixMax, String rechercheTexte);
+     public List<Hebergement> getFilteredHebergements(List<String> types, int prixMax, String rechercheTexte, LocalDate dateArrivee, LocalDate dateDepart);
 
 }
