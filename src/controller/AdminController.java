@@ -89,6 +89,7 @@ public class AdminController {
 
         view.getAjouterOptionLabel().setOnMouseClicked(e -> {
             AddOptionView addHView = new AddOptionView();
+            showSection(addHView.getRoot());
         });
     }
 
