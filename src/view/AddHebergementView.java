@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Vue pour ajouter un hébergement avec sélection d'options.
+ * Vue permettant d'ajouter un hébergement avec la possibilité de sélectionner des options.
+ * Cette vue inclut des champs pour le nom, le type, l'adresse, la description, le prix, la note,
+ * une image et des options disponibles.
  */
 public class AddHebergementView {
 
@@ -30,10 +32,10 @@ public class AddHebergementView {
     private final List<CheckBox> checkBoxes;
 
     /**
-     * Construit la vue pour ajouter un hébergement avec les types et options spécifiés.
+     * Constructeur pour initialiser la vue d'ajout d'hébergement avec les types et options spécifiés.
      *
      * @param types Liste des types d'hébergement disponibles.
-     * @param options Liste des options disponibles.
+     * @param options Liste des options disponibles à sélectionner pour l'hébergement.
      */
     public AddHebergementView(ArrayList<String> types, List<Options> options) {
         root = new VBox(10);
@@ -88,52 +90,112 @@ public class AddHebergementView {
         );
     }
 
+    /**
+     * Retourne le conteneur racine de la vue sous forme de {@link ScrollPane}.
+     *
+     * @return Un {@link ScrollPane} contenant la vue racine.
+     */
     public ScrollPane getRoot() {
         ScrollPane scrollPane = new ScrollPane(root);
         scrollPane.setFitToHeight(true);
         return scrollPane;
     }
 
+    /**
+     * Retourne le bouton de soumission pour ajouter l'hébergement.
+     *
+     * @return Le bouton de soumission.
+     */
     public Button getBtnSubmit() {
         return submit;
     }
 
+    /**
+     * Retourne le champ de texte pour le nom de l'hébergement.
+     *
+     * @return Le champ de texte pour le nom.
+     */
     public TextField getNomField() {
         return nomField;
     }
 
+    /**
+     * Retourne le champ de texte pour l'adresse de l'hébergement.
+     *
+     * @return Le champ de texte pour l'adresse.
+     */
     public TextField getAdresseField() {
         return adresseField;
     }
 
+    /**
+     * Retourne la zone de texte pour la description de l'hébergement.
+     *
+     * @return La zone de texte pour la description.
+     */
     public TextArea getDescriptionArea() {
         return descriptionArea;
     }
 
+    /**
+     * Retourne le champ de texte pour le prix de l'hébergement.
+     *
+     * @return Le champ de texte pour le prix.
+     */
     public TextField getPrixField() {
         return prixField;
     }
 
+    /**
+     * Retourne le composant {@link Spinner} pour la note de l'hébergement.
+     *
+     * @return Le composant {@link Spinner} pour la note.
+     */
     public Spinner<Integer> getNoteSpin() {
         return noteSpin;
     }
 
+    /**
+     * Retourne le type d'hébergement sélectionné dans la {@link ChoiceBox}.
+     *
+     * @return Le type d'hébergement sélectionné.
+     */
     public String getType() {
         return typeBox.getValue();
     }
 
+    /**
+     * Retourne le bouton pour choisir une image pour l'hébergement.
+     *
+     * @return Le bouton pour choisir une image.
+     */
     public Button getBtnChooseImage() {
         return btnChooseImage;
     }
 
+    /**
+     * Retourne le chemin de l'image sélectionnée.
+     *
+     * @return Le chemin de l'image.
+     */
     public String getImagePath() {
         return imagePathField.getText();
     }
 
+    /**
+     * Définit le chemin de l'image sélectionnée.
+     *
+     * @param path Le chemin de l'image à définir.
+     */
     public void setImagePath(String path) {
         imagePathField.setText(path);
     }
 
+    /**
+     * Retourne la liste des options sélectionnées pour l'hébergement.
+     *
+     * @return La liste des options sélectionnées.
+     */
     public List<Options> getSelectedOptions() {
         List<Options> selected = new ArrayList<>();
         for (CheckBox cb : checkBoxes) {

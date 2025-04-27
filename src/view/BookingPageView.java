@@ -14,6 +14,12 @@ import javafx.scene.text.Font;
 
 import java.util.List;
 
+/**
+ * La classe <code>BookingPageView</code> représente la vue d'une page de réservation
+ * d'un hébergement dans l'application de réservation.
+ * Elle affiche les informations relatives à l'hébergement, les options disponibles, ainsi que les avis des utilisateurs.
+ * Cette vue permet à un utilisateur de visualiser un hébergement, d'ajouter une date de séjour et de réserver.
+ */
 public class BookingPageView {
 
     private Scene scene;
@@ -37,10 +43,26 @@ public class BookingPageView {
 
     private int reservationId;
 
+    /**
+     * Constructeur de la vue de la page de réservation.
+     * Ce constructeur crée l'interface graphique de la page de réservation, en y intégrant les informations
+     * de l'hébergement, les options disponibles, ainsi que les avis des utilisateurs.
+     *
+     * @param hebergement L'hébergement à afficher.
+     * @param avisList Liste des avis pour cet hébergement.
+     * @param optionsList Liste des options disponibles pour cet hébergement.
+     */
     public BookingPageView(Hebergement hebergement, List<Avis> avisList, List<Options> optionsList) {
         createUI(hebergement, avisList, optionsList);
     }
 
+    /**
+     * Crée l'interface graphique pour la page de réservation en utilisant les informations fournies.
+     *
+     * @param hebergement L'hébergement à afficher.
+     * @param avisList Liste des avis pour cet hébergement.
+     * @param optionsList Liste des options disponibles pour cet hébergement.
+     */
     private void createUI(Hebergement hebergement, List<Avis> avisList, List<Options> optionsList) {
         root = new BorderPane();
 
@@ -184,11 +206,52 @@ public class BookingPageView {
     }
 
     // GETTERS
+    /**
+     * Retourne la scène de la vue de réservation.
+     *
+     * @return La scène contenant la vue de réservation.
+     */
     public Scene getScene() { return scene; }
+
+    /**
+     * Retourne la barre de navigation de la vue de réservation.
+     *
+     * @return La barre de navigation de la vue.
+     */
     public NavBarView getNavBarView() { return navBarView; }
+
+    /**
+     * Retourne le bouton "Retour" de la vue de réservation.
+     *
+     * @return Le bouton "Retour".
+     */
     public Button getBackButton() { return backButton; }
+
+    /**
+     * Retourne le bouton "Ajouter aux favoris" de la vue de réservation.
+     *
+     * @return Le bouton "Ajouter aux favoris".
+     */
     public Button getFavoriteButton() { return favoriteButton; }
+
+    /**
+     * Retourne le bouton "Réserver" de la vue de réservation.
+     *
+     * @return Le bouton "Réserver".
+     */
     public Button getReserverButton() { return reserverButton; }
+
+    /**
+     * Retourne le sélecteur de date d'arrivée de la vue de réservation.
+     *
+     * @return Le sélecteur de date d'arrivée.
+     */
     public DatePicker getDateArriveePicker() { return dateArriveePicker; }
+
+    /**
+     * Retourne le sélecteur de date de départ de la vue de réservation.
+     *
+     * @return Le sélecteur de date de départ.
+     */
     public DatePicker getDateDepartPicker() { return dateDepartPicker; }
 }
