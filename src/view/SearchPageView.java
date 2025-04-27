@@ -46,7 +46,6 @@ public class SearchPageView {
         filtersBox.setPrefWidth(250);
         filtersBox.setAlignment(Pos.TOP_LEFT);
 
-
         hotelCheck = new CheckBox("Hôtel");
         aubergeCheck = new CheckBox("Auberge");
         campingCheck = new CheckBox("Camping");
@@ -128,9 +127,12 @@ public class SearchPageView {
         box.setPadding(new Insets(10));
         box.setStyle("-fx-border-color: #CCC; -fx-background-color: #FAFAFA;");
 
-        ImageView iv = new ImageView(new Image("file:src/resources/" + hebergement.getImageFilename()));
+        ImageView iv = new ImageView(new Image("file:src/resources/images/" + hebergement.getImageFilename()));
         iv.setFitWidth(200);
         iv.setFitHeight(250);
+
+        //print le chemin de l'image
+        System.out.println("file:src/resources/images/" + hebergement.getImageFilename());
 
         box.getChildren().addAll(iv, new Label(hebergement.getNom()));
         return box;
