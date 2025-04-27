@@ -3,6 +3,8 @@ package view;
 import java.util.List;
 import java.util.Optional;
 
+import dao.HebergementDaoImpl;
+import db.AzureDBConnector;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -167,10 +169,11 @@ public class ReservationView {
 
         ImageView imageView = new ImageView();
         String imageUrl = "";
-        Hebergement h = reservation.getHebergement();
+        HebergementDaoImpl hebergementDao = new HebergementDaoImpl(new AzureDBConnector());
+        Hebergement h = hebergementDao.getHebergement(reservation.getIdHebergement());
 
-        imageUrl = h.getImageFilename();
-
+        imageUrl = "file:src/resources/images/" + h.getImageFilename();
+        System.out.println("Image URL: " + imageUrl);
         if (imageUrl == null) {
             imageUrl = "file:src/resources/images/larry.jpg"; // Image par défaut
         }
